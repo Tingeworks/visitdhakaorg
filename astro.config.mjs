@@ -7,6 +7,8 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'My Docs',
+			// Pre-launch: keep the site out of search engines. Remove this and public/robots.txt to go live.
+			head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } }],
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 				{

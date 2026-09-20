@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../node_modules/@sveltia/cms/schema/sveltia-cms.json
+
+backend:
+  name: github
+  repo: tingeworks/visitdhakaorg # TODO: confirm the GitHub owner/repo
+  branch: main
+
+# Enables editing local files through the File System Access API when running `astro dev`.
+# Open http://localhost:4321/admin/ in Chrome or Edge and choose "Work with Local Repository".
+local_backend: true
+
+site_url: https://visitdhaka.org # TODO: confirm the production URL
+display_url: https://visitdhaka.org
+
+media_folder: src/assets/uploads
+public_folder: ../../assets/uploads
+
+collections:
+  - name: docs
+    label: Docs
+    label_singular: Doc
+    folder: src/content/docs
+    extension: md
+    format: frontmatter
+    create: true
+    nested:
+      depth: 3
+      summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text, required: false }
+      - { name: body, label: Body, widget: markdown }
+    meta:
+      path:
+        widget: string
+        label: Path
+        index_file: index

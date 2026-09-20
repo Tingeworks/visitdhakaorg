@@ -1,0 +1,21 @@
+---
+// Sveltia CMS admin UI, served at /admin/. The CMS config lives in public/admin/config.yml.
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>Content Manager</title>
+		<link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+	</head>
+	<body>
+		<script>
+			import CMS from '@sveltia/cms';
+
+			CMS.init();
+		</script>
+	</body>
+</html>

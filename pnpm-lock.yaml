@@ -11,6 +11,9 @@ importers:
       '@astrojs/starlight':
         specifier: ^0.42.2
         version: 0.42.2(astro@7.3.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.6))
+      '@sveltia/cms':
+        specifier: ^0.216.0
+        version: 0.216.0
       astro:
         specifier: ^7.2.10
         version: 7.3.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.6)
@@ -735,6 +738,9 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
+  '@sveltia/cms@0.216.0':
+    resolution: {integrity: sha512-hAwyn/DumS2laI0DMrrm8NyX/JGC0fxz7p9wSXX7mYCyZFc+Xe88Ep4O6yPTSGGRTJdvH6jpSyNShT3bM1WpkA==}
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
@@ -2264,6 +2270,8 @@ snapshots:
       '@types/hast': 3.0.5
 
   '@shikijs/vscode-textmate@10.0.2': {}
+
+  '@sveltia/cms@0.216.0': {}
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
