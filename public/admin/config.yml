@@ -12,8 +12,8 @@ local_backend: true
 site_url: https://visitdhaka.org
 display_url: https://visitdhaka.org
 
-media_folder: src/assets/uploads
-public_folder: ../../assets/uploads
+media_folder: public/uploads
+public_folder: /uploads
 
 collections:
   - name: docs
