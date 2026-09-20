@@ -22,6 +22,8 @@ Uses pnpm. There is no test runner or linter configured.
 - **CMS:** Sveltia CMS is loaded from the `@sveltia/cms` npm package by `src/pages/admin/index.astro` (served at `/admin/`), which points at `public/admin/config.yml`. The CMS config is separate from the Astro collection schema, so a frontmatter field added in one must be added to the other by hand. Collection folder paths in `config.yml` are repo-relative (`src/content/docs`). `local_backend: true` enables local editing during `pnpm dev`.
 - **Pages outside Starlight:** files in `src/pages/` (such as `admin/`) are plain Astro routes that bypass Starlight's layout.
 
+- **Deploy:** Cloudflare builds with `pnpm run build`, then runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads `dist/` as static assets. The site is fully static, so don't add `@astrojs/cloudflare` or `wrangler` as a dependency. Without `wrangler.jsonc`, wrangler tries to auto-configure the project and the deploy fails.
+
 ## Pre-launch state
 
 The site is intentionally hidden from search engines: `public/robots.txt` disallows everything, and a `noindex, nofollow` meta tag is added via the `head` option in `astro.config.mjs`. Don't set the `site` option or add sitemap config until launch, and don't remove either mechanism unless asked. The launch steps are in `README.md`.
