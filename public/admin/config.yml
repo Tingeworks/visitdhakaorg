@@ -5,6 +5,9 @@ backend:
   repo: Tingeworks/visitdhakaorg
   branch: main
 
+# Edits are saved as pull requests and go live only when merged into main.
+publish_mode: editorial_workflow
+
 # Enables editing local files through the File System Access API when running `astro dev`.
 # Open http://localhost:4321/admin/ in Chrome or Edge and choose "Work with Local Repository".
 local_backend: true
