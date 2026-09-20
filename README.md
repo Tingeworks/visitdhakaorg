@@ -18,7 +18,7 @@ A secondary goal is to serve as a public showcase project for [Tingeworks](https
 | Area | Choice |
 | :--- | :--- |
 | Framework | [Astro](https://astro.build) with the [Starlight](https://starlight.astro.build) docs template |
-| CMS | [Sveltia CMS](https://sveltiacms.app) (git-based), admin at `/admin/` |
+| CMS | tingeworks CMS, built on [Sveltia CMS](https://sveltiacms.app) (git-based), admin at `/admin/` |
 | Hosting | GitHub repo, deployed to Cloudflare Pages on push to `main` |
 | Search | Pagefind (bundled with Starlight), static and client-side |
 | Maps | Leaflet (planned) for an areas and attractions map |
@@ -37,14 +37,14 @@ A secondary goal is to serve as a public showcase project for [Tingeworks](https
 .
 ├── public/
 │   ├── admin/
-│   │   └── config.yml        # Sveltia CMS configuration
+│   │   └── config.yml        # tingeworks CMS configuration
 │   └── robots.txt            # Pre-launch: disallows all crawlers
 ├── src/
 │   ├── assets/
 │   ├── content/
 │   │   └── docs/             # Wiki content (.md / .mdx)
 │   ├── pages/
-│   │   └── admin/index.astro # Sveltia CMS admin UI, served at /admin/
+│   │   └── admin/index.astro # tingeworks CMS admin UI, served at /admin/
 │   └── content.config.ts
 ├── astro.config.mjs
 └── package.json
@@ -64,9 +64,9 @@ Run from the project root:
 | `pnpm preview` | Preview the build locally |
 | `pnpm astro ...` | Run Astro CLI commands such as `astro add` |
 
-## Content management (Sveltia CMS)
+## Content management (tingeworks CMS)
 
-The admin UI lives at `/admin/`. It is loaded from the `@sveltia/cms` npm package in `src/pages/admin/index.astro`, and configured in `public/admin/config.yml`.
+tingeworks CMS is [Sveltia CMS](https://sveltiacms.app) under the hood. The admin UI lives at `/admin/`. It is loaded from the `@sveltia/cms` npm package in `src/pages/admin/index.astro`, and configured in `public/admin/config.yml`.
 
 - **Local editing:** run `pnpm dev`, open `http://localhost:4321/admin/` in Chrome or Edge, and choose "Work with Local Repository". No login is needed.
 - **Production login:** GitHub personal access token for now, which suits a solo or small team. Add the [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth) Cloudflare Worker later if non-technical contributors need proper OAuth.
@@ -115,9 +115,9 @@ To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.m
 
 ## Roadmap
 
-- [x] Install Sveltia CMS and add the admin entry point and base `config.yml`
+- [x] Install the CMS (Sveltia) and add the admin entry point and base `config.yml`
 - [x] Set the GitHub `repo` and production URL (`https://visitdhaka.org`) in `public/admin/config.yml`
-- [x] Write Sveltia collections matching the content pillars
+- [x] Write CMS collections matching the content pillars
 - [x] Extend the Astro content schema (Zod) with the shared pillar fields
 - [x] Scaffold the 10 pillars with starter pages (35 pages)
 - [ ] Fact-check every starter page and set `verified: true` (find them with `grep -rl "verified: false" src/content/docs`)
