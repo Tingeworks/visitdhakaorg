@@ -9,6 +9,7 @@ export default defineConfig({
 			title: 'Visit Dhaka',
 			// Pre-launch: keep the site out of search engines. Remove this and public/robots.txt to go live.
 			head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } }],
+			components: { Footer: './src/components/Footer.astro' },
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/Tingeworks/visitdhakaorg' }],
 			// Grouped by visitor intent. Each folder in src/content/docs is one content pillar.
 			sidebar: [
