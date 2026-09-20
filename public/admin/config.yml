@@ -19,22 +19,493 @@ media_folder: public/uploads
 public_folder: /uploads
 
 collections:
-  - name: docs
-    label: Docs
-    label_singular: Doc
-    folder: src/content/docs
+  - name: overview
+    label: Overview
+    label_singular: Overview page
+    folder: src/content/docs/overview
     extension: md
     format: frontmatter
     create: true
-    nested:
-      depth: 3
-      summary: '{{title}}'
+    slug: '{{slug}}'
+    summary: '{{title}}'
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: description, label: Description, widget: text, required: false }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
       - { name: body, label: Body, widget: markdown }
-    meta:
-      path:
+
+  - name: areas
+    label: Areas & Neighborhoods
+    label_singular: Area
+    folder: src/content/docs/areas
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: area
+        label: Area
         widget: string
-        label: Path
-        index_file: index
+        required: false
+      - name: coordinates
+        label: Coordinates
+        widget: object
+        required: false
+        collapsed: true
+        hint: Approximate map position. Copy from a map and check it before launch.
+        fields:
+          - { name: lat, label: Latitude, widget: number, value_type: float }
+          - { name: lng, label: Longitude, widget: number, value_type: float }
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: attractions
+    label: Attractions & Landmarks
+    label_singular: Attraction
+    folder: src/content/docs/attractions
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Historic site
+          - Museum
+          - Landmark
+          - Religious site
+          - Park
+      - name: area
+        label: Area
+        widget: string
+        required: false
+      - name: coordinates
+        label: Coordinates
+        widget: object
+        required: false
+        collapsed: true
+        hint: Approximate map position. Copy from a map and check it before launch.
+        fields:
+          - { name: lat, label: Latitude, widget: number, value_type: float }
+          - { name: lng, label: Longitude, widget: number, value_type: float }
+      - name: hours
+        label: Opening hours
+        widget: string
+        required: false
+      - name: entryFee
+        label: Entry fee
+        widget: string
+        required: false
+      - name: bestTime
+        label: Best time to visit
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: food
+    label: Food & Dining
+    label_singular: Food page
+    folder: src/content/docs/food
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Dish
+          - Street food
+          - Restaurant guide
+      - name: area
+        label: Area
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: getting-around
+    label: Getting Around
+    label_singular: Transport page
+    folder: src/content/docs/getting-around
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Transport
+          - Guide
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: where-to-stay
+    label: Where to Stay
+    label_singular: Accommodation page
+    folder: src/content/docs/where-to-stay
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Accommodation
+          - Hotel guide
+      - name: area
+        label: Area
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: culture
+    label: Culture & Festivals
+    label_singular: Culture page
+    folder: src/content/docs/culture
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Festival
+          - Arts
+          - Religion
+      - name: bestTime
+        label: When
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: practical-info
+    label: Practical Info
+    label_singular: Practical info page
+    folder: src/content/docs/practical-info
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: shopping
+    label: Shopping
+    label_singular: Shopping page
+    folder: src/content/docs/shopping
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Market
+          - Shopping mall
+          - Craft
+      - name: area
+        label: Area
+        widget: string
+        required: false
+      - name: hours
+        label: Opening hours
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }
+
+  - name: day-trips
+    label: Day Trips
+    label_singular: Day trip
+    folder: src/content/docs/day-trips
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: One or two sentences. Used in search results and link previews.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Historic town
+          - Nature
+          - Museum
+      - name: area
+        label: Area
+        widget: string
+        required: false
+      - name: coordinates
+        label: Coordinates
+        widget: object
+        required: false
+        collapsed: true
+        hint: Approximate map position. Copy from a map and check it before launch.
+        fields:
+          - { name: lat, label: Latitude, widget: number, value_type: float }
+          - { name: lng, label: Longitude, widget: number, value_type: float }
+      - name: bestTime
+        label: Best time to visit
+        widget: string
+        required: false
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+        default: []
+      - name: sidebar
+        label: Sidebar
+        widget: object
+        required: false
+        collapsed: true
+        hint: Only needed for section index pages, to set the sidebar label and order.
+        fields:
+          - { name: label, label: Label, widget: string, required: false }
+          - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking every fact against an official or first-hand source.
+      - { name: body, label: Body, widget: markdown }

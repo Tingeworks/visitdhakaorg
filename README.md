@@ -70,11 +70,11 @@ The admin UI lives at `/admin/`. It is loaded from the `@sveltia/cms` npm packag
 
 - **Local editing:** run `pnpm dev`, open `http://localhost:4321/admin/` in Chrome or Edge, and choose "Work with Local Repository". No login is needed.
 - **Production login:** GitHub personal access token for now, which suits a solo or small team. Add the [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth) Cloudflare Worker later if non-technical contributors need proper OAuth.
-- **Current state:** the config has a single generic `Docs` collection over `src/content/docs`. Collections per content pillar (below) are still to be written.
+- **Collections:** one per content pillar (below), each exposing only the fields that pillar uses. Tick **Fact-checked by an editor** on a page once you have verified it.
 
 ## Content pillars
 
-Each pillar is intended to become an Astro content collection with consistent typed frontmatter (coordinates, category, tags, hours and so on) to support structured data and faceted browsing.
+Each pillar is a folder in `src/content/docs/` with consistent typed frontmatter (coordinates, category, tags, hours and so on) to support structured data and faceted browsing. The starter pages contain only well-known facts and are all marked `verified: false` until an editor checks them.
 
 1. **Overview:** history, geography, climate, demographics. The primary "about Dhaka" page.
 2. **Areas and Neighborhoods:** one page per area (Old Dhaka, Gulshan, Banani, Dhanmondi, Uttara, Mohammadpur).
@@ -117,8 +117,11 @@ To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.m
 
 - [x] Install Sveltia CMS and add the admin entry point and base `config.yml`
 - [x] Set the GitHub `repo` and production URL (`https://visitdhaka.org`) in `public/admin/config.yml`
-- [ ] Write Sveltia collections matching the content pillars
-- [ ] Define the Astro content collection schema (Zod) per pillar
+- [x] Write Sveltia collections matching the content pillars
+- [x] Extend the Astro content schema (Zod) with the shared pillar fields
+- [x] Scaffold the 10 pillars with starter pages (35 pages)
+- [ ] Fact-check every starter page and set `verified: true` (find them with `grep -rl "verified: false" src/content/docs`)
+- [ ] Fill in opening hours, fees, prices and coordinates from first-hand or official sources
 - [ ] Buy the domain and point DNS at Cloudflare
 - [ ] Set up Cloudflare Pages deployment
 - [ ] Add a reusable JSON-LD structured data component

@@ -1,40 +1,35 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Visit Dhaka
+description: A community guide to Dhaka, Bangladesh, covering where to go, what to eat, where to stay and how to get around.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: A community guide to Dhaka, the capital of Bangladesh.
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: About Dhaka
+      link: /overview/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: Plan your trip
+      link: /practical-info/
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
-
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Explore" icon="star">
+		[Areas](/areas/), [attractions](/attractions/), [culture](/culture/), [shopping](/shopping/) and [day trips](/day-trips/).
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Eat" icon="pencil">
+		Street food, biryani and more in [Food and Dining](/food/).
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Stay" icon="document">
+		Which neighborhood suits you: [Where to stay](/where-to-stay/).
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Get around" icon="rocket">
+		Rickshaws, ride-share apps and the metro: [Getting around](/getting-around/).
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Plan your trip" icon="information">
+		[Practical information](/practical-info/) on visas, money, phones and safety.
 	</Card>
 </CardGrid>
