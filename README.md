@@ -116,7 +116,7 @@ To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.m
 ## Roadmap
 
 - [x] Install Sveltia CMS and add the admin entry point and base `config.yml`
-- [ ] Confirm the GitHub `repo` and production URL in `public/admin/config.yml` (currently placeholders)
+- [x] Set the GitHub `repo` and production URL (`https://visitdhaka.org`) in `public/admin/config.yml`
 - [ ] Write Sveltia collections matching the content pillars
 - [ ] Define the Astro content collection schema (Zod) per pillar
 - [ ] Buy the domain and point DNS at Cloudflare

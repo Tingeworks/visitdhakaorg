@@ -2,14 +2,14 @@
 
 backend:
   name: github
-  repo: tingeworks/visitdhakaorg # TODO: confirm the GitHub owner/repo
+  repo: Tingeworks/visitdhakaorg
   branch: main
 
 # Enables editing local files through the File System Access API when running `astro dev`.
 # Open http://localhost:4321/admin/ in Chrome or Edge and choose "Work with Local Repository".
 local_backend: true
 
-site_url: https://visitdhaka.org # TODO: confirm the production URL
+site_url: https://visitdhaka.org
 display_url: https://visitdhaka.org
 
 media_folder: src/assets/uploads
