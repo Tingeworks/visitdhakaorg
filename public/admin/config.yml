@@ -15,7 +15,7 @@ local_backend: true
 # Shown on the loading and sign-in screens and in the browser tab.
 app_title: tingeworks CMS
 logo:
-  src: /admin/logo.png
+  src: /admin/tingeworks-logo.svg
 
 site_url: https://visitdhaka.org
 display_url: https://visitdhaka.org
