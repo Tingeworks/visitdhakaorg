@@ -1,0 +1,13 @@
+---
+// Wraps Starlight's page frame and adds the site footer after it. The frame's sidebar and table of contents are fixed to
+// the viewport, so a footer inside the content column can never be full width; a sibling of the frame can.
+import Default from '@astrojs/starlight/components/PageFrame.astro';
+import SiteFooter from './SiteFooter.astro';
+---
+
+<Default {...Astro.props}>
+	<slot name="header" slot="header" />
+	<slot name="sidebar" slot="sidebar" />
+	<slot />
+</Default>
+<SiteFooter />

@@ -8,9 +8,23 @@ export default defineConfig({
 		starlight({
 			title: 'Visit Dhaka',
 			// Pre-launch: keep the site out of search engines. Remove this and public/robots.txt to go live.
-			head: [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } }],
-			components: { Footer: './src/components/Footer.astro' },
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/Tingeworks/visitdhakaorg' }],
+			head: [
+				{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } },
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'stylesheet',
+						href: 'https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap',
+					},
+				},
+			],
+			customCss: ['./src/styles/custom.css'],
+			components: {
+				Header: './src/components/Header.astro',
+				PageFrame: './src/components/PageFrame.astro',
+			},
 			// Grouped by visitor intent. Each folder in src/content/docs is one content pillar.
 			sidebar: [
 				{
