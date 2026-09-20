@@ -12,8 +12,8 @@ publish_mode: editorial_workflow
 # Open http://localhost:4321/admin/ in Chrome or Edge and choose "Work with Local Repository".
 local_backend: true
 
-# Heading on the loading and sign-in screens, also used in the browser tab title.
-app_title: powered by tingeworks
+# Browser tab title and welcome text. The heading on the loading screen is hidden in src/pages/admin/index.astro.
+app_title: tingeworks
 logo:
   src: /admin/tingeworks-logo.svg
 

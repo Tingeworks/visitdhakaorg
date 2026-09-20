@@ -10,12 +10,32 @@
 		<meta name="robots" content="noindex" />
 		<title>tingeworks CMS</title>
 		<link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+		<!-- Hide the app title heading on the loading and sign-in screens; the logo stands alone. -->
+		<style is:global>
+			.container > .inner > h1 {
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 		<script>
 			import CMS from '@sveltia/cms';
 
 			CMS.init();
+
+			// The CMS hardcodes its own name in the "Powered by ..." footer, so swap it in the DOM.
+			const rebrand = () => {
+				document.querySelectorAll('.powered-by').forEach((el) => {
+					if (el.textContent?.includes('Sveltia CMS')) {
+						el.textContent = el.textContent.replace('Sveltia CMS', 'tingeworks');
+					}
+				});
+			};
+			new MutationObserver(rebrand).observe(document.body, {
+				childList: true,
+				subtree: true,
+				characterData: true,
+			});
 		</script>
 	</body>
 </html>
