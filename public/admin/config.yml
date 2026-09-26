@@ -514,3 +514,70 @@ collections:
         default: false
         hint: Tick only after checking every fact against an official or first-hand source.
       - { name: body, label: Body, widget: markdown }
+
+  - name: events
+    label: Dhaka Now (events)
+    label_singular: Event
+    description: Events shown in Dhaka Now on the homepage and at /whats-on/. Past events drop off by themselves.
+    folder: src/content/events
+    extension: yml
+    format: yaml
+    create: true
+    slug: '{{slug}}-{{startDate}}'
+    summary: '{{startDate}} · {{title}}'
+    sortable_fields: [startDate, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: summary
+        label: Summary
+        widget: text
+        hint: One or two sentences on what it is and why it's worth going.
+      - name: startDate
+        label: Start date
+        widget: datetime
+        time_format: false
+        format: YYYY-MM-DD
+      - name: endDate
+        label: End date
+        widget: datetime
+        time_format: false
+        format: YYYY-MM-DD
+        required: false
+        hint: Leave empty for one-day events.
+      - name: category
+        label: Category
+        widget: select
+        required: false
+        options:
+          - Festival
+          - National day
+          - Music
+          - Art and exhibitions
+          - Food
+          - Market
+          - Sport
+          - Talk
+      - name: venue
+        label: Venue
+        widget: string
+        required: false
+      - name: area
+        label: Area
+        widget: string
+        required: false
+        hint: Shown when there is no venue.
+      - name: page
+        label: Related wiki page
+        widget: string
+        required: false
+        hint: A path on this site, such as /culture/pohela-boishakh/. The card links here if set.
+      - name: link
+        label: Official source
+        widget: string
+        required: false
+        hint: Organiser or official URL for dates and details. The card links here when there is no wiki page.
+      - name: verified
+        label: Fact-checked by an editor
+        widget: boolean
+        default: false
+        hint: Tick only after checking the dates against the organiser or an official source.

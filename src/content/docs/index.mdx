@@ -1,35 +1,124 @@
 ---
 title: Visit Dhaka
-description: A community guide to Dhaka, Bangladesh, covering where to go, what to eat, where to stay and how to get around.
+description: Plan your trip to Dhaka, Bangladesh with a community travel guide to things to do, what's on, where to eat, where to stay and how to get around.
+# Homepage-only SEO title. The site title in astro.config.mjs stays "Visit Dhaka" so other pages read "Page | Visit Dhaka".
+head:
+  - tag: title
+    content: 'Visit Dhaka: Travel Guide to Dhaka, Bangladesh'
+  - tag: meta
+    attrs:
+      property: og:title
+      content: 'Visit Dhaka: Travel Guide to Dhaka, Bangladesh'
 template: splash
 hero:
-  tagline: A community guide to Dhaka, the capital of Bangladesh.
+  tagline: A community travel guide to Dhaka, the capital of Bangladesh. What's on, where to go, what to eat and how to get around.
   actions:
-    - text: About Dhaka
-      link: /overview/
+    - text: Start exploring
+      link: /attractions/
       icon: right-arrow
     - text: Plan your trip
       link: /practical-info/
-      icon: external
+      icon: right-arrow
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import HomeSection from '../../components/home/HomeSection.astro';
+import CardGrid from '../../components/home/CardGrid.astro';
+import HomeCard from '../../components/home/HomeCard.astro';
+import EventList from '../../components/home/EventList.astro';
+import PageCards from '../../components/home/PageCards.astro';
 
-<CardGrid stagger>
-	<Card title="Explore" icon="star">
-		[Areas](/areas/), [attractions](/attractions/), [culture](/culture/), [shopping](/shopping/) and [day trips](/day-trips/).
-	</Card>
-	<Card title="Eat" icon="pencil">
-		Street food, biryani and more in [Food and Dining](/food/).
-	</Card>
-	<Card title="Stay" icon="document">
-		Which neighborhood suits you: [Where to stay](/where-to-stay/).
-	</Card>
-	<Card title="Get around" icon="rocket">
-		Rickshaws, ride-share apps and the metro: [Getting around](/getting-around/).
-	</Card>
-	<Card title="Plan your trip" icon="information">
-		[Practical information](/practical-info/) on visas, money, phones and safety.
-	</Card>
-</CardGrid>
+export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/new?title=Event%3A%20';
+
+<HomeSection
+	id="dhaka-now"
+	title="Dhaka Now"
+	intro="What's on in Dhaka: festivals, events and things to do happening now or coming up soon."
+	links={[{ label: 'See all events', href: '/whats-on/' }]}
+>
+	<EventList limit={4} columns={4} />
+</HomeSection>
+
+<HomeSection
+	id="neighborhoods"
+	eyebrow="Explore"
+	title="Dhaka's neighborhoods"
+	intro="From the historic lanes of Old Dhaka to the cafés of Gulshan and Banani, each part of the city has its own character."
+	links={[
+		{ label: 'All areas', href: '/areas/' },
+		{ label: 'Where to stay', href: '/where-to-stay/' },
+	]}
+>
+	<PageCards dir="areas" order={['old-dhaka', 'gulshan', 'banani', 'dhanmondi', 'uttara', 'mohammadpur']} limit={6} />
+</HomeSection>
+
+<HomeSection
+	id="eat"
+	eyebrow="Eat"
+	title="Eat like a local"
+	intro="Dhaka runs on street snacks and slow-cooked biryani. Start with these."
+	links={[{ label: 'Food and dining', href: '/food/' }]}
+>
+	<PageCards dir="food" order={['kacchi-biryani', 'fuchka']} eyebrow="category" columns={2} />
+</HomeSection>
+
+<HomeSection
+	id="getting-around"
+	eyebrow="Get around"
+	title="Getting around Dhaka"
+	intro="Traffic is part of life in Dhaka. Pick the right ride for the distance."
+	links={[{ label: 'Transport guide', href: '/getting-around/' }]}
+>
+	<PageCards dir="getting-around" order={['rickshaws', 'cng-auto-rickshaws', 'ride-share', 'metro-rail']} columns={4} />
+</HomeSection>
+
+<HomeSection
+	id="before-you-go"
+	eyebrow="Plan your trip"
+	title="Before you go"
+	intro="Entry rules and advice change, so always confirm the details with official sources before you travel."
+	links={[{ label: 'Practical info', href: '/practical-info/' }]}
+>
+	<PageCards
+		dir="practical-info"
+		order={['visa-and-entry', 'money-and-connectivity', 'health-and-safety', 'bangla-phrases']}
+		eyebrow="number"
+		columns={4}
+	/>
+</HomeSection>
+
+<HomeSection
+	id="festivals"
+	eyebrow="Culture"
+	title="Festivals and seasons"
+	intro="Time your trip around the city's biggest celebrations."
+	links={[{ label: 'Culture and festivals', href: '/culture/' }]}
+>
+	<PageCards dir="culture" order={['ekushey-book-fair', 'pohela-boishakh']} eyebrow="bestTime" columns={2} />
+</HomeSection>
+
+<HomeSection
+	id="community"
+	eyebrow="Community"
+	title="Written by the community"
+	intro="Visit Dhaka is compiled by the community and edited in the open. Every page is checked by an editor before it is marked as fact-checked."
+>
+	<CardGrid>
+		<HomeCard
+			title="Fix or update a page"
+			description="Every guide page has an Edit page link at the bottom. Use it to suggest a fix on GitHub."
+		/>
+		<HomeCard
+			title="Suggest an event"
+			description="Know about a festival, exhibition or gig in Dhaka? Tell us and an editor will add it to Dhaka Now."
+			href={suggestEvent}
+			external
+		/>
+		<HomeCard
+			title="See the project on GitHub"
+			description="Every page lives in a public GitHub repository. Browse the pages and their edit history."
+			href="https://github.com/Tingeworks/visitdhakaorg"
+			external
+		/>
+	</CardGrid>
+</HomeSection>

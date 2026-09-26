@@ -1,0 +1,120 @@
+---
+// A text card used by the homepage lists. Renders as a link when `href` is set. Any extra props (such as data-*
+// attributes) are passed through to the card element.
+interface Props {
+	title: string;
+	href?: string;
+	external?: boolean;
+	eyebrow?: string;
+	description?: string;
+	meta?: string;
+	badge?: string;
+	hidden?: boolean;
+	[attr: `data-${string}`]: string | boolean | undefined;
+}
+
+const { title, href, external, eyebrow, description, meta, badge, ...attrs } = Astro.props;
+const Tag = href ? 'a' : 'div';
+const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}) } : {};
+---
+
+<Tag class:list={['home-card', { link: href }]} {...linkAttrs} {...attrs}>
+	{
+		(eyebrow || badge) && (
+			<div class="top">
+				{eyebrow && <span class="eyebrow">{eyebrow}</span>}
+				{badge && (
+					<span class="badge" data-status>
+						{badge}
+					</span>
+				)}
+			</div>
+		)
+	}
+	<h3 class="title">
+		{title}
+		{external && <span class="sr-only"> (opens in a new tab)</span>}
+	</h3>
+	{description && <p class="description">{description}</p>}
+	{meta && <p class="meta">{meta}</p>}
+</Tag>
+
+<style>
+	.home-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		height: 100%;
+		padding: 1.25rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		background: var(--vd-surface);
+		box-shadow: var(--sl-shadow-sm);
+		color: inherit;
+		text-decoration: none;
+	}
+	.home-card[hidden] {
+		display: none;
+	}
+	.link {
+		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
+			border-color var(--vd-duration) var(--vd-ease), background-color var(--vd-duration) var(--vd-ease);
+	}
+	.link:hover,
+	.link:focus-visible {
+		transform: translateY(-2px);
+		border-color: var(--sl-color-accent);
+		background: var(--vd-surface-hover);
+		box-shadow: var(--sl-shadow-md);
+	}
+	.top {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+	.eyebrow {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--sl-color-text-accent);
+	}
+	.badge {
+		padding: 0.15rem 0.5rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-sm);
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		color: var(--sl-color-gray-2);
+	}
+	/* Set by EventList when an event has started. */
+	[data-live] .badge {
+		border-color: var(--sl-color-orange);
+		background: var(--sl-color-orange-low);
+		color: var(--sl-color-orange-high);
+	}
+	.title {
+		margin: 0;
+		font-family: var(--vd-font-display);
+		font-size: var(--sl-text-lg);
+		font-weight: 700;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--sl-color-white);
+	}
+	.description {
+		margin: 0;
+		font-size: var(--sl-text-sm);
+		line-height: 1.55;
+		color: var(--sl-color-gray-2);
+		text-wrap: pretty;
+	}
+	.meta {
+		margin: auto 0 0;
+		padding-top: 0.25rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+</style>

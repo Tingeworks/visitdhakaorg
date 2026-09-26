@@ -2,12 +2,15 @@
  * Visit Dhaka design tokens.
  *
  * Layered on top of Starlight's own tokens (--sl-*). Unlayered, so it wins over Starlight's layers.
- * Direction: bottle green accent (the Bangladesh flag), warm marigold and terracotta secondaries,
- * paper-warm neutrals in light mode and green-tinted charcoal in dark mode.
+ * Direction: Krishnachura accent (#CA3422, close to PANTONE 18-1564 TCX, the red-orange of Dhaka's flame trees),
+ * bottle green and marigold secondaries, paper-warm neutrals in light mode and green-tinted charcoal in dark mode.
  */
 
 /* ---------- Tokens shared by both themes ---------- */
 :root {
+	/* Brand colour: Krishnachura, the red-orange of the flame trees that bloom across Dhaka in spring (#CA3422). */
+	--vd-krishnachura: hsl(6, 71%, 46%);
+
 	/* Brand hues. Starlight derives its orange/red/green/... swatches from these. */
 	--sl-hue-orange: 38; /* marigold */
 	--sl-hue-red: 12; /* terracotta */
@@ -16,9 +19,10 @@
 	--sl-hue-purple: 285;
 
 	/* Type */
-	/* Noto Sans is loaded from Google Fonts in astro.config.mjs. Noto Sans Bengali covers Bangla text. */
-	--vd-font-display: 'Noto Sans', 'Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--sl-font: 'Noto Sans', 'Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	/* Google Sans is loaded from Google Fonts in astro.config.mjs (weights 400 to 700, optical sizes 17 to 18). It has no
+	   Bengali, so Bangla text falls back to Noto Sans Bengali where the reader has it installed. */
+	--vd-font-display: 'Google Sans', 'Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--sl-font: 'Google Sans', 'Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--sl-text-body: 1.0625rem; /* 17px, easier to read for long guides */
 	--sl-text-body-sm: 0.875rem;
 	--sl-line-height: 1.7;
@@ -34,12 +38,19 @@
 	--sl-sidebar-width: 17rem;
 	--sl-content-pad-x: 1.25rem;
 
-	/* Shape and motion */
-	--vd-radius-sm: 0.375rem;
-	--vd-radius-md: 0.625rem;
-	--vd-radius-lg: 1rem;
+	/* Shape and motion. Slightly rounded corners: small for chips, medium for buttons and inputs, large for cards
+	   and menus. */
+	--vd-radius-sm: 4px;
+	--vd-radius-md: 6px;
+	--vd-radius-lg: 8px;
 	--vd-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 	--vd-duration: 160ms;
+
+	/* Primary buttons use Krishnachura with light text in both themes, rather than Starlight's pale accent in
+	   dark mode. About 4.9:1, so it passes WCAG AA. */
+	--vd-button: var(--vd-krishnachura);
+	--vd-button-hover: hsl(6, 71%, 40%);
+	--vd-button-text: #f4f4f8;
 }
 
 @media (min-width: 50em) {
@@ -51,20 +62,57 @@
 	}
 }
 
+/* Font size setting from the accessibility menu (src/components/AccessibilityMenu.astro). The text sizes are declared
+   again on the page content, sidebar and footer, multiplied by --vd-font-scale. The header keeps the sizes above, so the
+   navbar still fits at the largest setting. Keep these base values in step with the ones above and Starlight's. */
+html[data-a11y-font] :is(.main-frame, .sidebar-pane, .site-footer) {
+	/* Body text inherits the browser's default size rather than a token, so it is scaled here. */
+	font-size: calc(1rem * var(--vd-font-scale));
+	--sl-text-2xs: calc(0.75rem * var(--vd-font-scale));
+	--sl-text-xs: calc(0.8125rem * var(--vd-font-scale));
+	--sl-text-sm: calc(0.875rem * var(--vd-font-scale));
+	--sl-text-base: calc(1rem * var(--vd-font-scale));
+	--sl-text-lg: calc(1.125rem * var(--vd-font-scale));
+	--sl-text-xl: calc(1.25rem * var(--vd-font-scale));
+	--sl-text-2xl: calc(1.5rem * var(--vd-font-scale));
+	--sl-text-3xl: calc(1.8125rem * var(--vd-font-scale));
+	--sl-text-4xl: calc(2.1875rem * var(--vd-font-scale));
+	--sl-text-5xl: calc(2.625rem * var(--vd-font-scale));
+	--sl-text-6xl: calc(4rem * var(--vd-font-scale));
+	--sl-text-body: calc(1.0625rem * var(--vd-font-scale));
+	--sl-text-body-sm: calc(0.875rem * var(--vd-font-scale));
+	--sl-text-code: calc(0.875rem * var(--vd-font-scale));
+	--sl-text-code-sm: calc(0.8125rem * var(--vd-font-scale));
+	--sl-text-h1: calc(2.5rem * var(--vd-font-scale));
+	--sl-text-h2: calc(1.75rem * var(--vd-font-scale));
+	--sl-text-h3: calc(1.375rem * var(--vd-font-scale));
+	--sl-text-h4: calc(1.125rem * var(--vd-font-scale));
+	--sl-text-h5: calc(1.125rem * var(--vd-font-scale));
+}
+@media (min-width: 50em) {
+	html[data-a11y-font] :is(.main-frame, .sidebar-pane, .site-footer) {
+		--sl-text-h1: calc(3rem * var(--vd-font-scale));
+		--sl-text-h2: calc(2rem * var(--vd-font-scale));
+		--sl-text-h3: calc(1.5rem * var(--vd-font-scale));
+		--sl-text-h4: calc(1.25rem * var(--vd-font-scale));
+	}
+}
+
 /* ---------- Dark theme (Starlight's default) ---------- */
 :root {
-	--sl-color-white: hsl(40, 25%, 98%);
+	--sl-color-white: #f4f4f8;
 	--sl-color-gray-1: hsl(40, 14%, 91%);
 	--sl-color-gray-2: hsl(40, 9%, 76%);
 	--sl-color-gray-3: hsl(40, 6%, 59%);
 	--sl-color-gray-4: hsl(165, 6%, 38%);
 	--sl-color-gray-5: hsl(165, 10%, 22%);
 	--sl-color-gray-6: hsl(165, 14%, 14%);
-	--sl-color-black: hsl(165, 18%, 9%);
+	--sl-color-black: #010714;
 
-	--sl-color-accent-low: hsl(163, 45%, 16%);
-	--sl-color-accent: hsl(160, 55%, 42%);
-	--sl-color-accent-high: hsl(158, 60%, 78%);
+	/* Krishnachura, lifted so links and buttons stay readable on the dark background. */
+	--sl-color-accent-low: hsl(6, 45%, 18%);
+	--sl-color-accent: hsl(6, 71%, 55%);
+	--sl-color-accent-high: hsl(8, 90%, 82%);
 
 	--sl-color-orange-low: hsl(38, 45%, 20%);
 	--sl-color-orange: hsl(38, 88%, 60%);
@@ -73,19 +121,26 @@
 	--sl-color-red: hsl(12, 78%, 62%);
 	--sl-color-red-high: hsl(12, 85%, 86%);
 
-	--sl-color-bg-nav: hsl(165, 16%, 11%);
+	--sl-color-bg-nav: rgb(1 7 20 / 0.9);
 	--sl-color-bg-sidebar: hsl(165, 16%, 11%);
 	--sl-color-hairline: hsl(165, 12%, 18%);
 	--sl-color-hairline-light: hsl(165, 10%, 22%);
 
-	--vd-surface: hsl(165, 15%, 12%);
+	--vd-surface: #010714;
 	--vd-surface-hover: hsl(165, 15%, 15%);
-	--vd-ring: hsl(158, 60%, 62%);
+	--vd-ring: hsl(8, 85%, 68%);
+	/* Hover and open state for buttons and links without a background: a faint tint of the text colour. */
+	--vd-hover: rgb(244 244 248 / 0.08);
+
+	/* Subtle elevation. Replaces Starlight's heavier defaults. */
+	--sl-shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.2);
+	--sl-shadow-md: 0 2px 6px hsla(0, 0%, 0%, 0.22);
+	--sl-shadow-lg: 0 8px 20px hsla(0, 0%, 0%, 0.28);
 }
 
 /* ---------- Light theme ---------- */
 :root[data-theme='light'] {
-	--sl-color-white: hsl(165, 22%, 9%);
+	--sl-color-white: #010714;
 	--sl-color-gray-1: hsl(165, 16%, 15%);
 	--sl-color-gray-2: hsl(165, 10%, 24%);
 	--sl-color-gray-3: hsl(165, 6%, 36%);
@@ -93,11 +148,12 @@
 	--sl-color-gray-5: hsl(38, 14%, 80%);
 	--sl-color-gray-6: hsl(38, 30%, 93%);
 	--sl-color-gray-7: hsl(40, 38%, 96%);
-	--sl-color-black: hsl(40, 45%, 98.5%);
+	--sl-color-black: #f4f4f8;
 
-	--sl-color-accent-low: hsl(160, 42%, 90%);
-	--sl-color-accent: hsl(163, 92%, 24%);
-	--sl-color-accent-high: hsl(165, 85%, 15%);
+	/* Krishnachura. About 5:1 against the page background, so it passes WCAG AA for text. */
+	--sl-color-accent-low: hsl(8, 75%, 93%);
+	--sl-color-accent: var(--vd-krishnachura);
+	--sl-color-accent-high: hsl(6, 75%, 26%);
 
 	--sl-color-orange-low: hsl(38, 90%, 88%);
 	--sl-color-orange: hsl(36, 92%, 50%);
@@ -106,15 +162,20 @@
 	--sl-color-red: hsl(12, 76%, 48%);
 	--sl-color-red-high: hsl(12, 80%, 28%);
 
-	--sl-color-bg-nav: hsla(40, 45%, 98.5%, 0.9);
+	--sl-color-bg-nav: rgb(244 244 248 / 0.9);
 	--sl-color-bg-sidebar: hsl(40, 38%, 96.5%);
 	--sl-color-hairline: hsl(38, 22%, 89%);
 	--sl-color-hairline-light: hsl(38, 25%, 92%);
 	--sl-color-hairline-shade: hsl(38, 25%, 92%);
 
-	--vd-surface: hsl(0, 0%, 100%);
+	--vd-surface: #f4f4f8;
 	--vd-surface-hover: hsl(40, 38%, 97%);
-	--vd-ring: hsl(163, 92%, 24%);
+	--vd-ring: var(--vd-krishnachura);
+	--vd-hover: rgb(1 7 20 / 0.06);
+
+	--sl-shadow-sm: 0 1px 2px hsla(165, 20%, 10%, 0.04);
+	--sl-shadow-md: 0 2px 6px hsla(165, 20%, 10%, 0.05);
+	--sl-shadow-lg: 0 8px 20px hsla(165, 20%, 10%, 0.07);
 }
 
 /* ---------- Base ---------- */
@@ -126,7 +187,7 @@ html {
 }
 
 ::selection {
-	background: var(--sl-color-accent-low);
+	background: var(--sl-color-gray-5);
 	color: var(--sl-color-white);
 }
 
@@ -222,13 +283,41 @@ html {
 
 /* ---------- Header and sidebar ---------- */
 header.header {
-	border-bottom: 1px solid var(--sl-color-hairline);
+	border-bottom: none;
 	backdrop-filter: saturate(1.4) blur(12px);
+}
+
+/* No left sidebar once the navbar's dropdown menu is showing (64rem, see Header.astro); the navbar covers the same pages.
+   Below that the sidebar stays, since Starlight uses it as the mobile menu. Zeroing the content offset lets the content
+   column take the freed space. */
+@media (min-width: 64rem) {
+	:root[data-has-sidebar] {
+		--sl-content-inline-start: 0rem;
+		/* Header.astro lines the nav up with the content column using this pad, which assumes a sidebar. With the
+		   sidebar gone, only the gap between the header and content padding is left to account for. */
+		--__sidebar-pad: calc(2 * (var(--sl-nav-pad-x) - var(--sl-content-pad-x)));
+	}
+	:root[data-has-sidebar]:not([data-has-toc]) {
+		--__sidebar-pad: 0rem;
+	}
+	.sidebar-pane {
+		display: none;
+	}
+}
+/* Until 72rem the table of contents is a bar above the content rather than a column, so center the content column,
+   and offset the header maths by the column the table of contents would otherwise take. */
+@media (min-width: 64rem) and (max-width: 71.99rem) {
+	[data-has-sidebar] .main-pane .sl-container {
+		margin-inline: auto;
+	}
+	:root[data-has-sidebar][data-has-toc] {
+		--__sidebar-pad: calc(var(--sl-sidebar-width) + 2 * var(--sl-nav-pad-x));
+	}
 }
 
 .site-title {
 	font-family: var(--vd-font-display);
-	font-size: var(--sl-text-xl);
+	font-size: var(--sl-text-base);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 }
@@ -248,7 +337,7 @@ starlight-theme-select select,
 	transition: background-color var(--vd-duration) var(--vd-ease), color var(--vd-duration) var(--vd-ease);
 }
 .sidebar-content a:hover:not([aria-current='page']) {
-	background: var(--sl-color-accent-low);
+	background: var(--vd-hover);
 	color: var(--sl-color-white);
 }
 .sidebar-content a[aria-current='page'] {
@@ -261,7 +350,15 @@ starlight-theme-select select,
 	transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
 		background-color var(--vd-duration) var(--vd-ease);
 }
+.sl-link-button.primary {
+	background: var(--vd-button);
+	border-color: var(--vd-button);
+	color: var(--vd-button-text);
+}
 .sl-link-button.primary:hover {
+	background: var(--vd-button-hover);
+	border-color: var(--vd-button-hover);
+	color: var(--vd-button-text);
 	transform: translateY(-1px);
 	box-shadow: var(--sl-shadow-md);
 }
@@ -287,24 +384,67 @@ starlight-theme-select select,
 }
 
 .card .icon {
-	background: var(--sl-color-accent-low);
+	background: var(--vd-hover);
 	border-color: var(--sl-color-accent);
 	color: var(--sl-color-text-accent);
 	border-radius: var(--vd-radius-md);
 }
 
 /* ---------- Home hero ---------- */
-[data-has-hero] .hero h1 {
+/* The splash homepage has no sidebar, so give its sections more room than a reading column. */
+html[data-has-hero] {
+	--sl-content-width: 72rem;
+}
+/* Fill the first screen: the hero starts directly under the fixed navbar (no content panel top padding) and is the
+   viewport height minus the navbar. svh keeps the bottom edge visible behind mobile browser toolbars; vh is the
+   fallback. The hero's grid centers its content. */
+[data-has-hero] .content-panel {
+	padding-top: 0;
+}
+[data-has-hero] .hero {
+	min-height: calc(100vh - var(--sl-nav-height));
+	min-height: calc(100svh - var(--sl-nav-height));
+}
+/* Full-bleed photo behind the hero. The hero sits inside the content column, so the photo is drawn on a pseudo-element
+   stretched to the viewport width; the content panel clips the overflow so the page can't scroll sideways. A dark
+   wash keeps the text readable over the busy aerial shot in both themes: stronger on the left, where the text sits
+   from 50rem, and even on narrow screens, where it is centered. */
+[data-has-hero] .content-panel:has(.hero) {
+	overflow-x: clip;
+}
+[data-has-hero] .hero {
+	position: relative;
+	isolation: isolate;
+	--vd-hero-wash: linear-gradient(rgb(1 7 20 / 0.62), rgb(1 7 20 / 0.62));
+}
+[data-has-hero] .hero::before {
+	content: '';
+	position: absolute;
+	inset-block: 0;
+	inset-inline: calc(50% - 50vw);
+	z-index: -1;
+	background: var(--vd-hero-wash), url('/images/landing-1.jpg') center / cover no-repeat;
+}
+@media (min-width: 50rem) {
+	[data-has-hero] .hero {
+		--vd-hero-wash: linear-gradient(90deg, rgb(1 7 20 / 0.8) 0%, rgb(1 7 20 / 0.55) 45%, rgb(1 7 20 / 0.2) 100%);
+	}
+}
+/* #_top is the hero heading's id; the typography rule above targets it by id, so match that here. */
+[data-has-hero] .hero h1#_top {
 	font-family: var(--vd-font-display);
 	font-size: clamp(2.75rem, 7vw, 4.5rem);
 	letter-spacing: -0.035em;
-	color: var(--sl-color-white);
+	color: #f4f4f8;
 }
 [data-has-hero] .hero .tagline {
 	max-width: 32ch;
 	font-size: clamp(1.125rem, 2.2vw, 1.375rem);
 	line-height: 1.5;
-	color: var(--sl-color-gray-2);
+	color: rgb(244 244 248 / 0.85);
+}
+[data-has-hero] .hero .sl-link-button.minimal {
+	color: #f4f4f8;
 }
 
 /* ---------- Pagination ---------- */

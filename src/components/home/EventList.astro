@@ -1,0 +1,105 @@
+---
+// "Dhaka Now": events from src/content/events that haven't ended, soonest first.
+// The site is static, so the list is filtered twice: at build time, and again in the browser so events that ended
+// since the last deploy disappear and "Coming up" turns into "On now" on the day. Dates are compared in Dhaka time.
+import { getCollection } from 'astro:content';
+import CardGrid from './CardGrid.astro';
+import HomeCard from './HomeCard.astro';
+
+interface Props {
+	/** Maximum number of events to show. */
+	limit?: number;
+	columns?: 2 | 3 | 4;
+}
+
+const { limit = Infinity, columns } = Astro.props;
+
+const dhakaToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka' }).format(new Date());
+// Event dates are date-only values, parsed as UTC midnight.
+const isoDate = (date: Date) => date.toISOString().slice(0, 10);
+const format = (date: Date, options: Intl.DateTimeFormatOptions) =>
+	new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', ...options }).format(date);
+
+/** "16 Dec 2026", "1–28 Feb 2027" or "30 Jan – 2 Feb 2027". */
+function dateLabel(start: Date, end?: Date) {
+	const full = format(end ?? start, { day: 'numeric', month: 'short', year: 'numeric' });
+	if (!end || isoDate(start) === isoDate(end)) return full;
+	if (isoDate(start).slice(0, 7) === isoDate(end).slice(0, 7)) return `${format(start, { day: 'numeric' })}–${full}`;
+	if (start.getUTCFullYear() === end.getUTCFullYear()) return `${format(start, { day: 'numeric', month: 'short' })} – ${full}`;
+	return `${format(start, { day: 'numeric', month: 'short', year: 'numeric' })} – ${full}`;
+}
+
+const today = dhakaToday();
+const events = (await getCollection('events'))
+	.map(({ id, data }) => ({
+		id,
+		...data,
+		start: isoDate(data.startDate),
+		end: isoDate(data.endDate ?? data.startDate),
+	}))
+	.filter((event) => event.end >= today)
+	.sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end));
+---
+
+<div class="event-list not-content" data-event-list data-limit={limit}>
+	<CardGrid columns={columns}>
+		{
+			events.map((event, index) => {
+				const live = event.start <= today;
+				return (
+					<HomeCard
+						href={event.page ?? event.link}
+						external={!event.page && Boolean(event.link)}
+						title={event.title}
+						eyebrow={dateLabel(event.startDate, event.endDate)}
+						badge={live ? 'On now' : 'Coming up'}
+						description={event.summary}
+						meta={[event.venue ?? event.area, event.category].filter(Boolean).join(' · ') || undefined}
+						hidden={index >= limit}
+						data-event
+						data-start={event.start}
+						data-end={event.end}
+						data-live={live ? '' : undefined}
+					/>
+				);
+			})
+		}
+	</CardGrid>
+	<p class="empty" data-empty hidden={events.length > 0}>
+		Nothing is listed right now. Know about something happening in Dhaka? Suggest it and an editor will add it.
+	</p>
+</div>
+
+<script>
+	const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka' }).format(new Date());
+	for (const list of document.querySelectorAll<HTMLElement>('[data-event-list]')) {
+		const limit = Number(list.dataset.limit) || Infinity;
+		let shown = 0;
+		for (const card of list.querySelectorAll<HTMLElement>('[data-event]')) {
+			const { start = '', end = '' } = card.dataset;
+			if (end < today) {
+				card.remove();
+				continue;
+			}
+			const live = start <= today;
+			card.hidden = shown++ >= limit;
+			card.toggleAttribute('data-live', live);
+			const status = card.querySelector('[data-status]');
+			if (status) status.textContent = live ? 'On now' : 'Coming up';
+		}
+		list.querySelector('[data-empty]')?.toggleAttribute('hidden', shown > 0);
+	}
+</script>
+
+<style>
+	.empty {
+		margin: 0;
+		padding: 1.25rem;
+		border: 1px dashed var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		color: var(--sl-color-gray-2);
+	}
+	.empty[hidden] {
+		display: none;
+	}
+</style>

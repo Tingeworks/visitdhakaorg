@@ -133,7 +133,7 @@ To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.m
 
 ## Decided against or deferred
 
-- **Real-time anonymous MediaWiki-style editing:** needs a persistent backend and database, which conflicts with the static Cloudflare Pages approach.
+- **Real-time anonymous MediaWiki-style editing:** needs a persistent backend and database, which conflicts with the static Cloudflare Pages approach. Moderated public editing (a Worker that opens pull requests) is proposed instead. See [`docs/`](docs/README.md).
 - **Cloudflare R2 for media:** deferred until image volume grows.
 - **`sveltia-cms-auth` Worker:** deferred until non-technical contributors join.
 - **A second city domain (Chittagong):** deferred until the Dhaka site has traction.

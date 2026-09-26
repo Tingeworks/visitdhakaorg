@@ -1,0 +1,458 @@
+---
+// Floating accessibility menu in the bottom corner of every page: font size, dark mode, monochrome, big cursor, reading guide and link highlighting.
+// Settings are saved in localStorage and applied to <html> as data attributes (see the global styles below, and the
+// font size rules in src/styles/custom.css).
+// Dark mode uses Starlight's own `starlight-theme` storage key, so it stays in sync with Starlight's theme picker.
+const toggles = [
+	{ key: 'dark', label: 'Dark mode', icon: 'moon' },
+	{ key: 'mono', label: 'Monochrome', icon: 'pipette' },
+	{ key: 'cursor', label: 'Big cursor', icon: 'pointer' },
+	{ key: 'guide', label: 'Reading guide', icon: 'book' },
+	{ key: 'links', label: 'Highlight links', icon: 'link' },
+];
+---
+
+{/* Inlined so saved settings apply before the page paints. */}
+<script is:inline>
+	(() => {
+		try {
+			const s = JSON.parse(localStorage.getItem('vd-a11y') || '{}');
+			const root = document.documentElement;
+			if (s.font) {
+				root.style.setProperty('--vd-font-scale', String(1 + s.font * 0.125));
+				root.setAttribute('data-a11y-font', '');
+			}
+			for (const key of ['mono', 'cursor', 'guide', 'links']) root.toggleAttribute(`data-a11y-${key}`, !!s[key]);
+		} catch {}
+	})();
+</script>
+
+<vd-a11y>
+	<button
+		type="button"
+		class="a11y-button"
+		aria-expanded="false"
+		aria-controls="vd-a11y-panel"
+		aria-label="Accessibility settings"
+		title="Accessibility"
+	>
+		<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<circle cx="12" cy="12" r="10" />
+			<circle cx="12" cy="7" r="1.25" fill="currentColor" />
+			<path d="m7 9.5 5 1 5-1" />
+			<path d="M12 10.5V14l-2.5 4.5M12 14l2.5 4.5" />
+		</svg>
+	</button>
+
+	<div class="panel" id="vd-a11y-panel" role="group" aria-labelledby="vd-a11y-title" hidden>
+		<p class="title" id="vd-a11y-title">Accessibility</p>
+		<ul>
+			<li class="row">
+				<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="m3 18 5-12 5 12M4.5 14.5h7" />
+					<path d="M21 18v-4.5a2.5 2.5 0 0 0-5 0M21 15.5h-2.75a2.25 2.25 0 0 0 0 4.5c1.5 0 2.75-1 2.75-2.5" />
+				</svg>
+				<span class="label">
+					Font size
+					<span class="value" data-font-value aria-live="polite">100%</span>
+				</span>
+				<span class="steppers">
+					<button type="button" class="step" data-font="-1" aria-label="Decrease font size">
+						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /></svg>
+					</button>
+					<button type="button" class="step" data-font="1" aria-label="Increase font size">
+						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14" /></svg>
+					</button>
+				</span>
+			</li>
+			{
+				toggles.map(({ key, label, icon }) => (
+					<li>
+						<button type="button" class="row toggle" role="switch" aria-checked="false" data-toggle={key}>
+							<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								{icon === 'moon' && <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />}
+								{icon === 'pipette' && (
+									<>
+										<path d="m2 22 1-1h3l9-9" />
+										<path d="M3 21v-3l9-9" />
+										<path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" />
+									</>
+								)}
+								{icon === 'pointer' && <path d="M4.04 4.69a.5.5 0 0 1 .65-.65l16 6.5a.5.5 0 0 1-.06.95l-6.13 1.58a2 2 0 0 0-1.43 1.43l-1.58 6.13a.5.5 0 0 1-.95.06Z" />}
+								{icon === 'book' && (
+									<>
+										<path d="M12 7v14" />
+										<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3Z" />
+									</>
+								)}
+								{icon === 'link' && (
+									<>
+										<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+										<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+									</>
+								)}
+							</svg>
+							<span class="label">{label}</span>
+							<span class="switch" aria-hidden="true" />
+						</button>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</vd-a11y>
+
+<script>
+	type Settings = { font?: number; mono?: boolean; cursor?: boolean; guide?: boolean; links?: boolean };
+	type Theme = 'dark' | 'light';
+
+	const KEY = 'vd-a11y';
+	const THEME_KEY = 'starlight-theme';
+	const FONT_MIN = -1; // 87.5%
+	const FONT_MAX = 4; // 150%
+	const root = document.documentElement;
+
+	const load = (): Settings => {
+		try {
+			return JSON.parse(localStorage.getItem(KEY) || '{}');
+		} catch {
+			return {};
+		}
+	};
+	const save = (settings: Settings) => {
+		try {
+			localStorage.setItem(KEY, JSON.stringify(settings));
+		} catch {}
+	};
+
+	const systemTheme = (): Theme => (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+	const storedTheme = () => {
+		try {
+			return localStorage.getItem(THEME_KEY) || '';
+		} catch {
+			return '';
+		}
+	};
+	/** Same effect as picking a theme in Starlight's picker, which is still used in the mobile menu. */
+	function setTheme(theme: Theme) {
+		root.dataset.theme = theme;
+		try {
+			localStorage.setItem(THEME_KEY, theme);
+		} catch {}
+		(window as any).StarlightThemeProvider?.updatePickers?.(theme);
+	}
+	// With no saved choice ("auto"), follow the system setting as it changes.
+	matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+		if (!storedTheme()) root.dataset.theme = systemTheme();
+	});
+
+	/** A band that follows the pointer to help keep your place in a line of text. */
+	let guide: HTMLElement | undefined;
+	const moveGuide = (event: PointerEvent) => {
+		if (!guide) return;
+		guide.style.transform = `translateY(${event.clientY}px)`;
+		guide.hidden = false;
+	};
+	function setGuide(on: boolean) {
+		if (on && !guide) {
+			guide = document.createElement('div');
+			guide.className = 'vd-reading-guide';
+			guide.hidden = true;
+			document.body.append(guide);
+			addEventListener('pointermove', moveGuide, { passive: true });
+		} else if (!on && guide) {
+			removeEventListener('pointermove', moveGuide);
+			guide.remove();
+			guide = undefined;
+		}
+	}
+
+	class VdA11y extends HTMLElement {
+		connectedCallback() {
+			const button = this.querySelector<HTMLButtonElement>('.a11y-button')!;
+			const panel = this.querySelector<HTMLElement>('.panel')!;
+			const fontValue = this.querySelector<HTMLElement>('[data-font-value]')!;
+			const [fontDown, fontUp] = this.querySelectorAll<HTMLButtonElement>('[data-font]');
+			const switches = [...this.querySelectorAll<HTMLButtonElement>('[data-toggle]')];
+			let settings = load();
+
+			const render = () => {
+				const font = settings.font ?? 0;
+				fontValue.textContent = `${100 + font * 12.5}%`;
+				fontDown.disabled = font <= FONT_MIN;
+				fontUp.disabled = font >= FONT_MAX;
+				for (const el of switches) {
+					const key = el.dataset.toggle as keyof Settings;
+					const on = key === 'dark' ? root.dataset.theme === 'dark' : !!settings[key];
+					el.setAttribute('aria-checked', String(on));
+				}
+			};
+
+			const apply = () => {
+				const font = settings.font ?? 0;
+				// Scales the text tokens re-declared on the page content in custom.css.
+				root.style.setProperty('--vd-font-scale', String(1 + font * 0.125));
+				root.toggleAttribute('data-a11y-font', font !== 0);
+				for (const key of ['mono', 'cursor', 'guide', 'links'] as const) {
+					root.toggleAttribute(`data-a11y-${key}`, !!settings[key]);
+				}
+				setGuide(!!settings.guide);
+				save(settings);
+				render();
+			};
+
+			for (const el of [fontDown, fontUp]) {
+				el.addEventListener('click', () => {
+					const font = (settings.font ?? 0) + Number(el.dataset.font);
+					settings = { ...settings, font: Math.min(FONT_MAX, Math.max(FONT_MIN, font)) };
+					apply();
+				});
+			}
+			for (const el of switches) {
+				el.addEventListener('click', () => {
+					const key = el.dataset.toggle as keyof Settings;
+					if (key === 'dark') return setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+					settings = { ...settings, [key]: !settings[key] };
+					apply();
+				});
+			}
+			// Keep the dark mode switch right when the theme changes elsewhere (the mobile menu picker, system setting).
+			new MutationObserver(render).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+			const setOpen = (open: boolean) => {
+				panel.hidden = !open;
+				button.setAttribute('aria-expanded', String(open));
+			};
+			button.addEventListener('click', () => setOpen(panel.hidden));
+			document.addEventListener('click', (event) => {
+				if (!this.contains(event.target as Node)) setOpen(false);
+			});
+			this.addEventListener('focusout', (event) => {
+				if (!this.contains(event.relatedTarget as Node | null)) setOpen(false);
+			});
+			this.addEventListener('keydown', (event) => {
+				if (event.key !== 'Escape' || panel.hidden) return;
+				setOpen(false);
+				button.focus();
+			});
+
+			setGuide(!!settings.guide);
+			render();
+		}
+	}
+	if (!customElements.get('vd-a11y')) customElements.define('vd-a11y', VdA11y);
+</script>
+
+<style>
+	/* Floats in the bottom corner, above the page but below Starlight's mobile menu and the search dialog. */
+	vd-a11y {
+		/* Centred under the navbar's search button, with the same gap below. The search button is 2.5rem wide against
+		   this 3rem one, and sits in from the edge by the header padding (plus the header's 1rem action gap from 50rem). */
+		--__inset: calc(var(--sl-nav-pad-x) - 0.25rem);
+		position: fixed;
+		inset-inline-end: var(--__inset);
+		bottom: var(--__inset);
+		z-index: 20;
+		display: flex;
+	}
+	@media (min-width: 50rem) {
+		vd-a11y {
+			--__inset: calc(var(--sl-nav-pad-x) + 0.75rem);
+		}
+	}
+	@media print {
+		vd-a11y {
+			display: none;
+		}
+	}
+
+	.a11y-button {
+		display: grid;
+		place-items: center;
+		width: 3rem;
+		height: 3rem;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: var(--vd-button);
+		color: var(--vd-button-text);
+		box-shadow: var(--sl-shadow-md);
+		cursor: pointer;
+		transition:
+			background-color var(--vd-duration) var(--vd-ease),
+			color var(--vd-duration) var(--vd-ease);
+	}
+	.a11y-button:hover,
+	.a11y-button[aria-expanded='true'] {
+		background: var(--vd-button-hover);
+	}
+
+	/* Opens upward from the button. */
+	.panel {
+		position: absolute;
+		bottom: calc(100% + 0.75rem);
+		inset-inline-end: 0;
+		width: min(22rem, calc(100vw - 2.5rem));
+		max-height: calc(100vh - 6rem);
+		overflow-y: auto;
+		padding: 1.25rem 1.25rem 0.5rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		background: var(--vd-surface);
+		box-shadow: var(--sl-shadow-lg);
+	}
+	.panel[hidden] {
+		display: none;
+	}
+	.title {
+		margin: 0 0 0.5rem;
+		font-family: var(--vd-font-display);
+		font-size: var(--sl-text-lg);
+		font-weight: 700;
+		color: var(--sl-color-white);
+	}
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li + li {
+		border-top: 1px solid var(--sl-color-hairline);
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		gap: 0.875rem;
+		width: 100%;
+		min-height: 3.25rem;
+		padding: 0.5rem 0;
+		font-size: var(--sl-text-sm);
+		font-weight: 550;
+		color: var(--sl-color-gray-1);
+	}
+	.icon {
+		flex-shrink: 0;
+		color: var(--sl-color-gray-2);
+	}
+	.label {
+		flex: 1;
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		text-align: start;
+	}
+	.value {
+		font-size: var(--sl-text-xs);
+		font-weight: 500;
+		color: var(--sl-color-gray-3);
+	}
+
+	.steppers {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.step {
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		padding: 0;
+		border: 0;
+		border-radius: var(--vd-radius-md);
+		background: var(--sl-color-gray-6);
+		color: var(--sl-color-white);
+		cursor: pointer;
+		transition: background-color var(--vd-duration) var(--vd-ease);
+	}
+	.step:hover:not(:disabled) {
+		background: var(--sl-color-gray-5);
+	}
+	.step:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.toggle {
+		border: 0;
+		background: transparent;
+		font: inherit;
+		font-size: var(--sl-text-sm);
+		font-weight: 550;
+		cursor: pointer;
+	}
+	.toggle:hover .label {
+		color: var(--sl-color-white);
+	}
+	.switch {
+		position: relative;
+		flex-shrink: 0;
+		width: 2.25rem;
+		height: 1.25rem;
+		border-radius: 999px;
+		background: var(--sl-color-gray-5);
+		transition: background-color var(--vd-duration) var(--vd-ease);
+	}
+	.switch::after {
+		content: '';
+		position: absolute;
+		top: 0.125rem;
+		left: 0.125rem;
+		width: 1rem;
+		height: 1rem;
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: var(--sl-shadow-sm);
+		transition: transform var(--vd-duration) var(--vd-ease);
+	}
+	[aria-checked='true'] .switch {
+		background: var(--sl-color-accent);
+	}
+	[aria-checked='true'] .switch::after {
+		transform: translateX(1rem);
+	}
+
+	.step:focus-visible,
+	.toggle:focus-visible,
+	.a11y-button:focus-visible {
+		outline: 2px solid var(--vd-ring);
+		outline-offset: 2px;
+	}
+</style>
+
+<style is:global>
+	/* Settings from the accessibility menu, set on <html>. */
+	html[data-a11y-mono] {
+		filter: grayscale(1);
+	}
+
+	html[data-a11y-cursor],
+	html[data-a11y-cursor] * {
+		cursor:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M3 2v17l4.5-4.5 3 6.5 2.5-1-3-6.5h6.5z' fill='%23000' stroke='%23fff' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+				6 4,
+			auto !important;
+	}
+
+	html[data-a11y-links] a {
+		outline: 2px solid var(--sl-color-text-accent);
+		outline-offset: 2px;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+	}
+
+	.vd-reading-guide {
+		position: fixed;
+		top: -1.25rem;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		height: 2.5rem;
+		border-block: 2px solid var(--sl-color-accent);
+		background: color-mix(in srgb, var(--sl-color-accent) 10%, transparent);
+		pointer-events: none;
+	}
+	.vd-reading-guide[hidden] {
+		display: none;
+	}
+</style>

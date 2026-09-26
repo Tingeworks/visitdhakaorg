@@ -1,0 +1,22 @@
+---
+// Full "Dhaka Now" listing. A plain route, wrapped in StarlightPage so it gets the site's header, sidebar and footer.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import EventList from '../components/home/EventList.astro';
+---
+
+<StarlightPage
+	frontmatter={{
+		title: "What's on in Dhaka",
+		description: 'Festivals, national days and events happening in Dhaka now and coming up soon.',
+	}}
+>
+	<p>
+		Festivals, national days and events happening in Dhaka now and coming up soon. Dates can change, so check with the
+		organiser or official source before you go. Know about something that's missing? <a
+			href="https://github.com/Tingeworks/visitdhakaorg/issues/new?title=Event%3A%20"
+			target="_blank"
+			rel="noopener noreferrer">Suggest an event</a
+		>.
+	</p>
+	<EventList columns={2} />
+</StarlightPage>

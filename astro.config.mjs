@@ -16,10 +16,12 @@ export default defineConfig({
 					tag: 'link',
 					attrs: {
 						rel: 'stylesheet',
-						href: 'https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap',
+						href: 'https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap',
 					},
 				},
 			],
+			// "Edit page" link on every docs page: readers propose changes as GitHub pull requests.
+			editLink: { baseUrl: 'https://github.com/Tingeworks/visitdhakaorg/edit/main/' },
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				Header: './src/components/Header.astro',
@@ -31,6 +33,7 @@ export default defineConfig({
 					label: 'Explore',
 					items: [
 						{ label: 'Overview', slug: 'overview' },
+						{ label: "What's On", link: '/whats-on/' },
 						{ label: 'Areas & Neighborhoods', collapsed: true, items: [{ autogenerate: { directory: 'areas' } }] },
 						{ label: 'Attractions & Landmarks', collapsed: true, items: [{ autogenerate: { directory: 'attractions' } }] },
 						{ label: 'Culture & Festivals', collapsed: true, items: [{ autogenerate: { directory: 'culture' } }] },
