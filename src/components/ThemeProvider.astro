@@ -1,0 +1,17 @@
+---
+// Replaces Starlight's theme provider. The site is always light unless the reader turns on dark mode in the accessibility
+// menu, which saves 'dark' under Starlight's `starlight-theme` key. There is no "auto" mode: the system colour scheme is ignored.
+---
+
+{/* Inlined so the theme is set before the page paints. */}
+<script is:inline>
+	window.StarlightThemeProvider = (() => {
+		let stored = '';
+		try {
+			stored = localStorage.getItem('starlight-theme') || '';
+		} catch {}
+		document.documentElement.dataset.theme = stored === 'dark' ? 'dark' : 'light';
+		// Starlight's own scripts may call this; there are no theme pickers left to update.
+		return { updatePickers() {} };
+	})();
+</script>

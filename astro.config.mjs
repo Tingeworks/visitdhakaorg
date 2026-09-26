@@ -29,10 +29,16 @@ export default defineConfig({
 			],
 			// "Edit page" link on every docs page: readers propose changes as GitHub pull requests.
 			editLink: { baseUrl: 'https://github.com/Tingeworks/visitdhakaorg/edit/main/' },
+			// Navbar logo, in place of the site title text: public/favicon-long.svg with its viewBox cropped to the artwork, so
+			// there is no empty margin around it. The title is still in the link for screen readers, so the image has empty alt.
+			logo: { src: './src/assets/logo.svg', alt: '', replacesTitle: true },
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				Header: './src/components/Header.astro',
 				PageFrame: './src/components/PageFrame.astro',
+				// Light by default, with no "auto" mode. Dark mode is switched on only from the accessibility menu.
+				ThemeProvider: './src/components/ThemeProvider.astro',
+				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			// Grouped by visitor intent. Each folder in src/content/docs is one content pillar. Bangla labels go in `translations`
 			// and should match the section.* and nav.* strings in src/content/i18n/bn.json.

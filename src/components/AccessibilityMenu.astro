@@ -2,7 +2,8 @@
 // Floating accessibility menu in the bottom corner of every page: font size, dark mode, monochrome, big cursor, reading guide and link highlighting.
 // Settings are saved in localStorage and applied to <html> as data attributes (see the global styles below, and the
 // font size rules in src/styles/custom.css).
-// Dark mode uses Starlight's own `starlight-theme` storage key, so it stays in sync with Starlight's theme picker.
+// Dark mode is saved under Starlight's `starlight-theme` storage key, which src/components/ThemeProvider.astro reads before
+// the page paints. The site is light unless dark mode is turned on here.
 const { t } = Astro.locals;
 const toggles = [
 	{ key: 'dark', label: t('a11y.dark'), icon: 'moon' },
@@ -126,26 +127,12 @@ const toggles = [
 		} catch {}
 	};
 
-	const systemTheme = (): Theme => (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-	const storedTheme = () => {
-		try {
-			return localStorage.getItem(THEME_KEY) || '';
-		} catch {
-			return '';
-		}
-	};
-	/** Same effect as picking a theme in Starlight's picker, which is still used in the mobile menu. */
 	function setTheme(theme: Theme) {
 		root.dataset.theme = theme;
 		try {
 			localStorage.setItem(THEME_KEY, theme);
 		} catch {}
-		(window as any).StarlightThemeProvider?.updatePickers?.(theme);
 	}
-	// With no saved choice ("auto"), follow the system setting as it changes.
-	matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
-		if (!storedTheme()) root.dataset.theme = systemTheme();
-	});
 
 	/** A band that follows the pointer to help keep your place in a line of text. */
 	let guide: HTMLElement | undefined;
@@ -212,13 +199,14 @@ const toggles = [
 			for (const el of switches) {
 				el.addEventListener('click', () => {
 					const key = el.dataset.toggle as keyof Settings;
-					if (key === 'dark') return setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+					if (key === 'dark') {
+						setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+						return render();
+					}
 					settings = { ...settings, [key]: !settings[key] };
 					apply();
 				});
 			}
-			// Keep the dark mode switch right when the theme changes elsewhere (the mobile menu picker, system setting).
-			new MutationObserver(render).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
 
 			const setOpen = (open: boolean) => {
 				panel.hidden = !open;

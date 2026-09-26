@@ -98,7 +98,7 @@ html[data-a11y-font] :is(.main-frame, .sidebar-pane, .site-footer) {
 	}
 }
 
-/* ---------- Dark theme (Starlight's default) ---------- */
+/* ---------- Dark theme (turned on from the accessibility menu) ---------- */
 :root {
 	--sl-color-white: #f4f4f8;
 	--sl-color-gray-1: hsl(40, 14%, 91%);
@@ -315,18 +315,15 @@ header.header {
 	}
 }
 
-.site-title {
-	font-family: var(--vd-font-display);
-	font-size: var(--sl-text-base);
-	font-weight: 700;
-	letter-spacing: -0.01em;
+/* The logo replaces the title text, which Starlight keeps for screen readers only. */
+.site-title img {
+	height: 2rem;
 }
 
 site-search button[data-open-modal] {
 	border-radius: var(--vd-radius-md);
 }
 
-starlight-theme-select select,
 .sl-link-button,
 .pagination-links a {
 	border-radius: var(--vd-radius-md);
