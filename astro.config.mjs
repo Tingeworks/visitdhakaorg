@@ -30,7 +30,8 @@ export default defineConfig({
 			// "Edit page" link on every docs page: readers propose changes as GitHub pull requests.
 			editLink: { baseUrl: 'https://github.com/Tingeworks/visitdhakaorg/edit/main/' },
 			// Navbar logo, in place of the site title text: public/favicon-long.svg with its viewBox cropped to the artwork, so
-			// there is no empty margin around it. The title is still in the link for screen readers, so the image has empty alt.
+			// there is no empty margin around it. It's a separate copy, so recreate it whenever favicon-long.svg changes.
+			// The title is still in the link for screen readers, so the image has empty alt.
 			logo: { src: './src/assets/logo.svg', alt: '', replacesTitle: true },
 			customCss: ['./src/styles/custom.css'],
 			components: {

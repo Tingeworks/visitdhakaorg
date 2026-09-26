@@ -41,64 +41,113 @@ const { id, title, eyebrow, intro, links = [] } = Astro.props;
 </section>
 
 <style>
+	/* Sections are separated by space alone, no rule between them. */
 	.home-section {
-		margin-top: 3.5rem;
-		padding-top: 2.5rem;
-		border-top: 1px solid var(--sl-color-hairline);
+		margin-top: 4.5rem;
+	}
+	.home-section:first-of-type {
+		margin-top: 2.5rem;
+	}
+	@media (min-width: 50em) {
+		.home-section {
+			margin-top: 6rem;
+		}
+		.home-section:first-of-type {
+			margin-top: 3rem;
+		}
 	}
 	.head {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: 1rem 2rem;
-		margin-bottom: 1.5rem;
+		gap: 1.25rem 2rem;
+		margin-bottom: 2rem;
 	}
 	.copy {
-		max-width: 40rem;
+		max-width: 42rem;
 	}
+	/* Eyebrow: a short Krishnachura rule leading into the label, in the same type as the cards' eyebrows. */
 	.eyebrow {
-		margin: 0 0 0.5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0 0 0.875rem;
 		font-size: var(--sl-text-xs);
 		font-weight: 600;
-		letter-spacing: 0.08em;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--sl-color-text-accent);
+	}
+	.eyebrow::before {
+		content: '';
+		flex: none;
+		width: 1.75rem;
+		height: 2px;
+		border-radius: 1px;
+		background: currentColor;
 	}
 	h2 {
 		margin: 0;
 		font-family: var(--vd-font-display);
-		font-size: var(--sl-text-h2);
+		font-size: calc(var(--sl-text-h2) * 1.15);
 		font-weight: 650;
-		line-height: var(--sl-line-height-headings);
-		letter-spacing: -0.02em;
+		line-height: 1.1;
+		letter-spacing: -0.025em;
 		color: var(--sl-color-white);
+		text-wrap: balance;
 	}
 	.intro {
-		margin: 0.75rem 0 0;
-		color: var(--sl-color-gray-2);
+		margin: 0.875rem 0 0;
+		max-width: 36rem;
+		font-size: var(--sl-text-base);
 		line-height: 1.6;
+		color: var(--sl-color-gray-2);
 		text-wrap: pretty;
 	}
 	.links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem 1.5rem;
+		gap: 0.5rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 		font-size: var(--sl-text-sm);
 		font-weight: 600;
 	}
+	/* Quiet outlined buttons, matching the cards' border and hover treatment. */
 	.links a {
 		display: inline-flex;
-		gap: 0.35rem;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.9rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-md);
 		color: var(--sl-color-text-accent);
 		text-decoration: none;
+		white-space: nowrap;
+		transition: border-color var(--vd-duration) var(--vd-ease), background-color var(--vd-duration) var(--vd-ease);
+	}
+	.links a span {
+		transition: transform var(--vd-duration) var(--vd-ease);
 	}
 	.links a:hover,
 	.links a:focus-visible {
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
+		border-color: var(--sl-color-accent);
+		background: var(--vd-hover);
+	}
+	.links a:hover span,
+	.links a:focus-visible span {
+		transform: translateX(2px);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.links a,
+		.links a span {
+			transition: none;
+		}
+		.links a:hover span,
+		.links a:focus-visible span {
+			transform: none;
+		}
 	}
 </style>
