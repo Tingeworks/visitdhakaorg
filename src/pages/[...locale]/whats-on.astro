@@ -1,0 +1,22 @@
+---
+// Full "Dhaka Now" listing, at /whats-on/ in English and /bn/whats-on/ in Bangla. A plain route, wrapped in
+// StarlightPage so it gets the site's header, sidebar and footer. StarlightPage reads the language from the URL.
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import EventList from '../../components/home/EventList.astro';
+import { translatedLocales } from '../../lib/i18n';
+
+export const getStaticPaths = (() =>
+	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
+
+const { t } = Astro.locals;
+const intro = t('whatsOn.intro', {
+	link: `<a href="https://github.com/Tingeworks/visitdhakaorg/issues/new?title=Event%3A%20" target="_blank" rel="noopener noreferrer">${t('events.suggest')}</a>`,
+	interpolation: { escapeValue: false },
+});
+---
+
+<StarlightPage frontmatter={{ title: t('whatsOn.title'), description: t('whatsOn.description') }}>
+	<p set:html={intro} />
+	<EventList columns={2} />
+</StarlightPage>

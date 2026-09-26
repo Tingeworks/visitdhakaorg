@@ -1,7 +1,7 @@
 ---
 // Cards for the pages in one content pillar, using each page's own title and description, so the homepage stays in
 // step with what editors write in the CMS. New pages in the folder appear after the ones named in `order`.
-import { getCollection } from 'astro:content';
+import { localeOf, localizedPages } from '../../lib/i18n';
 import CardGrid from './CardGrid.astro';
 import HomeCard from './HomeCard.astro';
 
@@ -18,23 +18,23 @@ interface Props {
 
 const { dir, order = [], limit = Infinity, eyebrow, columns } = Astro.props;
 
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, '').replace(/\/?index$/, '');
 const rank = (slug: string) => {
 	const index = order.indexOf(slug.slice(dir.length + 1));
 	return index === -1 ? Infinity : index;
 };
 
-const pages = (await getCollection('docs', (entry) => slugOf(entry.id).startsWith(`${dir}/`)))
-	.map((entry) => ({ slug: slugOf(entry.id), data: entry.data }))
+// In the page's language, falling back to English for pages that haven't been translated.
+const pages = (await localizedPages(localeOf(Astro.url)))
+	.filter((page) => page.slug.startsWith(`${dir}/`))
 	.sort((a, b) => rank(a.slug) - rank(b.slug) || a.data.title.localeCompare(b.data.title))
 	.slice(0, limit);
 ---
 
 <CardGrid columns={columns}>
 	{
-		pages.map(({ slug, data }, index) => (
+		pages.map(({ href, data }, index) => (
 			<HomeCard
-				href={`/${slug}/`}
+				href={href}
 				title={data.title}
 				description={data.description}
 				eyebrow={eyebrow === 'number' ? String(index + 1).padStart(2, '0') : eyebrow ? data[eyebrow] : undefined}

@@ -1,8 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { docsLoader } from '@astrojs/starlight/loaders';
-import { docsSchema } from '@astrojs/starlight/schema';
+import { docsLoader, i18nLoader } from '@astrojs/starlight/loaders';
+import { docsSchema, i18nSchema } from '@astrojs/starlight/schema';
+import siteStrings from './content/i18n/en.json';
 
 // One `docs` collection holds every pillar (Starlight requires this). Pillar-specific
 // fields are optional here and exposed per pillar in public/admin/config.yml.
@@ -21,6 +22,15 @@ export const collections = {
 				// Set to true once an editor has fact-checked the page.
 				verified: z.boolean().default(false),
 			}),
+		}),
+	}),
+	// Interface text, one JSON file per language (en.json, bn.json). Holds Starlight's own strings (Starlight has no
+	// Bangla built in) and the site's custom strings, read in components with `Astro.locals.t('key')`. The custom keys
+	// are declared from en.json so they aren't stripped, which makes en.json the list of keys every language needs.
+	i18n: defineCollection({
+		loader: i18nLoader(),
+		schema: i18nSchema({
+			extend: z.object(Object.fromEntries(Object.keys(siteStrings).map((key) => [key, z.string().optional()]))),
 		}),
 	}),
 	// "Dhaka Now" listings on the homepage and /whats-on/. One YAML file per event, edited in the CMS.

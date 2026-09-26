@@ -33,7 +33,7 @@ const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopen
 	}
 	<h3 class="title">
 		{title}
-		{external && <span class="sr-only"> (opens in a new tab)</span>}
+		{external && <span class="sr-only"> {Astro.locals.t('card.newTab')}</span>}
 	</h3>
 	{description && <p class="description">{description}</p>}
 	{meta && <p class="meta">{meta}</p>}

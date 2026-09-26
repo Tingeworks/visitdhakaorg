@@ -1,0 +1,127 @@
+---
+title: ভিজিট ঢাকা
+description: 'কমিউনিটির লেখা ভ্রমণ গাইড নিয়ে ঢাকা ভ্রমণের পরিকল্পনা করুন: কী করবেন, কী হচ্ছে, কোথায় খাবেন, কোথায় থাকবেন এবং কীভাবে চলাফেরা করবেন।'
+# Homepage-only SEO title, like the English homepage (src/content/docs/index.mdx).
+head:
+  - tag: title
+    content: 'Visit Dhaka: ঢাকা, বাংলাদেশের ভ্রমণ গাইড'
+  - tag: meta
+    attrs:
+      property: og:title
+      content: 'Visit Dhaka: ঢাকা, বাংলাদেশের ভ্রমণ গাইড'
+template: splash
+hero:
+  tagline: বাংলাদেশের রাজধানী ঢাকার একটি কমিউনিটি ভ্রমণ গাইড। কী হচ্ছে, কোথায় যাবেন, কী খাবেন এবং কীভাবে চলাফেরা করবেন।
+  actions:
+    - text: ঘুরে দেখা শুরু করুন
+      link: /bn/attractions/
+      icon: right-arrow
+    - text: ভ্রমণের পরিকল্পনা করুন
+      link: /bn/practical-info/
+      icon: right-arrow
+      variant: minimal
+---
+
+{/* Bangla version of src/content/docs/index.mdx. Keep the two in step. Links need the /bn/ prefix; the cards below
+   already link to Bangla pages, falling back to English where a page isn't translated yet. */}
+
+import HomeSection from '../../../components/home/HomeSection.astro';
+import CardGrid from '../../../components/home/CardGrid.astro';
+import HomeCard from '../../../components/home/HomeCard.astro';
+import EventList from '../../../components/home/EventList.astro';
+import PageCards from '../../../components/home/PageCards.astro';
+
+export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/new?title=Event%3A%20';
+
+<HomeSection
+	id="dhaka-now"
+	title="ঢাকা এখন"
+	intro="ঢাকায় কী হচ্ছে: এখন চলছে বা শিগগির আসছে এমন উৎসব, আয়োজন ও করার মতো নানা কিছু।"
+	links={[{ label: 'সব আয়োজন দেখুন', href: '/bn/whats-on/' }]}
+>
+	<EventList limit={4} columns={4} />
+</HomeSection>
+
+<HomeSection
+	id="neighborhoods"
+	eyebrow="ঘুরে দেখুন"
+	title="ঢাকার এলাকাগুলো"
+	intro="পুরান ঢাকার ঐতিহাসিক অলিগলি থেকে গুলশান ও বনানীর ক্যাফে পর্যন্ত, শহরের প্রতিটি অংশের নিজস্ব চরিত্র আছে।"
+	links={[
+		{ label: 'সব এলাকা', href: '/bn/areas/' },
+		{ label: 'কোথায় থাকবেন', href: '/bn/where-to-stay/' },
+	]}
+>
+	<PageCards dir="areas" order={['old-dhaka', 'gulshan', 'banani', 'dhanmondi', 'uttara', 'mohammadpur']} limit={6} />
+</HomeSection>
+
+<HomeSection
+	id="eat"
+	eyebrow="খাওয়াদাওয়া"
+	title="স্থানীয়দের মতো খান"
+	intro="ঢাকা চলে রাস্তার খাবার আর ধীরে রান্না করা বিরিয়ানিতে। শুরু করুন এগুলো দিয়ে।"
+	links={[{ label: 'খাবার ও রেস্তোরাঁ', href: '/bn/food/' }]}
+>
+	<PageCards dir="food" order={['kacchi-biryani', 'fuchka']} eyebrow="category" columns={2} />
+</HomeSection>
+
+<HomeSection
+	id="getting-around"
+	eyebrow="যাতায়াত"
+	title="ঢাকায় চলাফেরা"
+	intro="যানজট ঢাকার জীবনের অংশ। দূরত্ব বুঝে ঠিক বাহনটি বেছে নিন।"
+	links={[{ label: 'যাতায়াত গাইড', href: '/bn/getting-around/' }]}
+>
+	<PageCards dir="getting-around" order={['rickshaws', 'cng-auto-rickshaws', 'ride-share', 'metro-rail']} columns={4} />
+</HomeSection>
+
+<HomeSection
+	id="before-you-go"
+	eyebrow="ভ্রমণ পরিকল্পনা"
+	title="যাওয়ার আগে"
+	intro="প্রবেশের নিয়ম ও পরামর্শ বদলায়, তাই ভ্রমণের আগে সবসময় সরকারি সূত্র থেকে বিস্তারিত যাচাই করে নিন।"
+	links={[{ label: 'প্রয়োজনীয় তথ্য', href: '/bn/practical-info/' }]}
+>
+	<PageCards
+		dir="practical-info"
+		order={['visa-and-entry', 'money-and-connectivity', 'health-and-safety', 'bangla-phrases']}
+		eyebrow="number"
+		columns={4}
+	/>
+</HomeSection>
+
+<HomeSection
+	id="festivals"
+	eyebrow="সংস্কৃতি"
+	title="উৎসব ও ঋতু"
+	intro="শহরের সবচেয়ে বড় উৎসবগুলোর সময় মিলিয়ে ভ্রমণের পরিকল্পনা করুন।"
+	links={[{ label: 'সংস্কৃতি ও উৎসব', href: '/bn/culture/' }]}
+>
+	<PageCards dir="culture" order={['ekushey-book-fair', 'pohela-boishakh']} eyebrow="bestTime" columns={2} />
+</HomeSection>
+
+<HomeSection
+	id="community"
+	eyebrow="কমিউনিটি"
+	title="কমিউনিটির লেখা"
+	intro="ভিজিট ঢাকা কমিউনিটির সংকলন, সম্পাদনা হয় খোলামেলাভাবে। কোনো পাতাকে যাচাই করা হিসেবে চিহ্নিত করার আগে একজন সম্পাদক সেটি পরীক্ষা করেন।"
+>
+	<CardGrid>
+		<HomeCard
+			title="কোনো পাতা ঠিক বা হালনাগাদ করুন"
+			description="প্রতিটি গাইড পাতার নিচে “পাতাটি সম্পাদনা করুন” লিংক আছে। GitHub-এ সংশোধনের প্রস্তাব দিতে এটি ব্যবহার করুন।"
+		/>
+		<HomeCard
+			title="একটি আয়োজনের কথা জানান"
+			description="ঢাকায় কোনো উৎসব, প্রদর্শনী বা গানের আসরের খবর জানেন? আমাদের জানান, একজন সম্পাদক সেটি ‘ঢাকা এখন’-এ যোগ করবেন।"
+			href={suggestEvent}
+			external
+		/>
+		<HomeCard
+			title="GitHub-এ প্রকল্পটি দেখুন"
+			description="প্রতিটি পাতা একটি উন্মুক্ত GitHub রিপোজিটরিতে রাখা আছে। পাতাগুলো ও তাদের সম্পাদনার ইতিহাস দেখুন।"
+			href="https://github.com/Tingeworks/visitdhakaorg"
+			external
+		/>
+	</CardGrid>
+</HomeSection>

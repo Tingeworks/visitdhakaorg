@@ -33,7 +33,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &overview-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -69,7 +69,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &areas-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -118,7 +118,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &attractions-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -189,7 +189,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &food-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -237,7 +237,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &getting-around-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -280,7 +280,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &where-to-stay-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -327,7 +327,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &culture-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -375,7 +375,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &practical-info-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -411,7 +411,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &shopping-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -463,7 +463,7 @@ collections:
     create: true
     slug: '{{slug}}'
     summary: '{{title}}'
-    fields:
+    fields: &day-trips-fields
       - { name: title, label: Title, widget: string }
       - name: description
         label: Description
@@ -581,3 +581,128 @@ collections:
         widget: boolean
         default: false
         hint: Tick only after checking the dates against the organiser or an official source.
+
+  # Bangla pages. Starlight serves src/content/docs/bn/<pillar>/<page>.md at /bn/<pillar>/<page>/ as the translation of
+  # the English page with the same file name, and falls back to English for pages with no translation. Sveltia's own
+  # i18n structures can't write that layout, so each pillar has a Bangla collection that reuses its English fields.
+  - divider: true
+
+  - name: bn-overview
+    label: Overview · বাংলা
+    label_singular: Overview page (Bangla)
+    description: Bangla translations of Overview pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/overview
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *overview-fields
+
+  - name: bn-areas
+    label: Areas & Neighborhoods · বাংলা
+    label_singular: Area (Bangla)
+    description: Bangla translations of Areas & Neighborhoods pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/areas
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *areas-fields
+
+  - name: bn-attractions
+    label: Attractions & Landmarks · বাংলা
+    label_singular: Attraction (Bangla)
+    description: Bangla translations of Attractions & Landmarks pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/attractions
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *attractions-fields
+
+  - name: bn-food
+    label: Food & Dining · বাংলা
+    label_singular: Food page (Bangla)
+    description: Bangla translations of Food & Dining pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/food
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *food-fields
+
+  - name: bn-getting-around
+    label: Getting Around · বাংলা
+    label_singular: Transport page (Bangla)
+    description: Bangla translations of Getting Around pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/getting-around
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *getting-around-fields
+
+  - name: bn-where-to-stay
+    label: Where to Stay · বাংলা
+    label_singular: Accommodation page (Bangla)
+    description: Bangla translations of Where to Stay pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/where-to-stay
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *where-to-stay-fields
+
+  - name: bn-culture
+    label: Culture & Festivals · বাংলা
+    label_singular: Culture page (Bangla)
+    description: Bangla translations of Culture & Festivals pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/culture
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *culture-fields
+
+  - name: bn-practical-info
+    label: Practical Info · বাংলা
+    label_singular: Practical info page (Bangla)
+    description: Bangla translations of Practical Info pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/practical-info
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *practical-info-fields
+
+  - name: bn-shopping
+    label: Shopping · বাংলা
+    label_singular: Shopping page (Bangla)
+    description: Bangla translations of Shopping pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/shopping
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *shopping-fields
+
+  - name: bn-day-trips
+    label: Day Trips · বাংলা
+    label_singular: Day trip (Bangla)
+    description: Bangla translations of Day Trips pages. Use the English page's file name as the slug (index for the section overview) so the site pairs them.
+    folder: src/content/docs/bn/day-trips
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{fields._slug}}'
+    summary: '{{title}}'
+    fields: *day-trips-fields

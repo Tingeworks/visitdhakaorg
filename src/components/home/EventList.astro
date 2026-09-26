@@ -3,6 +3,7 @@
 // The site is static, so the list is filtered twice: at build time, and again in the browser so events that ended
 // since the last deploy disappear and "Coming up" turns into "On now" on the day. Dates are compared in Dhaka time.
 import { getCollection } from 'astro:content';
+import { localeOf, localizePath } from '../../lib/i18n';
 import CardGrid from './CardGrid.astro';
 import HomeCard from './HomeCard.astro';
 
@@ -13,14 +14,17 @@ interface Props {
 }
 
 const { limit = Infinity, columns } = Astro.props;
+const { t } = Astro.locals;
+const locale = localeOf(Astro.url);
+const status = { live: t('events.onNow'), soon: t('events.comingUp') };
 
 const dhakaToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka' }).format(new Date());
 // Event dates are date-only values, parsed as UTC midnight.
 const isoDate = (date: Date) => date.toISOString().slice(0, 10);
 const format = (date: Date, options: Intl.DateTimeFormatOptions) =>
-	new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', ...options }).format(date);
+	new Intl.DateTimeFormat(locale ?? 'en-GB', { timeZone: 'UTC', ...options }).format(date);
 
-/** "16 Dec 2026", "1–28 Feb 2027" or "30 Jan – 2 Feb 2027". */
+/** "16 Dec 2026", "1–28 Feb 2027" or "30 Jan – 2 Feb 2027", in the page's language. */
 function dateLabel(start: Date, end?: Date) {
 	const full = format(end ?? start, { day: 'numeric', month: 'short', year: 'numeric' });
 	if (!end || isoDate(start) === isoDate(end)) return full;
@@ -41,18 +45,24 @@ const events = (await getCollection('events'))
 	.sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end));
 ---
 
-<div class="event-list not-content" data-event-list data-limit={limit}>
+<div
+	class="event-list not-content"
+	data-event-list
+	data-limit={limit}
+	data-status-live={status.live}
+	data-status-soon={status.soon}
+>
 	<CardGrid columns={columns}>
 		{
 			events.map((event, index) => {
 				const live = event.start <= today;
 				return (
 					<HomeCard
-						href={event.page ?? event.link}
+						href={event.page ? localizePath(event.page, locale) : event.link}
 						external={!event.page && Boolean(event.link)}
 						title={event.title}
 						eyebrow={dateLabel(event.startDate, event.endDate)}
-						badge={live ? 'On now' : 'Coming up'}
+						badge={live ? status.live : status.soon}
 						description={event.summary}
 						meta={[event.venue ?? event.area, event.category].filter(Boolean).join(' · ') || undefined}
 						hidden={index >= limit}
@@ -66,7 +76,7 @@ const events = (await getCollection('events'))
 		}
 	</CardGrid>
 	<p class="empty" data-empty hidden={events.length > 0}>
-		Nothing is listed right now. Know about something happening in Dhaka? Suggest it and an editor will add it.
+		{t('events.empty')}
 	</p>
 </div>
 
@@ -74,6 +84,7 @@ const events = (await getCollection('events'))
 	const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka' }).format(new Date());
 	for (const list of document.querySelectorAll<HTMLElement>('[data-event-list]')) {
 		const limit = Number(list.dataset.limit) || Infinity;
+		const { statusLive = 'On now', statusSoon = 'Coming up' } = list.dataset;
 		let shown = 0;
 		for (const card of list.querySelectorAll<HTMLElement>('[data-event]')) {
 			const { start = '', end = '' } = card.dataset;
@@ -85,7 +96,7 @@ const events = (await getCollection('events'))
 			card.hidden = shown++ >= limit;
 			card.toggleAttribute('data-live', live);
 			const status = card.querySelector('[data-status]');
-			if (status) status.textContent = live ? 'On now' : 'Coming up';
+			if (status) status.textContent = live ? statusLive : statusSoon;
 		}
 		list.querySelector('[data-empty]')?.toggleAttribute('hidden', shown > 0);
 	}

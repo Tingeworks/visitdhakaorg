@@ -1,61 +1,68 @@
 ---
-import { getCollection } from 'astro:content';
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import { localeOf, localizedPages, localizePath, unlocalizePath } from '../lib/i18n';
+
+const { t } = Astro.locals;
+const locale = localeOf(Astro.url);
 
 // Top-level menu. Mirrors the sidebar groups in astro.config.mjs. The pages inside each dropdown are read from the
 // content collection, so a new page in one of these folders shows up here without touching this file.
 // Items without `groups` are plain links.
 type Group = { label: string; dir: string };
-type Item = { label: string; icon: string; blurb?: string; href?: string; groups?: Group[] };
+type Item = { id: string; label: string; icon: string; href?: string; groups?: Group[] };
 
 const menu: Item[] = [
 	{
-		label: 'Explore',
+		id: 'explore',
+		label: t('nav.explore'),
 		icon: 'compass',
-		blurb: 'Neighborhoods, landmarks, festivals, markets and day trips.',
 		groups: [
-			{ label: 'Areas & Neighborhoods', dir: 'areas' },
-			{ label: 'Attractions', dir: 'attractions' },
-			{ label: 'Culture & Festivals', dir: 'culture' },
-			{ label: 'Shopping', dir: 'shopping' },
-			{ label: 'Day Trips', dir: 'day-trips' },
+			{ label: t('section.areas'), dir: 'areas' },
+			{ label: t('nav.attractions'), dir: 'attractions' },
+			{ label: t('section.culture'), dir: 'culture' },
+			{ label: t('section.shopping'), dir: 'shopping' },
+			{ label: t('section.dayTrips'), dir: 'day-trips' },
 		],
 	},
-	{ label: 'Eat', icon: 'utensils', groups: [{ label: 'Food & Dining', dir: 'food' }] },
-	{ label: 'Stay', icon: 'bed', href: '/where-to-stay/' },
-	{ label: 'Get Around', icon: 'map', groups: [{ label: 'Getting Around', dir: 'getting-around' }] },
-	{ label: 'Plan Your Trip', icon: 'info', groups: [{ label: 'Practical Info', dir: 'practical-info' }] },
+	{ id: 'eat', label: t('nav.eat'), icon: 'utensils', groups: [{ label: t('section.food'), dir: 'food' }] },
+	{ id: 'stay', label: t('nav.stay'), icon: 'bed', href: '/where-to-stay/' },
+	{ id: 'get-around', label: t('nav.getAround'), icon: 'map', groups: [{ label: t('section.gettingAround'), dir: 'getting-around' }] },
+	{ id: 'plan', label: t('nav.plan'), icon: 'info', groups: [{ label: t('section.practicalInfo'), dir: 'practical-info' }] },
 ];
 
-const docs = await getCollection('docs');
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, '').replace(/\/?index$/, '');
+// Pages in the current language, falling back to English where there is no translation.
+const pages = await localizedPages(locale);
 
 /** The overview page of a folder plus its child pages, sorted like the sidebar (order, then title). */
 function pagesIn(dir: string) {
-	const overview = docs.find((entry) => slugOf(entry.id) === dir);
-	const children = docs
-		.filter((entry) => slugOf(entry.id).startsWith(`${dir}/`))
+	const overview = pages.find((page) => page.slug === dir);
+	const children = pages
+		.filter((page) => page.slug.startsWith(`${dir}/`))
 		.sort(
 			(a, b) =>
 				(a.data.sidebar?.order ?? Infinity) - (b.data.sidebar?.order ?? Infinity) ||
 				a.data.title.localeCompare(b.data.title),
 		)
-		.map((entry) => ({ title: entry.data.title, description: entry.data.description, href: `/${slugOf(entry.id)}/` }));
-	return { href: `/${dir}/`, description: overview?.data.description, children };
+		.map((page) => ({ title: page.data.title, description: page.data.description, href: page.href }));
+	return { href: localizePath(`/${dir}/`, locale), description: overview?.data.description, children };
 }
+
+const pathname = Astro.url.pathname;
+// Compared without the locale prefix, so /bn/food/ highlights Eat like /food/ does.
+const basePath = unlocalizePath(pathname);
+const isActive = (item: Item) =>
+	item.href
+		? basePath.startsWith(item.href)
+		: item.groups?.some((group) => basePath.startsWith(`/${group.dir}/`)) ?? false;
 
 const items = menu.map((item) => ({
 	...item,
+	active: isActive(item),
+	href: item.href && localizePath(item.href, locale),
 	groups: item.groups?.map((group) => ({ ...group, ...pagesIn(group.dir) })),
 }));
-
-const pathname = Astro.url.pathname;
-const isActive = (item: (typeof items)[number]) =>
-	item.href
-		? pathname.startsWith(item.href)
-		: item.groups?.some((group) => pathname.startsWith(`/${group.dir}/`)) ?? false;
 ---
 
 <div class="header">
@@ -64,13 +71,13 @@ const isActive = (item: (typeof items)[number]) =>
 	</div>
 
 	<vd-nav class="print:hidden">
-		<nav aria-label="Main">
+		<nav aria-label={t('nav.main')}>
 			<ul>
 				{
 					items.map((item) => {
 						const groups = item.groups ?? [];
 						const mega = groups.length > 1;
-						const active = isActive(item);
+						const active = item.active;
 						return (
 							<li class="item" data-has-panel={groups.length ? '' : undefined}>
 								{groups.length ? (
@@ -80,14 +87,14 @@ const isActive = (item: (typeof items)[number]) =>
 											class="trigger"
 											aria-expanded="false"
 											aria-current={active ? 'true' : undefined}
-											aria-controls={`vd-panel-${item.label}`}
+											aria-controls={`vd-panel-${item.id}`}
 										>
 											{item.label}
 											<svg class="caret" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
 												<path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 											</svg>
 										</button>
-										<div class:list={['panel', mega ? 'panel-mega' : 'panel-list']} id={`vd-panel-${item.label}`}>
+										<div class:list={['panel', mega ? 'panel-mega' : 'panel-list']} id={`vd-panel-${item.id}`}>
 											<div class="panel-inner">
 												{mega ? (
 													<>
@@ -110,9 +117,9 @@ const isActive = (item: (typeof items)[number]) =>
 																</div>
 															))}
 														</div>
-														<a class="mega-footer" href="/overview/">
+														<a class="mega-footer" href={localizePath('/overview/', locale)}>
 															<span>
-																<strong>New to Dhaka?</strong> Start with the city overview.
+																<strong>{t('nav.newToDhaka')}</strong> {t('nav.startWithOverview')}
 															</span>
 															<span aria-hidden="true">→</span>
 														</a>
@@ -148,7 +155,7 @@ const isActive = (item: (typeof items)[number]) =>
 															<p class="intro-title">{groups[0].label}</p>
 															<p class="intro-text">{groups[0].description}</p>
 															<a class="intro-link" href={groups[0].href}>
-																Browse all
+																{t('nav.browseAll')}
 																<span aria-hidden="true">→</span>
 															</a>
 														</div>

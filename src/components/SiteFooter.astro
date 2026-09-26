@@ -1,43 +1,55 @@
 ---
-// Mirrors the sidebar groups in astro.config.mjs.
+import { localeOf, localizePath } from '../lib/i18n';
+
+const { t } = Astro.locals;
+const locale = localeOf(Astro.url);
+
+// Mirrors the sidebar groups in astro.config.mjs. Site paths are written in English and get the locale prefix below.
 const columns = [
 	{
-		title: 'Explore',
+		title: t('nav.explore'),
 		links: [
-			{ label: "What's On", href: '/whats-on/' },
-			{ label: 'Areas & Neighborhoods', href: '/areas/' },
-			{ label: 'Attractions & Landmarks', href: '/attractions/' },
-			{ label: 'Culture & Festivals', href: '/culture/' },
-			{ label: 'Shopping', href: '/shopping/' },
-			{ label: 'Day Trips', href: '/day-trips/' },
+			{ label: t('section.whatsOn'), href: '/whats-on/' },
+			{ label: t('section.areas'), href: '/areas/' },
+			{ label: t('section.attractions'), href: '/attractions/' },
+			{ label: t('section.culture'), href: '/culture/' },
+			{ label: t('section.shopping'), href: '/shopping/' },
+			{ label: t('section.dayTrips'), href: '/day-trips/' },
 		],
 	},
 	{
-		title: 'Eat & Stay',
+		title: t('footer.eatStay'),
 		links: [
-			{ label: 'Food & Dining', href: '/food/' },
-			{ label: 'Where to Stay', href: '/where-to-stay/' },
+			{ label: t('section.food'), href: '/food/' },
+			{ label: t('section.whereToStay'), href: '/where-to-stay/' },
 		],
 	},
 	{
-		title: 'Plan Your Trip',
+		title: t('nav.plan'),
 		links: [
-			{ label: 'Getting Around', href: '/getting-around/' },
-			{ label: 'Practical Info', href: '/practical-info/' },
-			{ label: 'Visa & Entry', href: '/practical-info/visa-and-entry/' },
-			{ label: 'Health & Safety', href: '/practical-info/health-and-safety/' },
+			{ label: t('section.gettingAround'), href: '/getting-around/' },
+			{ label: t('section.practicalInfo'), href: '/practical-info/' },
+			{ label: t('footer.visaEntry'), href: '/practical-info/visa-and-entry/' },
+			{ label: t('footer.healthSafety'), href: '/practical-info/health-and-safety/' },
 		],
 	},
 	{
-		title: 'Project',
+		title: t('footer.project'),
 		links: [
-			{ label: 'About Dhaka', href: '/overview/' },
+			{ label: t('footer.aboutDhaka'), href: '/overview/' },
 			{ label: 'GitHub', href: 'https://github.com/Tingeworks/visitdhakaorg', external: true },
 			{ label: 'Tingeworks', href: 'https://tingeworks.com', external: true },
 		],
 	},
-];
+].map((column) => ({
+	...column,
+	links: column.links.map((link) => ({ ...link, href: link.external ? link.href : localizePath(link.href, locale) })),
+}));
 
+const credit = t('footer.credit', {
+	link: '<a href="https://tingeworks.com" target="_blank" rel="noopener noreferrer">Tingeworks</a>',
+	interpolation: { escapeValue: false },
+});
 const year = new Date().getFullYear();
 ---
 
@@ -45,13 +57,10 @@ const year = new Date().getFullYear();
 	<div class="container">
 	<div class="top">
 		<div class="brand">
-			<a class="name" href="/">Visit Dhaka</a>
-			<p>
-				A community guide to Dhaka, the capital of Bangladesh: where to go, what to eat, where to stay and how to get
-				around.
-			</p>
+			<a class="name" href={localizePath('/', locale)}>Visit Dhaka</a>
+			<p>{t('footer.tagline')}</p>
 		</div>
-		<nav class="columns" aria-label="Footer">
+		<nav class="columns" aria-label={t('footer.label')}>
 			{
 				columns.map((column) => (
 					<div class="column">
@@ -75,10 +84,7 @@ const year = new Date().getFullYear();
 	</div>
 	<div class="bottom">
 		<p>&copy; {year} Visit Dhaka.</p>
-		<p>
-			Powered by <a href="https://tingeworks.com" target="_blank" rel="noopener noreferrer">Tingeworks</a>, compiled by
-			the community.
-		</p>
+		<p set:html={credit} />
 	</div>
 	</div>
 </footer>

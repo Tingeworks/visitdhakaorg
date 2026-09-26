@@ -3,12 +3,13 @@
 // Settings are saved in localStorage and applied to <html> as data attributes (see the global styles below, and the
 // font size rules in src/styles/custom.css).
 // Dark mode uses Starlight's own `starlight-theme` storage key, so it stays in sync with Starlight's theme picker.
+const { t } = Astro.locals;
 const toggles = [
-	{ key: 'dark', label: 'Dark mode', icon: 'moon' },
-	{ key: 'mono', label: 'Monochrome', icon: 'pipette' },
-	{ key: 'cursor', label: 'Big cursor', icon: 'pointer' },
-	{ key: 'guide', label: 'Reading guide', icon: 'book' },
-	{ key: 'links', label: 'Highlight links', icon: 'link' },
+	{ key: 'dark', label: t('a11y.dark'), icon: 'moon' },
+	{ key: 'mono', label: t('a11y.mono'), icon: 'pipette' },
+	{ key: 'cursor', label: t('a11y.cursor'), icon: 'pointer' },
+	{ key: 'guide', label: t('a11y.guide'), icon: 'book' },
+	{ key: 'links', label: t('a11y.links'), icon: 'link' },
 ];
 ---
 
@@ -33,8 +34,8 @@ const toggles = [
 		class="a11y-button"
 		aria-expanded="false"
 		aria-controls="vd-a11y-panel"
-		aria-label="Accessibility settings"
-		title="Accessibility"
+		aria-label={t('a11y.open')}
+		title={t('a11y.title')}
 	>
 		<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 			<circle cx="12" cy="12" r="10" />
@@ -45,7 +46,7 @@ const toggles = [
 	</button>
 
 	<div class="panel" id="vd-a11y-panel" role="group" aria-labelledby="vd-a11y-title" hidden>
-		<p class="title" id="vd-a11y-title">Accessibility</p>
+		<p class="title" id="vd-a11y-title">{t('a11y.title')}</p>
 		<ul>
 			<li class="row">
 				<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -53,14 +54,14 @@ const toggles = [
 					<path d="M21 18v-4.5a2.5 2.5 0 0 0-5 0M21 15.5h-2.75a2.25 2.25 0 0 0 0 4.5c1.5 0 2.75-1 2.75-2.5" />
 				</svg>
 				<span class="label">
-					Font size
+					{t('a11y.fontSize')}
 					<span class="value" data-font-value aria-live="polite">100%</span>
 				</span>
 				<span class="steppers">
-					<button type="button" class="step" data-font="-1" aria-label="Decrease font size">
+					<button type="button" class="step" data-font="-1" aria-label={t('a11y.fontDown')}>
 						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /></svg>
 					</button>
-					<button type="button" class="step" data-font="1" aria-label="Increase font size">
+					<button type="button" class="step" data-font="1" aria-label={t('a11y.fontUp')}>
 						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14" /></svg>
 					</button>
 				</span>
