@@ -17,6 +17,12 @@ export default defineConfig({
 			// Pre-launch: keep the site out of search engines. Remove this and public/robots.txt to go live.
 			head: [
 				{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } },
+				// Google Tag Manager (container GTM-57LQWQ8W). Its noscript fallback is in src/components/SkipLink.astro.
+				{
+					tag: 'script',
+					content:
+						"(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-57LQWQ8W');",
+				},
 				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
 				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
 				{
@@ -41,6 +47,8 @@ export default defineConfig({
 				// Adds the fluted glass effect to the homepage hero photo.
 				Hero: './src/components/Hero.astro',
 				PageFrame: './src/components/PageFrame.astro',
+				// Adds the Google Tag Manager noscript fallback at the top of <body>.
+				SkipLink: './src/components/SkipLink.astro',
 				// Light by default, with no "auto" mode. Dark mode is switched on only from the accessibility menu.
 				ThemeProvider: './src/components/ThemeProvider.astro',
 				ThemeSelect: './src/components/ThemeSelect.astro',
