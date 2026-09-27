@@ -33,6 +33,8 @@ export default defineConfig({
 			// there is no empty margin around it. It's a separate copy, so recreate it whenever favicon-long.svg changes.
 			// The title is still in the link for screen readers, so the image has empty alt.
 			logo: { src: './src/assets/logo.svg', alt: '', replacesTitle: true },
+			// No "On this page" column on any page, so the content gets the full width.
+			tableOfContents: false,
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				Header: './src/components/Header.astro',
