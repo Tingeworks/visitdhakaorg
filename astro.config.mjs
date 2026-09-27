@@ -1,9 +1,26 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	// Google Sans, downloaded from Google Fonts at build time and served from this site, so visitors' browsers never
+	// contact Google for it. Weights 400 to 700 and optical sizes 17 to 18, in normal and italic. It has no Bengali, so Bangla
+	// text falls back to Noto Sans Bengali where the reader has it installed. Used in src/styles/custom.css through
+	// --font-google-sans, and added to every page's <head> by src/components/Head.astro.
+	fonts: [
+		{
+			provider: fontProviders.google(),
+			name: 'Google Sans',
+			cssVariable: '--font-google-sans',
+			weights: ['400 700'],
+			styles: ['normal', 'italic'],
+			// Accented Latin letters (latin-ext) are a separate file, downloaded only by pages that use them.
+			subsets: ['latin', 'latin-ext'],
+			fallbacks: ['Noto Sans Bengali', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+			options: { experimental: { variableAxis: { opsz: [['17', '18']] } } },
+		},
+	],
 	integrations: [
 		starlight({
 			title: 'Visit Dhaka',
@@ -17,15 +34,6 @@ export default defineConfig({
 			// Pre-launch: keep the site out of search engines. Remove this and public/robots.txt to go live.
 			head: [
 				{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } },
-				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
-				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
-				{
-					tag: 'link',
-					attrs: {
-						rel: 'stylesheet',
-						href: 'https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap',
-					},
-				},
 			],
 			// "Edit page" link on every docs page: readers propose changes as GitHub pull requests.
 			editLink: { baseUrl: 'https://github.com/Tingeworks/visitdhakaorg/edit/main/' },

@@ -18,7 +18,7 @@ For anything about your privacy or your data, email [privacy@tingeworks.com](mai
 
 - **Analytics:** we use Google Analytics only if you agree to it in the cookie banner. If you reject it or ignore the banner, it never loads.
 - **Hosting:** the site is hosted by Cloudflare, which handles the technical information needed to deliver pages to you.
-- **Fonts:** the site's fonts are loaded from Google Fonts.
+- **Fonts:** the site's fonts are served from this site, so your browser doesn't contact Google or anyone else for them.
 - **Settings:** your accessibility and cookie choices are saved in your own browser, not sent to us.
 - **Contributing:** if you suggest an edit through GitHub, your GitHub username and your changes become public.
 - We don't sell your information, show ads or use your information for advertising.
@@ -68,9 +68,9 @@ Only the Google Analytics cookies need your consent. The rest are needed for the
 
 The site is hosted on [Cloudflare](https://www.cloudflare.com). To deliver pages and protect the site from attacks and abuse, Cloudflare processes technical information about each request, such as your IP address, browser and the page requested. See [Cloudflare's privacy policy](https://www.cloudflare.com/privacypolicy/).
 
-## Fonts (Google Fonts)
+## Fonts
 
-The site's typeface is loaded from Google Fonts. When a page loads, your browser requests the font from Google's servers, which means Google receives your IP address and browser details. Google says the Google Fonts service does not set cookies. See the [Google Fonts privacy FAQ](https://developers.google.com/fonts/faq/privacy).
+The site's typeface, Google Sans, is stored on and served from visitdhaka.org along with the rest of the site. Loading it doesn't send any information to Google or any other font service.
 
 ## Search
 
@@ -95,7 +95,7 @@ Google, Cloudflare and GitHub are based in the United States and run services ar
 ## Legal basis (for visitors in the EU and UK)
 
 - **Analytics:** your consent, which you can withdraw at any time from Cookie settings.
-- **Hosting, security and fonts:** our legitimate interest in delivering a working, secure site.
+- **Hosting and security:** our legitimate interest in delivering a working, secure site.
 - **Contributions and emails:** our legitimate interest in running a community-edited guide and replying to you.
 
 ## Your rights
