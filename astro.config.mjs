@@ -4,10 +4,11 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	// Google Sans, downloaded from Google Fonts at build time and served from this site, so visitors' browsers never
-	// contact Google for it. Weights 400 to 700 and optical sizes 17 to 18, in normal and italic. It has no Bengali, so Bangla
-	// text falls back to Noto Sans Bengali where the reader has it installed. Used in src/styles/custom.css through
-	// --font-google-sans, and added to every page's <head> by src/components/Head.astro.
+	// Fonts, downloaded from Google Fonts at build time and served from this site, so visitors' browsers never contact
+	// Google for them. Google Sans (weights 400 to 700, optical sizes 17 to 18, normal and italic) has no Bengali, so Bangla
+	// text uses Noto Sans Bengali. src/styles/custom.css lists Noto first: its file covers only Bengali characters, so the
+	// browser uses it for those and Google Sans for everything else, and pages without Bangla never download it.
+	// Both are added to every page's <head> by src/components/Head.astro.
 	fonts: [
 		{
 			provider: fontProviders.google(),
@@ -17,8 +18,19 @@ export default defineConfig({
 			styles: ['normal', 'italic'],
 			// Accented Latin letters (latin-ext) are a separate file, downloaded only by pages that use them.
 			subsets: ['latin', 'latin-ext'],
-			fallbacks: ['Noto Sans Bengali', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+			fallbacks: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
 			options: { experimental: { variableAxis: { opsz: [['17', '18']] } } },
+		},
+		{
+			provider: fontProviders.google(),
+			name: 'Noto Sans Bengali',
+			cssVariable: '--font-noto-sans-bengali',
+			weights: ['400 700'],
+			// Noto Sans Bengali has no italic; browsers slant it when needed.
+			styles: ['normal'],
+			subsets: ['bengali'],
+			// None: it is followed by the Google Sans stack in custom.css.
+			fallbacks: [],
 		},
 	],
 	integrations: [

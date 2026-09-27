@@ -70,7 +70,7 @@ The site is hosted on [Cloudflare](https://www.cloudflare.com). To deliver pages
 
 ## Fonts
 
-The site's typeface, Google Sans, is stored on and served from visitdhaka.org along with the rest of the site. Loading it doesn't send any information to Google or any other font service.
+The site's typefaces, Google Sans and Noto Sans Bengali, are stored on and served from visitdhaka.org along with the rest of the site. Loading them doesn't send any information to Google or any other font service.
 
 ## Search
 

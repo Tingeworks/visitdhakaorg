@@ -19,10 +19,10 @@
 	--sl-hue-purple: 285;
 
 	/* Type */
-	/* Self-hosted Google Sans with its fallbacks, from `fonts` in astro.config.mjs (weights 400 to 700, optical sizes 17 to
-	   18). It has no Bengali, so Bangla text falls back to Noto Sans Bengali where the reader has it installed. */
-	--vd-font-display: var(--font-google-sans);
-	--sl-font: var(--font-google-sans);
+	/* Self-hosted fonts from `fonts` in astro.config.mjs. Noto Sans Bengali comes first but covers only Bengali characters
+	   (its unicode-range), so Bangla text uses it and everything else uses Google Sans and its fallbacks. */
+	--vd-font-display: var(--font-noto-sans-bengali), var(--font-google-sans);
+	--sl-font: var(--font-noto-sans-bengali), var(--font-google-sans);
 	--sl-text-body: 1.0625rem; /* 17px, easier to read for long guides */
 	--sl-text-body-sm: 0.875rem;
 	--sl-line-height: 1.7;
@@ -492,4 +492,10 @@ site-search button[data-open-modal] {
 .pagination-links a:hover {
 	border-color: var(--sl-color-accent);
 	box-shadow: var(--sl-shadow-md);
+}
+
+/* On English pages the only Bangla text is "বাংলা" in the language picker. Leaving Noto Sans Bengali out of the picker's
+   font list lets the system font draw it, so English pages never download the Bengali font file. */
+:root:not([lang='bn']) starlight-lang-select select {
+	font-family: var(--font-google-sans);
 }

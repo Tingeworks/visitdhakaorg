@@ -1,7 +1,8 @@
 ---
-// Starlight's <head>, plus the self-hosted Google Sans font (from `fonts` in astro.config.mjs, preloading only the Latin
-// upright file) and Google Tag Manager (container GTM-57LQWQ8W), which loads only after the visitor agrees to analytics
-// cookies in the consent banner (src/components/CookieConsent.astro). Nothing is sent to Google before that,
+// Starlight's <head>, plus the self-hosted fonts from `fonts` in astro.config.mjs (preloading the Latin upright Google Sans
+// file, and Noto Sans Bengali on Bangla pages) and Google Tag Manager (container GTM-57LQWQ8W), which loads only after
+// the visitor agrees to analytics cookies in the consent banner (src/components/CookieConsent.astro). Nothing is sent to
+// Google before that,
 // whatever tags the container holds, so the privacy policy stays true. Google's consent mode signals are set too:
 // analytics is granted on consent, and the ad signals are always denied because the site shows no ads.
 // The choice is saved in localStorage under `vd-consent` and asked again after 12 months.
@@ -9,10 +10,14 @@
 // GTM loads only on visitdhaka.org. Elsewhere (localhost, preview URLs) the banner still works but nothing is sent.
 import { Font } from 'astro:assets';
 import Default from '@astrojs/starlight/components/Head.astro';
+import { localeOf } from '../lib/i18n';
+
+const bangla = localeOf(Astro.url) === 'bn';
 ---
 
 <Default {...Astro.props} />
 <Font cssVariable="--font-google-sans" preload={[{ subset: 'latin', style: 'normal' }]} />
+<Font cssVariable="--font-noto-sans-bengali" preload={bangla} />
 <script is:inline>
 	(() => {
 		window.dataLayer = window.dataLayer || [];
