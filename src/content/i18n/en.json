@@ -30,8 +30,20 @@
 	"footer.healthSafety": "Health & Safety",
 	"footer.aboutDhaka": "About Dhaka",
 	"footer.credit": "Powered by {{link}}, compiled by the community.",
+	"footer.aboutSite": "About this site",
+	"footer.legal": "Legal",
+	"footer.privacy": "Privacy",
+	"footer.terms": "Terms of use",
+	"footer.licence": "Licence",
+	"footer.cookieSettings": "Cookie settings",
 
 	"card.newTab": "(opens in a new tab)",
+
+	"consent.title": "Can we use analytics cookies?",
+	"consent.text": "We'd like to use Google Analytics to see which pages visitors find useful. It sets cookies and sends details of your visit to Google, so it stays off unless you agree. You can change your mind at any time from “Cookie settings” at the bottom of every page.",
+	"consent.privacy": "Read the privacy policy",
+	"consent.accept": "Accept",
+	"consent.reject": "Reject",
 
 	"events.onNow": "On now",
 	"events.comingUp": "Coming up",

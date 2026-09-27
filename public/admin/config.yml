@@ -515,6 +515,33 @@ collections:
         hint: Tick only after checking every fact against an official or first-hand source.
       - { name: body, label: Body, widget: markdown }
 
+  # About, privacy, terms and licence pages, linked from the site footer rather than the sidebar. A file collection, because
+  # a folder collection on src/content/docs would also pick up the homepage and pillar folders. Legal wording: have
+  # changes checked before publishing, and update the "Last updated" date at the top of the page.
+  - name: site
+    label: About & legal
+    label_singular: Site page
+    description: About, privacy policy, terms of use and licence pages.
+    files:
+      - name: about
+        label: About Visit Dhaka
+        file: src/content/docs/about.md
+        fields: &site-fields
+          - { name: title, label: Title, widget: string }
+          - name: description
+            label: Description
+            widget: text
+            hint: One or two sentences. Used in search results and link previews.
+          - name: verified
+            label: Checked
+            widget: boolean
+            default: false
+            hint: Tick once the page has been reviewed (for legal pages, by someone qualified to check the wording).
+          - { name: body, label: Body, widget: markdown }
+      - { name: privacy, label: Privacy policy, file: src/content/docs/privacy.md, fields: *site-fields }
+      - { name: terms, label: Terms of use, file: src/content/docs/terms.md, fields: *site-fields }
+      - { name: licence, label: Licence, file: src/content/docs/licence.md, fields: *site-fields }
+
   - name: events
     label: Dhaka Now (events)
     label_singular: Event

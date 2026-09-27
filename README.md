@@ -23,7 +23,7 @@ A secondary goal is to serve as a public showcase project for [Tingeworks](https
 | Search | Pagefind (bundled with Starlight), static and client-side |
 | Maps | Leaflet (planned) for an areas and attractions map |
 | Media | Committed to the repo (Sveltia default) |
-| Analytics | Cloudflare Web Analytics (planned), privacy-friendly with no cookie banner |
+| Analytics | Google Analytics 4 through Google Tag Manager, loaded only after cookie consent (see [0005](docs/decisions/0005-google-analytics-with-consent.md)) |
 
 **Why Starlight:** it ships with sidebar navigation, full-text search, i18n and content collections, which map closely onto what a wiki needs. Astro's islands architecture sends almost no JavaScript by default, which helps Core Web Vitals and LCP, both Google ranking factors.
 
@@ -127,8 +127,9 @@ To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.m
 - [ ] Add a reusable JSON-LD structured data component
 - [ ] Add Leaflet map integration for Areas and Attractions
 - [ ] Write the first batch of real content before launch (thin content won't rank regardless of technical setup)
-- [ ] Add a privacy policy, cookie notice and "About / who runs this" page (E-E-A-T, since travel-safety info is close to YMYL)
-- [ ] Add Cloudflare Web Analytics
+- [x] Add a privacy policy, cookie notice and "About / who runs this" page (E-E-A-T, since travel-safety info is close to YMYL)
+- [ ] Have the about, privacy, terms and licence pages reviewed, then set `verified: true`
+- [x] Add analytics (Google Analytics 4 with a consent banner)
 - [ ] Remove the pre-launch `noindex` and `robots.txt`, then verify Search Console and Bing and submit the sitemap
 
 ## Decided against or deferred

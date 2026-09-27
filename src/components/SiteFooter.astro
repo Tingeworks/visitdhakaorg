@@ -37,6 +37,7 @@ const columns = [
 		title: t('footer.project'),
 		links: [
 			{ label: t('footer.aboutDhaka'), href: '/overview/' },
+			{ label: t('footer.aboutSite'), href: '/about/' },
 			{ label: 'GitHub', href: 'https://github.com/Tingeworks/visitdhakaorg', external: true },
 			{ label: 'Tingeworks', href: 'https://tingeworks.com', external: true },
 		],
@@ -45,6 +46,12 @@ const columns = [
 	...column,
 	links: column.links.map((link) => ({ ...link, href: link.external ? link.href : localizePath(link.href, locale) })),
 }));
+
+const legal = [
+	{ label: t('footer.privacy'), href: '/privacy/' },
+	{ label: t('footer.terms'), href: '/terms/' },
+	{ label: t('footer.licence'), href: '/licence/' },
+].map((link) => ({ ...link, href: localizePath(link.href, locale) }));
 
 const credit = t('footer.credit', {
 	link: '<a href="https://tingeworks.com" target="_blank" rel="noopener noreferrer">Tingeworks</a>',
@@ -84,6 +91,23 @@ const year = new Date().getFullYear();
 	</div>
 	<div class="bottom">
 		<p>&copy; {year} Visit Dhaka.</p>
+		{/* "Cookie settings" reopens the consent banner (src/components/CookieConsent.astro). */}
+		<nav aria-label={t('footer.legal')}>
+			<ul class="legal">
+				{
+					legal.map((link) => (
+						<li>
+							<a href={link.href}>{link.label}</a>
+						</li>
+					))
+				}
+				<li>
+					<button type="button" class="link-button" data-consent-open>
+						{t('footer.cookieSettings')}
+					</button>
+				</li>
+			</ul>
+		</nav>
 		<p set:html={credit} />
 	</div>
 	</div>
@@ -166,6 +190,24 @@ const year = new Date().getFullYear();
 	}
 	.bottom a {
 		text-decoration: underline;
+	}
+	.legal {
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 0.25rem 1rem;
+	}
+	.link-button {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.link-button:hover,
+	.link-button:focus-visible {
+		color: var(--sl-color-white);
 	}
 
 	@media (min-width: 50rem) {

@@ -1,9 +1,10 @@
 ---
 // Wraps Starlight's page frame and adds the site footer after it. The frame's sidebar and table of contents are fixed to
 // the viewport, so a footer inside the content column can never be full width; a sibling of the frame can.
-// The floating accessibility button is also a sibling: inside the header, its backdrop-filter would pin it to the header.
+// The floating accessibility button and the cookie consent banner are also siblings: inside the header, its backdrop-filter would pin it to the header.
 import Default from '@astrojs/starlight/components/PageFrame.astro';
 import AccessibilityMenu from './AccessibilityMenu.astro';
+import CookieConsent from './CookieConsent.astro';
 import SiteFooter from './SiteFooter.astro';
 ---
 
@@ -14,3 +15,4 @@ import SiteFooter from './SiteFooter.astro';
 </Default>
 <SiteFooter />
 <AccessibilityMenu />
+<CookieConsent />

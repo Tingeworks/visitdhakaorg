@@ -1,0 +1,157 @@
+---
+// Cookie consent banner for Google Analytics, shown at the bottom of every page until the visitor accepts or rejects.
+// Accepting loads Google Tag Manager (see src/components/Head.astro, which also reloads it on later visits). Rejecting
+// after an earlier accept turns analytics off and deletes Google Analytics' cookies. Any element with
+// `data-consent-open`, such as "Cookie settings" in the footer, opens the banner again so the choice can be changed.
+import { localeOf, localizePath } from '../lib/i18n';
+
+const { t } = Astro.locals;
+const locale = localeOf(Astro.url);
+---
+
+<vd-consent>
+	<section class="banner" aria-labelledby="vd-consent-title" hidden>
+		<p class="title" id="vd-consent-title">{t('consent.title')}</p>
+		<p class="text">
+			{t('consent.text')}{' '}
+			<a href={localizePath('/privacy/', locale)}>{t('consent.privacy')}</a>
+		</p>
+		<div class="actions">
+			<button type="button" data-choice="accept">{t('consent.accept')}</button>
+			<button type="button" data-choice="reject">{t('consent.reject')}</button>
+		</div>
+	</section>
+</vd-consent>
+
+<script>
+	const KEY = 'vd-consent';
+	const MAX_AGE = 365 * 864e5; // Ask again after 12 months.
+	const w = window as unknown as { gtag: (...args: unknown[]) => void; vdLoadGtm: () => void; vdGtmLoaded?: boolean };
+
+	function stored(): { analytics: boolean; date: number } | undefined {
+		try {
+			const consent = JSON.parse(localStorage.getItem(KEY) || 'null');
+			return consent && Date.now() - consent.date < MAX_AGE ? consent : undefined;
+		} catch {
+			return undefined;
+		}
+	}
+
+	/** Deletes Google Analytics' cookies (_ga, _ga_<id>), which it sets on the widest domain it can. */
+	function clearAnalyticsCookies() {
+		const parts = location.hostname.split('.');
+		for (const cookie of document.cookie.split('; ')) {
+			const name = cookie.split('=')[0];
+			if (!name.startsWith('_ga')) continue;
+			document.cookie = `${name}=; Max-Age=0; path=/`;
+			for (let i = 0; i < parts.length - 1; i++) {
+				document.cookie = `${name}=; Max-Age=0; path=/; domain=.${parts.slice(i).join('.')}`;
+			}
+		}
+	}
+
+	class VdConsent extends HTMLElement {
+		connectedCallback() {
+			const banner = this.querySelector<HTMLElement>('.banner')!;
+			banner.hidden = !!stored();
+
+			for (const button of this.querySelectorAll<HTMLButtonElement>('[data-choice]')) {
+				button.addEventListener('click', () => {
+					const analytics = button.dataset.choice === 'accept';
+					try {
+						localStorage.setItem(KEY, JSON.stringify({ analytics, date: Date.now() }));
+					} catch {}
+					if (analytics) {
+						w.vdLoadGtm();
+					} else {
+						if (w.vdGtmLoaded) w.gtag('consent', 'update', { analytics_storage: 'denied' });
+						clearAnalyticsCookies();
+					}
+					banner.hidden = true;
+				});
+			}
+
+			document.addEventListener('click', (event) => {
+				if (!(event.target as Element).closest?.('[data-consent-open]')) return;
+				banner.hidden = false;
+				this.querySelector<HTMLButtonElement>('[data-choice]')!.focus();
+			});
+		}
+	}
+	if (!customElements.get('vd-consent')) customElements.define('vd-consent', VdConsent);
+</script>
+
+<style>
+	/* Bottom corner, opposite the accessibility button. On narrow screens it spans the width and sits above that button. */
+	.banner {
+		--__inset: calc(var(--sl-nav-pad-x) - 0.25rem);
+		position: fixed;
+		inset-inline: var(--__inset);
+		bottom: calc(var(--__inset) + 3.75rem);
+		z-index: 20;
+		max-height: calc(100vh - 8rem);
+		overflow-y: auto;
+		padding: 1.25rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		background: var(--vd-surface);
+		box-shadow: var(--sl-shadow-lg);
+		font-size: var(--sl-text-sm);
+		line-height: 1.5;
+		color: var(--sl-color-gray-2);
+	}
+	@media (min-width: 50rem) {
+		.banner {
+			--__inset: calc(var(--sl-nav-pad-x) + 0.75rem);
+			inset-inline-end: auto;
+			bottom: var(--__inset);
+			width: 28rem;
+		}
+	}
+	.banner[hidden] {
+		display: none;
+	}
+	@media print {
+		.banner {
+			display: none;
+		}
+	}
+
+	.title {
+		margin: 0 0 0.5rem;
+		font-family: var(--vd-font-display);
+		font-size: var(--sl-text-lg);
+		font-weight: 700;
+		line-height: 1.25;
+		color: var(--sl-color-white);
+	}
+	.text {
+		margin: 0;
+	}
+	.text a {
+		color: var(--sl-color-text-accent);
+	}
+
+	/* Accept and reject look the same, so neither choice is pushed. */
+	.actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+	button {
+		min-height: 2.75rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: var(--vd-radius-md);
+		background: var(--vd-button);
+		color: var(--vd-button-text);
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color var(--vd-duration) var(--vd-ease);
+	}
+	button:hover {
+		background: var(--vd-button-hover);
+	}
+</style>

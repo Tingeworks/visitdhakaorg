@@ -1,0 +1,41 @@
+---
+// Starlight's <head>, plus Google Tag Manager (container GTM-57LQWQ8W), which loads only after the visitor agrees to
+// analytics cookies in the consent banner (src/components/CookieConsent.astro). Nothing is sent to Google before that,
+// whatever tags the container holds, so the privacy policy stays true. Google's consent mode signals are set too:
+// analytics is granted on consent, and the ad signals are always denied because the site shows no ads.
+// The choice is saved in localStorage under `vd-consent` and asked again after 12 months.
+// There is no <noscript> GTM fallback: without JavaScript there is no way to give consent.
+// GTM loads only on visitdhaka.org. Elsewhere (localhost, preview URLs) the banner still works but nothing is sent.
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default {...Astro.props} />
+<script is:inline>
+	(() => {
+		window.dataLayer = window.dataLayer || [];
+		window.gtag = function () {
+			dataLayer.push(arguments);
+		};
+		gtag('consent', 'default', {
+			ad_storage: 'denied',
+			ad_user_data: 'denied',
+			ad_personalization: 'denied',
+			analytics_storage: 'denied',
+		});
+		window.vdLoadGtm = () => {
+			gtag('consent', 'update', { analytics_storage: 'granted' });
+			// Only on the live site, so local dev and preview builds don't send visits to Analytics.
+			if (window.vdGtmLoaded || !/(^|\.)visitdhaka\.org$/.test(location.hostname)) return;
+			window.vdGtmLoaded = true;
+			dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+			const script = document.createElement('script');
+			script.async = true;
+			script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-57LQWQ8W';
+			document.head.append(script);
+		};
+		try {
+			const consent = JSON.parse(localStorage.getItem('vd-consent') || 'null');
+			if (consent?.analytics && Date.now() - consent.date < 365 * 864e5) vdLoadGtm();
+		} catch {}
+	})();
+</script>

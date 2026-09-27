@@ -59,8 +59,20 @@
 	"footer.healthSafety": "স্বাস্থ্য ও নিরাপত্তা",
 	"footer.aboutDhaka": "ঢাকা সম্পর্কে",
 	"footer.credit": "{{link}} দ্বারা চালিত, কমিউনিটির সংকলন।",
+	"footer.aboutSite": "এই সাইট সম্পর্কে",
+	"footer.legal": "আইনি তথ্য",
+	"footer.privacy": "গোপনীয়তা",
+	"footer.terms": "ব্যবহারের শর্তাবলি",
+	"footer.licence": "লাইসেন্স",
+	"footer.cookieSettings": "কুকি সেটিংস",
 
 	"card.newTab": "(নতুন ট্যাবে খুলবে)",
+
+	"consent.title": "আমরা কি অ্যানালিটিক্স কুকি ব্যবহার করতে পারি?",
+	"consent.text": "কোন পাতাগুলো দর্শনার্থীদের কাজে লাগছে তা বুঝতে আমরা Google Analytics ব্যবহার করতে চাই। এটি কুকি সেট করে এবং আপনার ভিজিটের তথ্য Google-এ পাঠায়, তাই আপনি রাজি না হলে এটি বন্ধ থাকে। প্রতিটি পাতার নিচে “কুকি সেটিংস” থেকে যেকোনো সময় সিদ্ধান্ত বদলাতে পারবেন।",
+	"consent.privacy": "গোপনীয়তা নীতি পড়ুন",
+	"consent.accept": "রাজি আছি",
+	"consent.reject": "রাজি নই",
 
 	"events.onNow": "চলছে",
 	"events.comingUp": "আসছে",
