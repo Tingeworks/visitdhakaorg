@@ -1,0 +1,11 @@
+---
+// Starlight's hero, plus the fluted glass effect on the homepage photo (src/scripts/hero-glass.ts). The script adds its
+// canvas to the hero; the photo drawn in CSS (src/styles/custom.css) stays as the fallback without WebGL.
+import Default from '@astrojs/starlight/components/Hero.astro';
+---
+
+<Default {...Astro.props}><slot /></Default>
+
+<script>
+	import '../scripts/hero-glass';
+</script>
