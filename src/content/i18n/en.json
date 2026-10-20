@@ -63,5 +63,8 @@
 	"a11y.mono": "Monochrome",
 	"a11y.cursor": "Big cursor",
 	"a11y.guide": "Reading guide",
-	"a11y.links": "Highlight links"
+	"a11y.links": "Highlight links",
+
+	"unverified.text": "This page hasn't been fact-checked yet. Check opening hours, fees and rules with official sources before you travel.",
+	"unverified.help": "Help check it"
 }
