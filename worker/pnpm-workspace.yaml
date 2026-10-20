@@ -1,0 +1,5 @@
+# The edit Worker is its own pnpm project, separate from the site at the repo root, so installing or deploying one
+# never touches the other's dependencies (CLAUDE.md, Deploy). This file stops pnpm treating worker/ as part of the
+# root workspace.
+packages:
+  - .
