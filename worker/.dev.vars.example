@@ -1,0 +1,15 @@
+# Copy to .dev.vars (ignored by git) for `pnpm dev`. Never put real secrets in this example file.
+# Without the three GitHub App values, development mode reads the public repo without signing in, so GET /api/source
+# works before the app exists. For anything that writes (POST /api/edit, #15), point GITHUB_OWNER and GITHUB_REPO at a
+# fork or test repo with the app installed, never the real repo (#10).
+ENVIRONMENT=development
+GITHUB_APP_ID=
+GITHUB_INSTALLATION_ID=
+GITHUB_APP_PRIVATE_KEY=
+# Cloudflare's published always-pass test secret for Turnstile.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+GITHUB_OWNER=Tingeworks
+GITHUB_REPO=visitdhakaorg
+GITHUB_BASE_BRANCH=main
+DAILY_EDIT_CAP=50
+ALLOWED_ORIGIN=http://localhost:4321

@@ -45,7 +45,7 @@ The existing site (Astro + Starlight, `wrangler.jsonc` at the root, static asset
 | `turnstile` | Token, verified server side on every request. |
 | `licence` | Must be true. Text: contributions are released under CC BY-SA 4.0. |
 
-`GET /api/source?path=...` returns the current body and blob SHA for the editor. Responses are cached at the edge briefly to avoid spending GitHub API calls on reads.
+`GET /api/source?path=...` returns `{ ok, path, sha, title, body }`: the current body and blob SHA for the editor. Responses are cached at the edge for 60 seconds to avoid spending GitHub API calls on reads. `GET /api/health` says whether the Worker can mint a GitHub token, and never returns a secret. Errors are always `{ ok: false, errors: [{ code, field? }] }`. Any other path under `/api/` returns 404.
 
 ## Validation and abuse controls
 

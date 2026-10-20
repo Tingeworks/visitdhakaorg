@@ -39,3 +39,11 @@ export function rewriteFile(file: string, body: string, contributor: string) {
 
 	return `---\n${doc.toString({ lineWidth: 0, flowCollectionPadding: false })}---\n${body}`;
 }
+
+/** The page's frontmatter as plain data, for reading fields such as `title`. */
+export function readFrontmatter(file: string): Record<string, unknown> {
+	const doc = parseDocument(splitFile(file).frontmatter);
+	if (doc.errors.length > 0) throw new FrontmatterError(`The frontmatter isn't valid YAML: ${doc.errors[0].message}`);
+	const data = doc.toJS();
+	return data && typeof data === 'object' ? data : {};
+}
