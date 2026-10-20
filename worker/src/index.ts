@@ -1,10 +1,13 @@
 // The edit Worker (decision 0002, docs/architecture/open-editing.md). It answers only under /api/. Routes are matched
-// on the exact path, so POST /api/edit (#15) and, in phase 3, /api/auth/* (decision 0006) slot into `routes` without
-// changing the others. Phase 1 sets no cookies.
+// on the exact path, so phase 3's /api/auth/* (decision 0006) slots into `routes` without changing the others.
+// Phase 1 sets no cookies.
+import { edit } from './edit.ts';
 import type { Env } from './env.ts';
 import { splitFile, readFrontmatter } from './frontmatter.ts';
 import { GitHubError, NotConfiguredError, getFile, installationToken } from './github.ts';
 import { error, json, preflight, validationErrors, withCors } from './http.ts';
+import { branchFor, sourceCacheKey } from './pages.ts';
+import { branchSha, openPullFrom } from './repo.ts';
 import { validatePath } from './validate.ts';
 
 type Handler = (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
@@ -26,23 +29,35 @@ const health: Handler = async (_request, env) => {
 	return json({ ok: true, canMintToken: github === 'ok', github, ...(detail ? { detail } : {}) });
 };
 
-/** A page's current body, blob SHA and title, for the editor (#16). */
+/**
+ * A page's current body, blob SHA and title, for the editor (#16). When the page already has a public edit waiting
+ * for review, this is the version on that edit's branch, marked `pending`, so the next edit builds on it and joins the
+ * same pull request (#15), like Wikipedia's pending changes.
+ */
 const source: Handler = async (request, env, ctx) => {
 	const path = new URL(request.url).searchParams.get('path');
 	const valid = validatePath(path);
 	if (!valid.ok) return validationErrors(valid.errors);
 
-	// One cache entry per page, whatever host or extra parameters the request used.
 	const cache = typeof caches === 'undefined' ? undefined : caches.default;
-	const cacheKey = new Request(`https://edit-worker.cache/api/source?path=${encodeURIComponent(valid.value)}`);
+	const cacheKey = sourceCacheKey(valid.value);
 	const cached = await cache?.match(cacheKey);
 	if (cached) return cached;
 
-	const file = await getFile(env, valid.value);
+	const branch = branchFor(valid.value);
+	const pull = (await branchSha(env, branch)) ? await openPullFrom(env, branch) : undefined;
+	const file = await getFile(env, valid.value, pull ? branch : env.GITHUB_BASE_BRANCH);
 	if (!file) return error(404, 'not_found', 'path');
 	const { title } = readFrontmatter(file.text);
 	const response = json(
-		{ ok: true, path: valid.value, sha: file.sha, title: typeof title === 'string' ? title : '', body: splitFile(file.text).body },
+		{
+			ok: true,
+			path: valid.value,
+			sha: file.sha,
+			title: typeof title === 'string' ? title : '',
+			body: splitFile(file.text).body,
+			pending: pull ? { prUrl: pull.html_url } : null,
+		},
 		200,
 		{ 'Cache-Control': `public, max-age=${SOURCE_CACHE_SECONDS}` },
 	);
@@ -53,6 +68,7 @@ const source: Handler = async (request, env, ctx) => {
 const routes: Record<string, Partial<Record<string, Handler>>> = {
 	'/api/health': { GET: health },
 	'/api/source': { GET: source },
+	'/api/edit': { POST: edit },
 };
 
 export default {

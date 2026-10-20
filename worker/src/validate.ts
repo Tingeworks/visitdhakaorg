@@ -29,7 +29,7 @@ export const ANONYMOUS = 'Anonymous';
 /** Hosts that count as this site, so links to them aren't flagged as external. */
 const SITE_HOSTS = ['visitdhaka.org', 'www.visitdhaka.org'];
 
-export type Field = 'path' | 'body' | 'name' | 'summary';
+export type Field = 'path' | 'body' | 'name' | 'summary' | 'licence' | 'baseSha' | 'turnstile';
 export type ValidationError = { field: Field; code: string };
 export type Result<T> = { ok: true; value: T } | { ok: false; errors: ValidationError[] };
 
