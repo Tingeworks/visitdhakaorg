@@ -1,0 +1,63 @@
+---
+// Starlight's "Edit page" link, followed by a "Talk" link, like Wikipedia's Talk tab. Talk opens a search for the page's
+// discussions in the Talk category of the repo's GitHub Discussions, and "Start a discussion" opens a new one prefilled
+// with the page's title and address. Links only, with no embedded widget, so nothing loads from GitHub on page view.
+// Discussions are keyed by the English path, so a page's English and Bangla versions share them. Talk shows wherever
+// "Edit page" does, which is every page with a source file, and not on StarlightPage routes such as /whats-on/.
+import Default from '@astrojs/starlight/components/EditLink.astro';
+import { Icon } from '@astrojs/starlight/components';
+import { unlocalizePath } from '../lib/i18n';
+
+const route = Astro.locals.starlightRoute;
+const path = unlocalizePath(Astro.url.pathname);
+const { title } = route.entry.data;
+
+const discussions = 'https://github.com/Tingeworks/visitdhakaorg/discussions';
+const search = new URLSearchParams({ discussions_q: 'category:Talk "' + path + '"' });
+const prefill = new URLSearchParams({
+	category: 'talk',
+	title: title + ' (' + Astro.url.pathname + ')',
+	body: Astro.locals.t('talk.body') + '\n\nhttps://visitdhaka.org' + Astro.url.pathname + '\n',
+});
+// The homepage's Talk is the whole Talk category, since searching for "/" would match every discussion.
+const searchUrl = path === '/' ? discussions + '/categories/talk' : discussions + '?' + search;
+const newUrl = discussions + '/new?' + prefill;
+---
+
+<div class="page-actions sl-flex">
+	<Default {...Astro.props} />
+	{
+		route.editUrl && (
+			<p class="talk sl-flex print:hidden">
+				<Icon name="comment" size="1.2em" />
+				<a href={searchUrl}>{Astro.locals.t('talk.link')}</a>
+				<span aria-hidden="true">·</span>
+				<a href={newUrl}>{Astro.locals.t('talk.new')}</a>
+			</p>
+		)
+	}
+</div>
+
+<style>
+	.page-actions {
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		align-items: center;
+	}
+
+	.talk {
+		gap: 0.5rem;
+		align-items: center;
+		margin: 0;
+		color: var(--sl-color-gray-3);
+	}
+
+	.talk a {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.talk a:hover {
+		color: var(--sl-color-white);
+	}
+</style>
