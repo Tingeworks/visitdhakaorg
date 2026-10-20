@@ -1,0 +1,45 @@
+---
+// Random page, at /random/ and /bn/random/: sends the reader to a random topic page in their language. The list of pages
+// is built at build time and a few lines of inline JavaScript pick one, so no server is needed. Without JavaScript, the
+// page lists every topic page instead.
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { localizedPages, translatedLocales } from '../../lib/i18n';
+
+export const getStaticPaths = (() =>
+	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
+
+const { locale } = Astro.params;
+const { t } = Astro.locals;
+
+// Topic pages only (/areas/gulshan/), not the homepage, pillar overviews or the about and legal pages.
+const pages = (await localizedPages(locale))
+	.filter((page) => page.slug.includes('/'))
+	.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const hrefs = pages.map((page) => page.href);
+---
+
+<StarlightPage frontmatter={{ title: t('random.title'), description: t('random.description') }}>
+	<script is:inline define:vars={{ hrefs }}>
+		// replace() rather than assigning location, so Back returns to the page the reader came from.
+		location.replace(hrefs[Math.floor(Math.random() * hrefs.length)]);
+	</script>
+	<p class="js-only">{t('random.redirecting')}</p>
+	<noscript>
+		<style>
+			.js-only {
+				display: none;
+			}
+		</style>
+		<p>{t('random.noscript')}</p>
+		<ul>
+			{
+				pages.map((page) => (
+					<li>
+						<a href={page.href}>{page.data.title}</a>
+					</li>
+				))
+			}
+		</ul>
+	</noscript>
+</StarlightPage>

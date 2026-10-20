@@ -65,6 +65,17 @@
 	"whatsOn.description": "Festivals, national days and events happening in Dhaka now and coming up soon.",
 	"whatsOn.intro": "Festivals, national days and events happening in Dhaka now and coming up soon. Dates can change, so check with the organiser or official source before you go. Know about something that's missing? {{link}}.",
 
+	"recentChanges.title": "Recent changes",
+	"recentChanges.description": "The latest changes to pages on Visit Dhaka, newest first.",
+	"recentChanges.intro": "The latest changes to pages on Visit Dhaka, newest first, in Dhaka time. Edits from the public are reviewed before they're published. Names are as each contributor gave them and aren't verified. The full history is on {{link}}.",
+	"recentChanges.empty": "No changes to show yet.",
+	"recentChanges.more": "and {{n}} more",
+
+	"random.title": "Random page",
+	"random.description": "Go to a random page on Visit Dhaka.",
+	"random.redirecting": "Taking you to a random page…",
+	"random.noscript": "Picking a random page needs JavaScript. Here are all the pages instead:",
+
 	"a11y.title": "Accessibility",
 	"a11y.open": "Accessibility settings",
 	"a11y.fontSize": "Font size",

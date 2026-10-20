@@ -4,7 +4,7 @@ description: What information Visit Dhaka collects when you use the site, why, w
 verified: false
 ---
 
-_Last updated: 27 September 2026_
+_Last updated: 21 October 2026_
 
 This policy explains what information is collected when you visit visitdhaka.org, why, and what choices you have. We try to collect as little as possible. You don't need an account to use the site, and we never ask for your name, email address or any other details to read it.
 
@@ -80,7 +80,7 @@ The site search runs entirely in your browser. What you type isn't sent to us or
 
 Anyone can suggest a change to a page with the "Edit page" link, which opens the page's source on [GitHub](https://github.com/Tingeworks/visitdhakaorg). Editors also use the site's editor, which signs in with GitHub.
 
-If you contribute, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub. They stay there after your changes are published, because the history is how the site credits contributors and tracks where information came from. GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+If you contribute, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub. They stay there after your changes are published, because the history is how the site credits contributors and tracks where information came from. The name on each published change, its date and its description are also listed on the site's [Recent changes](/recent-changes/) page. GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
 If you email us, we use your email only to reply and keep it only as long as the conversation needs.
 
