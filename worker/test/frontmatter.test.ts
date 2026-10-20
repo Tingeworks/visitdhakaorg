@@ -76,7 +76,7 @@ describe('rewriteFile', () => {
 		const files = readdirSync(docs, { recursive: true, encoding: 'utf8' }).filter((file) => file.endsWith('.md'));
 		assert.ok(files.length > 30);
 		for (const file of files) {
-			const original = readFileSync(join(docs, file), 'utf8');
+			const original = readFileSync(join(docs, file), 'utf8').replace(/\r\n?/g, '\n');
 			const { body } = splitFile(original);
 			const result = rewriteFile(original, body, 'Test Contributor');
 			const strip = (text: string) =>

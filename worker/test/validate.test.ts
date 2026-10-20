@@ -75,7 +75,7 @@ describe('validateBody', () => {
 			.filter((file) => file.endsWith('.md'));
 		assert.ok(files.length > 30);
 		for (const file of files) {
-			const path = relative(join(docs, '../../..'), file);
+			const path = relative(join(docs, '../../..'), file).replaceAll('\\', '/');
 			if (!validatePath(path).ok) continue;
 			const { body } = splitFile(readFileSync(file, 'utf8'));
 			assert.equal(errorCode(validateBody(body, body)), 'ok', path);
@@ -147,6 +147,24 @@ describe('validateBody', () => {
 			assert.equal(errorCode(validateBody(body, base)), 'body_has_mdx', body);
 		}
 		assert.equal(errorCode(validateBody('Imports from India are common.', base)), 'ok');
+	});
+
+	test('does not hide HTML behind unmatched code delimiters', () => {
+		for (const body of ['`` <script> `', '```bad`info\n\n<script>\n```']) {
+			assert.equal(errorCode(validateBody(body, base)), 'body_has_html', body);
+		}
+	});
+
+	test('decodes Markdown URL escapes before checking links and images', () => {
+		for (const body of ['[x](java&#115;cript:alert)', '[x](j&#x61;vascript:alert)', '[x](javascript\\:alert)']) {
+			assert.equal(errorCode(validateBody(body, base)), 'body_has_unsafe_link', body);
+		}
+		for (const body of ['![x](https&#58;//tracker.example/p.gif)', '![x](https\\://tracker.example/p.gif)']) {
+			assert.equal(errorCode(validateBody(body, base)), 'body_has_external_image', body);
+		}
+		const result = validateBody('[x](https&#58;//example.org/)', base);
+		assert.ok(result.ok);
+		assert.deepEqual(result.value.flags.linksAdded, ['https://example.org/']);
 	});
 
 	test('rejects script-capable links', () => {
