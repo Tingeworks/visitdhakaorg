@@ -75,5 +75,10 @@
 	"a11y.links": "Highlight links",
 
 	"unverified.text": "This page hasn't been fact-checked yet. Check opening hours, fees and rules with official sources before you travel.",
-	"unverified.help": "Help check it"
+	"unverified.help": "Help check it",
+
+	"references.title": "References",
+	"references.sources": "Sources",
+	"references.accessed": "(checked {{date}})",
+	"references.backLabel": "Back to reference {{n}}"
 }

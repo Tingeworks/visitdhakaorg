@@ -1,9 +1,20 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { satteri } from '@astrojs/markdown-satteri';
+import references from './src/lib/references.mjs';
+import en from './src/content/i18n/en.json' with { type: 'json' };
+import bn from './src/content/i18n/bn.json' with { type: 'json' };
 
 // https://astro.build/config
 export default defineConfig({
+	markdown: {
+		// Astro's default Markdown processor, plus a plugin that turns footnotes and `sources` frontmatter into a References
+		// section at the end of each page (src/lib/references.mjs). Starlight adds its own plugins to this processor.
+		processor: satteri({
+			hastPlugins: [references({ locales: { root: { lang: 'en-GB', strings: en }, bn: { lang: 'bn-BD', strings: bn } } })],
+		}),
+	},
 	// Fonts, downloaded from Google Fonts at build time and served from this site, so visitors' browsers never contact
 	// Google for them. Google Sans (weights 400 to 700, optical sizes 17 to 18, normal and italic) has no Bengali, so Bangla
 	// text uses Noto Sans Bengali. src/styles/custom.css lists Noto first: its file covers only Bengali characters, so the
