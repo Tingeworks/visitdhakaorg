@@ -86,14 +86,26 @@ function withoutCode(markdown: string) {
 			if (marker && marker[0] === fence[0] && marker.length >= fence.length && line.trim() === marker) fence = undefined;
 			continue;
 		}
-		if (marker) {
+		if (marker && (marker[0] !== '`' || !line.slice(line.indexOf(marker) + marker.length).includes('`'))) {
 			fence = marker;
 			continue;
 		}
 		kept.push(line);
 	}
-	// Inline code: a run of backticks up to the next run of the same length.
-	return kept.join('\n').replace(/(`+)[\s\S]*?\1/g, '');
+	// Code spans need matching whole runs and cannot cross a paragraph boundary.
+	return kept.join('\n').split(/\n[ \t]*\n/).map((paragraph) => {
+		const runs = [...paragraph.matchAll(/`+/g)];
+		let result = '';
+		let start = 0;
+		for (let i = 0; i < runs.length; i++) {
+			const close = runs.findIndex((run, j) => j > i && run[0].length === runs[i][0].length);
+			if (close < 0) continue;
+			result += paragraph.slice(start, runs[i].index);
+			start = runs[close].index + runs[close][0].length;
+			i = close;
+		}
+		return result + paragraph.slice(start);
+	}).join('\n\n');
 }
 
 /** True for `<` at `index` that starts an autolink, such as `<https://example.org>` or `<name@example.org>`. */
@@ -126,13 +138,21 @@ function destinations(text: string) {
 	}
 	for (const [, url] of text.matchAll(/<([A-Za-z][A-Za-z0-9+.-]{1,31}:[^\s<>]*)>/g)) found.push({ url, image: false });
 	for (const [url] of text.matchAll(/\bhttps?:\/\/[^\s<>()[\]]+/gi)) found.push({ url, image: false });
-	return found;
+	return found.map(({ url, image }) => ({ url: decodeUrl(url), image }));
 }
+
+// CommonMark decodes character references and backslash-escaped punctuation in destinations.
+const decodeUrl = (url: string) => url
+	.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g, '$1')
+	.replace(/&#(x[0-9a-f]+|[0-9]+);|&(colon|Tab|NewLine);/gi, (_, numeric, named) => {
+		if (named) return ({ colon: ':', tab: '\t', newline: '\n' } as Record<string, string>)[named.toLowerCase()];
+		const point = numeric[0].toLowerCase() === 'x' ? parseInt(numeric.slice(1), 16) : Number(numeric);
+		return point > 0 && point <= 0x10ffff ? String.fromCodePoint(point) : '\uFFFD';
+	});
 
 /** The scheme of a URL as a browser would read it, ignoring case, whitespace, control characters and entities. */
 const schemeOf = (url: string) =>
 	url
-		.replace(/&#x?[0-9a-f]+;?|&colon;/gi, (entity) => (/colon|58|3a/i.test(entity) ? ':' : ''))
 		.replace(/[\s\u0000-\u001f]/g, '')
 		.toLowerCase()
 		.match(/^([a-z][a-z0-9+.-]*):/)?.[1];
