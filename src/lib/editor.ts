@@ -7,13 +7,13 @@
 //   /api/* (#14). Locally, the `wrangler dev` address, such as http://localhost:8787.
 // - PUBLIC_TURNSTILE_SITE_KEY: the Turnstile widget's site key (#10). Development uses Cloudflare's always-pass test key.
 
-export const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true';
-
 export const editApiUrl = (import.meta.env.PUBLIC_EDIT_API_URL ?? '').replace(/\/$/, '');
 
 const testSiteKey = '1x00000000000000000000AA';
 export const turnstileSiteKey: string | undefined =
 	import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? testSiteKey : undefined);
+
+export const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true' && Boolean(turnstileSiteKey);
 
 /**
  * Whether a page's source file can be edited in the site's editor: a Markdown page inside a pillar folder, in English
@@ -21,4 +21,4 @@ export const turnstileSiteKey: string | undefined =
  * (MDX) and the about and legal pages at the top of src/content/docs/ aren't editable there.
  */
 export const isEditablePath = (filePath: string | undefined) =>
-	Boolean(filePath && /^src\/content\/docs\/(?:bn\/)?[a-z0-9-]+\/[a-z0-9-]+\.md$/.test(filePath));
+	Boolean(filePath && /^src\/content\/docs\/(?:bn\/)?(?:overview|areas|attractions|food|getting-around|where-to-stay|culture|practical-info|shopping|day-trips)\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(filePath));

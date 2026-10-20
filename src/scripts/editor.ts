@@ -92,6 +92,7 @@ function start(root: HTMLElement) {
 		const script = document.createElement('script');
 		script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onVisitDhakaTurnstile';
 		script.async = true;
+		script.onerror = () => showAlert(message('edit.error.turnstile'));
 		document.head.append(script);
 	}
 
@@ -147,7 +148,11 @@ function start(root: HTMLElement) {
 		const token = widget ? window.turnstile?.getResponse(widget) : undefined;
 		if (!licence) showFieldError('licence', message('edit.error.licence_required'));
 		if (!token) showFieldError('turnstile', message('edit.error.turnstile'));
-		if (!licence || !token) return;
+		if (!licence || !token) {
+			if (!licence) $('edit-licence').focus();
+			else showAlert(message('edit.error.turnstile'));
+			return;
+		}
 
 		submit.disabled = true;
 		submit.textContent = message('edit.submitting');
