@@ -12,7 +12,7 @@ export interface Env {
 	GITHUB_REPO: string;
 	GITHUB_BASE_BRANCH: string;
 	/** Pull requests per day, site-wide (#15). 0 turns public editing off. */
-	DAILY_EDIT_CAP: string;
+	DAILY_EDIT_CAP?: string;
 	/** Origins allowed to call the API from a browser, comma-separated. */
 	ALLOWED_ORIGIN: string;
 	/**
