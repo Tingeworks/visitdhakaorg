@@ -287,6 +287,32 @@ html {
 	border-radius: var(--vd-radius-md);
 }
 
+/* References: footnotes and `sources`, built by src/lib/rehype-references.mjs. Clears the infobox on short pages. */
+.sl-markdown-content .references {
+	clear: both;
+	margin-top: 1.5em;
+	font-size: var(--sl-text-sm);
+}
+.sl-markdown-content .references :is(ol, ul) {
+	padding-inline-start: 1.5rem;
+}
+.sl-markdown-content .references .accessed {
+	color: var(--sl-color-gray-3);
+}
+.sl-markdown-content :is([data-footnote-ref], [data-footnote-backref]) {
+	text-decoration: none;
+}
+/* Back-links are "↩", which some systems draw as a colour emoji. */
+.sl-markdown-content [data-footnote-backref] {
+	font-variant-emoji: text;
+}
+.sl-markdown-content [data-footnote-ref]::before {
+	content: '[';
+}
+.sl-markdown-content [data-footnote-ref]::after {
+	content: ']';
+}
+
 /* ---------- Header and sidebar ---------- */
 header.header {
 	border-bottom: none;

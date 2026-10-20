@@ -104,5 +104,10 @@
 	"a11y.links": "লিংক চিহ্নিত করুন",
 
 	"unverified.text": "এই পাতার তথ্য এখনো যাচাই করা হয়নি। ভ্রমণের আগে খোলার সময়, ফি ও নিয়মকানুন অফিসিয়াল সূত্র থেকে মিলিয়ে নিন।",
-	"unverified.help": "যাচাইয়ে সাহায্য করুন"
+	"unverified.help": "যাচাইয়ে সাহায্য করুন",
+
+	"references.title": "তথ্যসূত্র",
+	"references.sources": "সূত্র",
+	"references.accessed": "(যাচাই: {{date}})",
+	"references.backLabel": "{{n}} নম্বর উল্লেখে ফিরে যান"
 }

@@ -19,6 +19,10 @@ export const collections = {
 				hours: z.string().optional(),
 				entryFee: z.string().optional(),
 				bestTime: z.string().optional(),
+				// Sources for the page's facts, listed under References at the end of the page (src/lib/rehype-references.mjs).
+				sources: z
+					.array(z.object({ title: z.string(), url: z.string().url(), accessed: z.coerce.date().optional() }))
+					.default([]),
 				// Set to true once an editor has fact-checked the page.
 				verified: z.boolean().default(false),
 			}),

@@ -72,6 +72,29 @@ tingeworks CMS is [Sveltia CMS](https://sveltiacms.app) under the hood. The admi
 - **Production login:** GitHub personal access token for now, which suits a solo or small team. Add the [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth) Cloudflare Worker later if non-technical contributors need proper OAuth.
 - **Collections:** one per content pillar (below), each exposing only the fields that pillar uses. Tick **Fact-checked by an editor** on a page once you have verified it.
 
+### How to cite
+
+Every page ends with a **References** section when it has citations, built from two places:
+
+- **Footnotes** cite a single sentence. Put `[^1]` after the claim and the source at the end of the body:
+
+  ```md
+  A sentence that needs a source.[^1]
+
+  [^1]: [Title of the source](https://example.org/page), checked October 2026.
+  ```
+
+- **Sources** (the `sources` field, or **Sources** in the CMS) list what backs the page as a whole, each with a title, a link and the date you checked it:
+
+  ```yaml
+  sources:
+    - title: Title of the source
+      url: https://example.org/page
+      accessed: 2026-10-21
+  ```
+
+Prefer official and first-hand sources: government sites, operators and venues. Cite them for anything that changes, such as opening hours, fees, prices and visa rules. Only tick **Fact-checked by an editor** once every fact on the page is checked against a source. On the page, sources come after the footnotes, under headings in the page's language.
+
 ## Content pillars
 
 Each pillar is a folder in `src/content/docs/` with consistent typed frontmatter (coordinates, category, tags, hours and so on) to support structured data and faceted browsing. The starter pages contain only well-known facts and are all marked `verified: false` until an editor checks them.

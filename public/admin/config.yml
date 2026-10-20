@@ -53,6 +53,18 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - &sources-field
+        name: sources
+        label: Sources
+        widget: list
+        required: false
+        collapsed: true
+        hint: Official or first-hand sources for this page's facts, listed under References at the end of the page. To cite one sentence, add a footnote in the body instead, such as [^1].
+        summary: '{{fields.title}}'
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: url, label: Link, widget: string, type: url }
+          - { name: accessed, label: Date checked, widget: datetime, required: false, time_format: false, format: YYYY-MM-DD }
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -102,6 +114,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -173,6 +186,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -221,6 +235,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -264,6 +279,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -311,6 +327,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -359,6 +376,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -395,6 +413,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -447,6 +466,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -508,6 +528,7 @@ collections:
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
+      - *sources-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -532,6 +553,7 @@ collections:
             label: Description
             widget: text
             hint: One or two sentences. Used in search results and link previews.
+          - *sources-field
           - name: verified
             label: Checked
             widget: boolean
