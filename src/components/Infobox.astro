@@ -1,0 +1,144 @@
+---
+// The key facts of a page, read from its frontmatter and shown like a Wikipedia infobox at the top of the content.
+// Shows only the fields the page has, and nothing at all on pillar overviews, the about and legal pages, the homepage,
+// or any page with none of the fields. Values are shown exactly as written: hours and fees are fact-checked fields,
+// so there are no placeholders.
+import { localeOf, localizedPages, unlocalizePath } from '../lib/i18n';
+
+const route = Astro.locals.starlightRoute;
+const { title, category, area, coordinates, hours, entryFee, bestTime } = route.entry.data;
+const locale = localeOf(Astro.url);
+const path = unlocalizePath(Astro.url.pathname);
+
+// Only topic pages inside a pillar folder (/attractions/lalbagh-fort/), not pillar overviews (/where-to-stay/).
+const isTopicPage = path.split('/').filter(Boolean).length > 1;
+
+// Link the area to its page under /areas/ when there is one, and leave the row out on that area's own page.
+let areaHref: string | undefined;
+if (area) {
+	const areaPage = (await localizedPages(locale)).find(
+		(page) => page.slug.startsWith('areas/') && (page.data.area === area || page.data.title === area),
+	);
+	areaHref = areaPage?.href;
+}
+const isOwnArea = area === title || (areaHref !== undefined && unlocalizePath(areaHref) === path);
+
+const rows = [
+	{ label: 'infobox.category', value: category },
+	{ label: 'infobox.area', value: isOwnArea ? undefined : area, href: areaHref },
+	{ label: 'infobox.hours', value: hours },
+	{ label: 'infobox.entryFee', value: entryFee },
+	{ label: 'infobox.bestTime', value: bestTime },
+].filter((row) => row.value);
+
+const mapHref =
+	coordinates &&
+	`https://www.openstreetmap.org/?mlat=${coordinates.lat}&mlon=${coordinates.lng}#map=17/${coordinates.lat}/${coordinates.lng}`;
+
+const show = isTopicPage && (rows.length > 0 || coordinates);
+---
+
+{
+	show && (
+		<aside class="infobox not-content" lang={route.lang} dir={route.dir} aria-labelledby="infobox-title">
+			<p class="title" id="infobox-title">
+				{Astro.locals.t('infobox.title')}
+			</p>
+			<dl>
+				{rows.map((row) => (
+					<div class="row">
+						<dt>{Astro.locals.t(row.label)}</dt>
+						<dd>{row.href ? <a href={row.href}>{row.value}</a> : row.value}</dd>
+					</div>
+				))}
+				{coordinates && (
+					<div class="row">
+						<dt>{Astro.locals.t('infobox.location')}</dt>
+						<dd>
+							<span dir="ltr">
+								{coordinates.lat}, {coordinates.lng}
+							</span>
+							<a class="map" href={mapHref} target="_blank" rel="noopener noreferrer">
+								{Astro.locals.t('infobox.openMap')}
+								<span class="sr-only"> {Astro.locals.t('card.newTab')}</span>
+							</a>
+						</dd>
+					</div>
+				)}
+			</dl>
+		</aside>
+	)
+}
+
+<style>
+	/* Floats beside the text once the content column is wide enough, and sits full width above it otherwise. Measured on
+	   the content column rather than the viewport, so it also reacts to the sidebar and the accessibility font size. */
+	:global(.sl-markdown-content:has(> .infobox)) {
+		container-type: inline-size;
+	}
+
+	/* The text starts level with the top of the box, without Starlight's gap between blocks. */
+	:global(.sl-markdown-content > .infobox + *) {
+		margin-top: 0;
+	}
+
+	.infobox {
+		margin-bottom: var(--sl-content-gap-y);
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: var(--vd-radius-lg);
+		background: var(--sl-color-bg-sidebar);
+		font-size: var(--sl-text-sm);
+		line-height: 1.5;
+		overflow-wrap: anywhere;
+	}
+
+	@container (min-width: 40em) {
+		.infobox {
+			float: inline-end;
+			width: min(22em, 40%);
+			margin-inline-start: 1.5rem;
+		}
+	}
+
+	.title {
+		margin: 0;
+		padding: 0.625rem 1rem;
+		border-bottom: 1px solid var(--sl-color-hairline);
+		color: var(--sl-color-white);
+		font-family: var(--vd-font-display);
+		font-weight: 600;
+	}
+
+	dl {
+		margin: 0;
+	}
+
+	.row {
+		display: grid;
+		grid-template-columns: 7.5em 1fr;
+		gap: 0.75rem;
+		padding: 0.5rem 1rem;
+	}
+
+	.row + .row {
+		border-top: 1px solid var(--sl-color-hairline);
+	}
+
+	dt {
+		color: var(--sl-color-gray-3);
+		font-weight: 600;
+	}
+
+	dd {
+		margin: 0;
+		color: var(--sl-color-white);
+	}
+
+	a {
+		color: var(--sl-color-text-accent);
+	}
+
+	.map {
+		display: block;
+	}
+</style>

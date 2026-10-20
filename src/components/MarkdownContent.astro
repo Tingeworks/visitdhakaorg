@@ -1,0 +1,10 @@
+---
+// Starlight's page content, with the page's infobox first so it can float beside the text.
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import Infobox from './Infobox.astro';
+---
+
+<Default {...Astro.props}>
+	<Infobox />
+	<slot />
+</Default>
