@@ -88,7 +88,11 @@ How to handle them:
 Use the lightest switch that stops the problem.
 
 1. **Spam wave:** set the edit Worker's `DAILY_EDIT_CAP` variable to `0` (#10). New edits get a "try again later"
-   message, and nothing else changes. Close the spam pull requests. One way is
+	message, and nothing else changes. Save and deploy the dashboard variable change to apply it immediately. The cap is
+	managed only in the dashboard, outside `worker/wrangler.jsonc`, so subsequent deploys preserve it (`keep_vars: true`,
+	#35). A missing or invalid cap also closes editing. `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH` and
+	`ALLOWED_ORIGIN` still come from the configuration file; the App ID and installation ID live in the dashboard.
+	Close the spam pull requests. One way is
    `gh pr list --label public-edit --state open --json number --jq '.[].number'`, then `gh pr close <number>` for each
    one you've checked.
 2. **The Worker misbehaves:** remove the `visitdhaka.org/api/*` route in Cloudflare (#14). The editor stops working,

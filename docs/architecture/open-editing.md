@@ -115,6 +115,10 @@ These matter more than the hosting choice.
 
 Cloudflare's branch controls for the site project should be set so `edit/*` branches do not trigger preview builds.
 
+`DAILY_EDIT_CAP` is a dashboard-managed runtime variable, deliberately absent from `worker/wrangler.jsonc`.
+Set it to `50` during setup (#10), or `0` to stop edits. `keep_vars: true` preserves it across deploys (#35).
+A missing or invalid cap keeps editing closed. Confirm preservation with a real redeploy before launch (#18).
+
 ## Phases
 
 1. **Phase 1, MVP (no D1):** editor, Worker, GitHub App, Turnstile, rate limiting, frontmatter rules, `contributors` credit, one branch per page. Recommended to test the credit and merge behaviour with a handful of real pull requests before public launch.

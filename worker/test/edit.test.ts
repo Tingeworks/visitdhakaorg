@@ -258,6 +258,14 @@ describe('POST /api/edit: errors', () => {
 		assert.deepEqual(gh.calls, []);
 	});
 
+	test('keeps editing closed when the dashboard cap is missing', async () => {
+		const response = await post(await anEdit(), {}, { ...env, DAILY_EDIT_CAP: undefined });
+		assert.equal(response.status, 429);
+		assert.deepEqual(await response.json(), { ok: false, errors: [{ code: 'daily_cap_reached' }] });
+		assert.deepEqual(gh.calls, []);
+		nothingWritten();
+	});
+
 	test('cancels an oversized chunked request before consuming its remaining body', async () => {
 		let reads = 0;
 		let cancelled = false;

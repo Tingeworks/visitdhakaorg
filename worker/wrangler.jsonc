@@ -7,14 +7,13 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-10-15",
 	"observability": { "enabled": true },
-	// Public settings. GITHUB_APP_ID and GITHUB_INSTALLATION_ID are set in the dashboard once the app exists (#10), and
-	// keep_vars stops a deploy from deleting them.
+	// GITHUB_APP_ID, GITHUB_INSTALLATION_ID and DAILY_EDIT_CAP are managed in the dashboard (#10).
+	// Keep DAILY_EDIT_CAP out of vars so a deploy cannot reopen editing after the kill switch is set to 0 (#35).
 	"keep_vars": true,
 	"vars": {
 		"GITHUB_OWNER": "Tingeworks",
 		"GITHUB_REPO": "visitdhakaorg",
 		"GITHUB_BASE_BRANCH": "main",
-		"DAILY_EDIT_CAP": "50",
 		"ALLOWED_ORIGIN": "https://visitdhaka.org"
 	}
 	// The visitdhaka.org/api/* route is added in #14, once the domain is on Cloudflare.
