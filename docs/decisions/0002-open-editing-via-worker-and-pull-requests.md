@@ -1,6 +1,6 @@
 # 0002: Public editing through a Worker that opens pull requests
 
-- Status: Proposed
+- Status: Accepted for phase 1 (2026-10-21). Phases 2 and 3 are still proposed.
 - Date: 2026-09-20
 
 ## Context
