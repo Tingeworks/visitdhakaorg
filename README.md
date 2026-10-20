@@ -136,6 +136,8 @@ The site is deliberately hidden from search engines until launch:
 
 To launch, delete `public/robots.txt`, remove the `head` line in `astro.config.mjs`, set `site` so the sitemap is generated, then submit the sitemap in Search Console and Bing Webmaster Tools.
 
+Before launch, also decide whether the tag pages (`/tags/` and `/tags/<tag>/`) should stay `noindex`. Most only list one or two pages, which search engines can treat as thin content. Record the decision in `docs/decisions/`.
+
 ## Roadmap
 
 - [x] Install the CMS (Sveltia) and add the admin entry point and base `config.yml`

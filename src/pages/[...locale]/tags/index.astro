@@ -1,0 +1,39 @@
+---
+// Every tag, with how many pages use it, at /tags/ in English and /bn/tags/ in Bangla. Tags link to their own pages
+// (src/pages/[...locale]/tags/[tag].astro). Built the same way as /whats-on/.
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { translatedLocales } from '../../../lib/i18n';
+import { tagHref, tagsFor } from '../../../lib/tags';
+
+export const getStaticPaths = (() =>
+	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
+
+const { locale } = Astro.params;
+const { t } = Astro.locals;
+const tags = await tagsFor(locale, locale ?? 'en');
+---
+
+<StarlightPage frontmatter={{ title: t('tags.title'), description: t('tags.description') }}>
+	<p>{t('tags.description')}</p>
+	<ul class="tags">
+		{
+			tags.map((tag) => (
+				<li>
+					<a href={tagHref(tag.label, locale)}>{tag.label}</a> ({tag.pages.length})
+				</li>
+			))
+		}
+	</ul>
+</StarlightPage>
+
+<style>
+	.tags {
+		columns: 12rem;
+		padding-inline-start: 1.25rem;
+	}
+
+	.tags li {
+		break-inside: avoid;
+	}
+</style>

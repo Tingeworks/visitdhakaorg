@@ -82,5 +82,13 @@
 	"references.title": "References",
 	"references.sources": "Sources",
 	"references.accessed": "(checked {{date}})",
-	"references.backLabel": "Back to reference {{n}}"
+	"references.backLabel": "Back to reference {{n}}",
+
+	"tags.label": "Tags",
+	"tags.title": "Tags",
+	"tags.description": "Every tag used on Visit Dhaka, with the number of pages that have it.",
+	"tags.tagTitle": "Tagged “{{tag}}”",
+	"tags.tagDescription": "Pages on Visit Dhaka tagged “{{tag}}”.",
+	"tags.all": "All tags",
+	"backlinks.title": "Pages that link here"
 }
