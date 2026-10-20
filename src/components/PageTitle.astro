@@ -1,0 +1,54 @@
+---
+// Starlight's page title, followed by a notice on pages an editor hasn't fact-checked yet (`verified: false`).
+// The notice only appears on pages inside a pillar folder (src/content/docs/<pillar>/ or docs/bn/<pillar>/), overviews
+// included. Top-level pages never show it: about, privacy, terms and licence are `verified: false` while they wait for
+// legal review, which is a different kind of check. Splash homepages render a hero instead of this title, and routes
+// outside the docs collection (such as /whats-on/) have no source file, so neither shows it either.
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import { Icon } from '@astrojs/starlight/components';
+import { translatedLocales } from '../lib/i18n';
+
+const route = Astro.locals.starlightRoute;
+const [first, ...rest] = (route.entry.filePath ?? '').replace(/^src\/content\/docs\//, '').split('/');
+const inPillar = (translatedLocales.includes(first) ? rest : [first, ...rest]).length > 1;
+const showNotice = inPillar && !route.entry.data.verified;
+---
+
+<Default {...Astro.props} />
+{
+	showNotice && (
+		<p class="unverified sl-flex" lang={route.lang} dir={route.dir}>
+			<Icon name="warning" size="1.5em" color="var(--sl-color-orange-high)" />
+			<span>
+				{Astro.locals.t('unverified.text')}
+				{route.editUrl && ' '}
+				{route.editUrl && <a href={route.editUrl.href}>{Astro.locals.t('unverified.help')}</a>}
+			</span>
+		</p>
+	)
+}
+
+<style>
+	/* Matches Starlight's own notices, such as the one on untranslated pages. */
+	.unverified {
+		align-items: center;
+		gap: 0.75em;
+		max-width: 100%;
+		width: max-content;
+		padding: 0.75em 1em;
+		border: 1px solid var(--sl-color-orange);
+		background-color: var(--sl-color-orange-low);
+		color: var(--sl-color-orange-high);
+		font-size: var(--sl-text-body-sm);
+		line-height: var(--sl-line-height-headings);
+	}
+
+	.unverified :global(svg) {
+		flex-shrink: 0;
+	}
+
+	a {
+		color: inherit;
+		font-weight: 600;
+	}
+</style>

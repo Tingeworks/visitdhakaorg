@@ -65,6 +65,8 @@ export default defineConfig({
 				// Adds the infobox of key facts from the page's frontmatter (src/components/Infobox.astro).
 				MarkdownContent: './src/components/MarkdownContent.astro',
 				PageFrame: './src/components/PageFrame.astro',
+				// Adds a notice under the title of pages that haven't been fact-checked yet.
+				PageTitle: './src/components/PageTitle.astro',
 				// Light by default, with no "auto" mode. Dark mode is switched on only from the accessibility menu.
 				ThemeProvider: './src/components/ThemeProvider.astro',
 				ThemeSelect: './src/components/ThemeSelect.astro',
