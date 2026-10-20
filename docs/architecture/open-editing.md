@@ -95,5 +95,5 @@ Cloudflare's branch controls for the site project should be set so `edit/*` bran
 - Does a squash merge preserve or replace the commit author? Test on the first real pull request and record the answer in 0003.
 - Does the free Worker plan's CPU limit per request cover frontmatter parsing and validation, or is the $5 paid plan needed?
 - Where does the editor read the current source from: the Worker (GitHub API, cached) or raw GitHub (may lag)?
-- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them?
+- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them? Reviewers and turnaround are in the [moderation runbook](moderation.md). Whether the pull request UI works for them is still open (#18).
 - Licence and terms wording, and a takedown process (see feasibility review).

@@ -15,7 +15,7 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 | # | Decision | Status |
 | :--- | :--- | :--- |
 | [0001](decisions/0001-suggest-edit-link.md) | "Edit page" link to GitHub | Accepted, implemented |
-| [0002](decisions/0002-open-editing-via-worker-and-pull-requests.md) | Public editing through a Worker that opens pull requests | Proposed |
+| [0002](decisions/0002-open-editing-via-worker-and-pull-requests.md) | Public editing through a Worker that opens pull requests | Accepted for phase 1 |
 | [0003](decisions/0003-contributor-credit-model.md) | How contributors are credited | Proposed |
 | [0004](decisions/0004-d1-for-contribution-records.md) | Cloudflare D1 for contribution records | Proposed, deferred to phase 2 |
 | [0005](decisions/0005-google-analytics-with-consent.md) | Google Analytics 4 through Tag Manager, loaded only after consent | Accepted, implemented |
@@ -24,6 +24,7 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 ## Documents
 
 - [Open editing architecture](architecture/open-editing.md)
+- [Moderation runbook](architecture/moderation.md): who reviews public edits, what to check, reverting, reports and takedown, and how to turn editing off
 - [Open editing feasibility review](reviews/open-editing-feasibility.md): feasibility, risks, technical debt and the go/no-go verdict
 
 ## Conventions
