@@ -13,6 +13,7 @@ Rules and prices change, so always confirm the important details with an officia
 - [Money and connectivity](/practical-info/money-and-connectivity/)
 - [Bangla phrases](/practical-info/bangla-phrases/)
 - [Health and safety](/practical-info/health-and-safety/)
+- [Trip planners and travel scrapbooks](/practical-info/trip-planners/)
 
 ## Emergency number
 
