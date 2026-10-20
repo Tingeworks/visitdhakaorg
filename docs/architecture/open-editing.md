@@ -1,12 +1,12 @@
 # Open editing architecture
 
-Status: proposed (decisions 0002, 0003, 0004). Nothing here is built yet except the "Edit page" link (0001).
+Status: proposed (decisions 0002, 0003, 0004, and 0006 for sign-in). Nothing here is built yet except the "Edit page" link (0001).
 
 ## Goals and non-goals
 
 Goals: let the public improve existing pages, keep full history and revert, credit contributors, cost close to nothing, and keep the static site as it is.
 
-Non-goals for v1: instant publishing, new pages, renames, deletes, image uploads, MDX pages, frontmatter edits, real-time collaboration, user accounts.
+Non-goals for v1: instant publishing, new pages, renames, deletes, image uploads, MDX pages, frontmatter edits, real-time collaboration, user accounts. Editing never requires an account. Optional sign-in, with Google as the first provider, comes in phase 3 (0006).
 
 ## Components
 
@@ -65,6 +65,7 @@ These matter more than the hosting choice.
 - A GitHub App installed on this one repo with only Contents and Pull requests write. It produces short-lived installation tokens and is not tied to a person's account, which a personal access token would be.
 - App private key and Turnstile secret are Worker secrets. Nothing secret is in the repo or the browser.
 - Anonymous author email is always `anonymous@visitdhaka.org` (see 0003).
+- The Worker works out who is editing in one place, which returns an anonymous identity with the optional name in phase 1. Phase 3 adds a session check there for signed-in editors, without changing the rest of `/api/edit` (0006).
 
 ## Data model changes
 
@@ -86,7 +87,7 @@ Cloudflare's branch controls for the site project should be set so `edit/*` bran
 
 1. **Phase 1, MVP (no D1):** editor, Worker, GitHub App, Turnstile, rate limiting, frontmatter rules, `contributors` credit, one branch per page. Recommended to test the credit and merge behaviour with a handful of real pull requests before public launch.
 2. **Phase 2, records:** D1 `contributions` table and webhook, reconcile job, recent-changes page.
-3. **Phase 3, identity and trust:** optional GitHub sign-in, verified credit, per-user trust levels, auto-merge for trusted users.
+3. **Phase 3, identity and trust:** optional sign-in, Google first and then GitHub, through a server-side redirect flow in the Worker with a first-party session cookie and a D1 `users` table. Also verified credit, per-user trust levels and auto-merge for trusted users. Anonymous editing stays available (0006).
 4. **Later:** new-page creation, image uploads, a reviewer UI outside GitHub.
 
 ## Open questions
@@ -94,5 +95,5 @@ Cloudflare's branch controls for the site project should be set so `edit/*` bran
 - Does a squash merge preserve or replace the commit author? Test on the first real pull request and record the answer in 0003.
 - Does the free Worker plan's CPU limit per request cover frontmatter parsing and validation, or is the $5 paid plan needed?
 - Where does the editor read the current source from: the Worker (GitHub API, cached) or raw GitHub (may lag)?
-- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them?
+- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them? Reviewers and turnaround are in the [moderation runbook](moderation.md). Whether the pull request UI works for them is still open (#18).
 - Licence and terms wording, and a takedown process (see feasibility review).
