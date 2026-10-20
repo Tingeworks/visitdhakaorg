@@ -1,0 +1,35 @@
+---
+// Starlight's "Last updated" date (from git), followed by a link to the page's commit history on GitHub. The history
+// link is the edit link with /edit/ swapped for /commits/, so it points at the same source file: the Bangla file for a
+// translated page, and the English one for a page that falls back to English.
+import Default from '@astrojs/starlight/components/LastUpdated.astro';
+
+const { lastUpdated, editUrl } = Astro.locals.starlightRoute;
+const historyUrl = editUrl?.href.replace('/edit/', '/commits/');
+---
+
+{
+	lastUpdated && (
+		<div class="last-updated sl-flex">
+			<Default />
+			{historyUrl && <a href={historyUrl}>{Astro.locals.t('page.history')}</a>}
+		</div>
+	)
+}
+
+<style>
+	.last-updated {
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.25rem 1rem;
+		margin-inline-start: auto;
+	}
+
+	a {
+		color: var(--sl-color-gray-3);
+	}
+
+	a:hover {
+		color: var(--sl-color-white);
+	}
+</style>
