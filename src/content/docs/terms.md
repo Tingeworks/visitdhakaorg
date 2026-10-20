@@ -4,7 +4,7 @@ description: The terms for using Visit Dhaka, including how reliable the informa
 verified: false
 ---
 
-_Last updated: 27 September 2026_
+_Last updated: 21 October 2026_
 
 These terms apply to everyone who uses visitdhaka.org. By using the site, you agree to them. If you don't agree, please don't use the site.
 
@@ -47,7 +47,7 @@ The text on Visit Dhaka is free to share and reuse under the Creative Commons At
 
 ## Contributing
 
-Anyone can suggest changes to a page with the "Edit page" link. Editors review every change before it goes live and can edit, decline or remove any contribution.
+Anyone can suggest changes to a page with the "Edit page" link, using the site's own editor, which needs no account, or GitHub. Every suggested edit is checked by a reviewer before it is published. Reviewers can change, decline or later remove any contribution, and they usually respond within two days, though we can't promise that.
 
 When you contribute, you agree to:
 
@@ -56,12 +56,18 @@ When you contribute, you agree to:
 - not add advertising, spam, links you are paid to include, or content that is unlawful, hateful, harassing or misleading
 - not add personal information about other people, such as private phone numbers or home addresses
 - disclose any connection you have with a business, venue or event you write about
+- give only your own name or a nickname as the contributor name, never someone else's or an organisation's you don't represent
+- not use automated tools to send edits, or try to get around the editor's security check or limits
 
-Your contribution is licensed as explained on the [licence page](/licence/), and your GitHub username becomes part of the site's public edit history. See the [privacy policy](/privacy/) for more.
+Your contribution is licensed as explained on the [licence page](/licence/). The name you give in the site's editor, or your GitHub username, becomes part of the site's public edit history, and it stays there even if your edit is declined. See the [privacy policy](/privacy/) for more.
+
+We may turn the site's editor off, limit how many edits it accepts, or block edits from a connection that sends spam or abuse.
 
 ## Copyright complaints and corrections
 
-If you believe something on the site infringes your copyright or other rights, or is wrong or harmful, email [team@tingeworks.com](mailto:team@tingeworks.com). Tell us the page address, what the problem is and, for a rights complaint, what you own and how to contact you. We'll look into it and remove or correct the material where needed.
+If you believe something on the site infringes your copyright or other rights, or is wrong or harmful, email [team@tingeworks.com](mailto:team@tingeworks.com). Tell us the page address, what the problem is and, for a rights complaint, what you own and how to contact you. We'll reply within two days and remove or correct the material where needed. We aim to take down harmful material, such as personal information, dangerous advice or clear copyright infringement, within a day of a valid report.
+
+To have your own name or personal information removed, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com).
 
 ## Changes to these terms
 

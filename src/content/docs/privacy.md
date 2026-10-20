@@ -20,7 +20,7 @@ For anything about your privacy or your data, email [privacy@tingeworks.com](mai
 - **Hosting:** the site is hosted by Cloudflare, which handles the technical information needed to deliver pages to you.
 - **Fonts:** the site's fonts are served from this site, so your browser doesn't contact Google or anyone else for them.
 - **Settings:** your accessibility and cookie choices are saved in your own browser, not sent to us.
-- **Contributing:** if you suggest an edit through GitHub, your GitHub username and your changes become public.
+- **Contributing:** if you suggest an edit, your changes and the name you give (or your GitHub username) become public, permanently, in the site's history on GitHub. Editing on the site doesn't need an account, and uses a Cloudflare security check that runs only on the editor page.
 - We don't sell your information, show ads or use your information for advertising.
 
 ## Analytics (Google Analytics)
@@ -61,8 +61,9 @@ Cookies are small files a site saves in your browser. Similar "local storage" le
 | `vd-a11y` | Local storage | Remembers your accessibility settings, such as font size | Until you clear it |
 | `starlight-theme` | Local storage | Remembers whether you turned on dark mode | Until you clear it |
 | Sidebar state | Session storage | Remembers which sidebar sections are open while you browse | Until you close the tab |
+| Cloudflare Turnstile | Cookies or storage set by Cloudflare | Only on the editor page: the security check that tells people from bots | Set and controlled by Cloudflare |
 
-Only the Google Analytics cookies need your consent. The rest are needed for the site to work the way you set it, and they never leave your browser.
+Only the Google Analytics cookies need your consent. The site's own settings are needed for it to work the way you set it, and they never leave your browser. Turnstile's storage is needed for the editor's security check, and it's used only if you open the editor.
 
 ## Hosting (Cloudflare)
 
@@ -78,11 +79,35 @@ The site search runs entirely in your browser. What you type isn't sent to us or
 
 ## Contributing edits
 
-Anyone can suggest a change to a page with the "Edit page" link, which opens the page's source on [GitHub](https://github.com/Tingeworks/visitdhakaorg). Editors also use the site's editor, which signs in with GitHub.
+Anyone can suggest a change to a page with the "Edit page" link. Depending on the page, it opens either the site's own editor, which needs no account, or the page's source on [GitHub](https://github.com/Tingeworks/visitdhakaorg), which needs a GitHub account. The site's team also edit pages through the content editor at `/admin/`, which signs in with GitHub.
 
-If you contribute, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub. They stay there after your changes are published, because the history is how the site credits contributors and tracks where information came from. The name on each published change, its date and its description are also listed on the site's [Recent changes](/recent-changes/) page. GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+Every suggested edit becomes a pull request in the site's public repository on GitHub, where a reviewer checks it before anything is published. **Everything in a suggested edit is public as soon as you send it, and it stays public**, including if the edit is declined, because the history is how the site credits contributors and tracks where information came from.
+
+### Editing with the site's editor
+
+The editor asks for:
+
+- **your edit** to the page
+- **a name (optional)**, which is shown publicly. Leave it empty and your edit is credited to "Anonymous". Don't give a name you don't want to be public.
+- **an edit summary (optional)**, describing what you changed
+
+When you send it, your edit, the name, the summary and the time become part of the site's public history on GitHub. Once the edit is published, the name is also listed under the page as a contributor and on the [Recent changes](/recent-changes/) page. The editor never asks for your email address. Every edit's commit uses the same placeholder address, `anonymous@visitdhaka.org`, never one that belongs to you.
+
+**Security check.** To keep out spam, the editor uses [Cloudflare Turnstile](https://www.cloudflare.com/application-services/products/turnstile/), which checks that the edit comes from a person. Turnstile loads only on the editor page, not when you read the site. It processes technical details about your browser and connection, including your IP address, your browser's user agent and details of the secure connection. Cloudflare says it uses them to detect and block bots, not to identify, profile or target anyone. See the [Turnstile privacy addendum](https://www.cloudflare.com/turnstile-privacy-policy/).
+
+**Your IP address.** The service that turns your edit into a pull request passes your IP address to Turnstile for the check. Cloudflare also uses it to limit how many edits one connection can send in a short time. We don't store it with your edit, and it isn't part of the site's history. Cloudflare may keep it in its own technical logs, as described under [Hosting](#hosting-cloudflare).
+
+**Removing your name or edit.** To have your name removed from the site or from a pull request description, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with the page and roughly when you made the edit. Removing something from the git history itself is possible in serious cases, but GitHub may keep copies for a while.
+
+### Editing on GitHub
+
+If you edit through GitHub, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub, and the name on each published change is listed on [Recent changes](/recent-changes/). GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+
+### Talk pages
 
 Each page also has a "Talk" link to discussions about it on [GitHub Discussions](https://github.com/Tingeworks/visitdhakaorg/discussions). Taking part needs a GitHub account, and what you post, your GitHub username and the time are public on GitHub. The site only links there: nothing from GitHub loads on our pages until you follow the link.
+
+## Emailing us
 
 If you email us, we use your email only to reply and keep it only as long as the conversation needs.
 
@@ -92,13 +117,14 @@ Pages link to official sources, venues and other sites. Once you leave visitdhak
 
 ## Where your information is processed
 
-Google, Cloudflare and GitHub are based in the United States and run services around the world, so information may be processed outside the country you are in. Each of them applies its own legal safeguards to international transfers.
+Google, Cloudflare (including Turnstile) and GitHub are based in the United States and run services around the world, so information may be processed outside the country you are in. Each of them applies its own legal safeguards to international transfers.
 
 ## Legal basis (for visitors in the EU and UK)
 
 - **Analytics:** your consent, which you can withdraw at any time from Cookie settings.
 - **Hosting and security:** our legitimate interest in delivering a working, secure site.
-- **Contributions and emails:** our legitimate interest in running a community-edited guide and replying to you.
+- **Contributions and emails:** our legitimate interest in running a community-edited guide, crediting contributors and replying to you.
+- **The editor's security check and limits:** our legitimate interest in protecting the editor from spam and abuse.
 
 ## Your rights
 

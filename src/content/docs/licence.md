@@ -4,7 +4,7 @@ description: How you can reuse Visit Dhaka's text and code, how to credit the si
 verified: false
 ---
 
-_Last updated: 27 September 2026_
+_Last updated: 21 October 2026_
 
 Visit Dhaka is a community guide, and its content is free to share and reuse. This page explains the licences that apply and how to credit the site.
 
@@ -38,14 +38,16 @@ The code that runs the site is available under the [MIT licence](https://opensou
 
 ## Contributing
 
-When you contribute to Visit Dhaka, whether through the "Edit page" link, a pull request on GitHub or the site's editor, you agree that:
+When you contribute to Visit Dhaka, whether through the site's editor, the "Edit page" link to GitHub, a pull request or the content editor, you agree that:
 
 - your text contributions are licensed under **CC BY-SA 4.0**
 - your code contributions are licensed under the **MIT licence**
 - you wrote the contribution yourself, or you have the right to share it under these licences
 - any photos you add are your own, or are published under a licence that allows them to be used on the site, and you include the credit and licence the owner requires
 
-The site's history on GitHub records who contributed what, and this is how contributors are credited under the licence.
+In the site's editor, ticking "I release my contribution under the CC BY-SA 4.0 licence, and it's my own work or comes from a source that allows this" means exactly this. You can't send an edit without ticking it.
+
+The site's history on GitHub records who contributed what, and this is how contributors are credited under the licence. An edit made in the site's editor is credited to the name you give, or to "Anonymous" if you give none, and published edits also list that name under the page.
 
 Please don't copy text from guidebooks, other websites or official leaflets, even if you rewrite it slightly. Write in your own words and link to the source instead.
 

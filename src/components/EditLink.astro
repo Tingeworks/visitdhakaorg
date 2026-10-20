@@ -1,14 +1,22 @@
 ---
-// Starlight's "Edit page" link, followed by a "Talk" link, like Wikipedia's Talk tab. Talk opens a search for the page's
+// "Edit page", followed by a "Talk" link, like Wikipedia's Talk tab. With the in-site editor switched on
+// (PUBLIC_EDITOR_ENABLED, src/lib/editor.ts), "Edit page" on a guide page opens the editor at /edit/, which needs no
+// GitHub account. Everywhere else, and while the editor is off, it stays Starlight's link to the file on GitHub: the
+// homepages and the about and legal pages, which can't be edited on the site, and Bangla pages with no Bangla file
+// yet, whose text is the English page's.
+// Talk opens a search for the page's
 // discussions in the Talk category of the repo's GitHub Discussions, and "Start a discussion" opens a new one prefilled
 // with the page's title and address. Links only, with no embedded widget, so nothing loads from GitHub on page view.
 // Discussions are keyed by the English path, so a page's English and Bangla versions share them. Talk shows wherever
 // "Edit page" does, which is every page with a source file, and not on StarlightPage routes such as /whats-on/.
 import Default from '@astrojs/starlight/components/EditLink.astro';
 import { Icon } from '@astrojs/starlight/components';
-import { unlocalizePath } from '../lib/i18n';
+import { editorEnabled, isEditablePath } from '../lib/editor';
+import { localeOf, localizePath, unlocalizePath } from '../lib/i18n';
 
 const route = Astro.locals.starlightRoute;
+const inSiteEditor = editorEnabled && Boolean(route.editUrl) && !route.isFallback && isEditablePath(route.entry.filePath);
+const editorUrl = localizePath('/edit/', localeOf(Astro.url)) + '?' + new URLSearchParams({ path: route.entry.filePath ?? '' });
 const path = unlocalizePath(Astro.url.pathname);
 const { title } = route.entry.data;
 
@@ -25,7 +33,16 @@ const newUrl = discussions + '/new?' + prefill;
 ---
 
 <div class="page-actions sl-flex">
-	<Default {...Astro.props} />
+	{
+		inSiteEditor ? (
+			<a href={editorUrl} class="edit sl-flex print:hidden">
+				<Icon name="pencil" size="1.2em" />
+				{Astro.locals.t('page.editLink')}
+			</a>
+		) : (
+			<Default {...Astro.props} />
+		)
+	}
 	{
 		route.editUrl && (
 			<p class="talk sl-flex print:hidden">
@@ -43,6 +60,17 @@ const newUrl = discussions + '/new?' + prefill;
 		flex-wrap: wrap;
 		gap: 0.5rem 1.5rem;
 		align-items: center;
+	}
+
+	.edit {
+		gap: 0.5rem;
+		align-items: center;
+		text-decoration: none;
+		color: var(--sl-color-gray-3);
+	}
+
+	.edit:hover {
+		color: var(--sl-color-white);
 	}
 
 	.talk {

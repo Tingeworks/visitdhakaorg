@@ -1,0 +1,21 @@
+// The edit Worker: its own Cloudflare project, deployed from `main` with root directory `worker/` (#14), and served on
+// visitdhaka.org/api/* so the editor calls it on the site's own origin (decision 0002). Secrets are never in this
+// file: set them with `npx wrangler secret put <NAME>` or in the dashboard (#10).
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "visitdhaka-edit",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-10-15",
+	"observability": { "enabled": true },
+	// Public settings. GITHUB_APP_ID and GITHUB_INSTALLATION_ID are set in the dashboard once the app exists (#10), and
+	// keep_vars stops a deploy from deleting them.
+	"keep_vars": true,
+	"vars": {
+		"GITHUB_OWNER": "Tingeworks",
+		"GITHUB_REPO": "visitdhakaorg",
+		"GITHUB_BASE_BRANCH": "main",
+		"DAILY_EDIT_CAP": "50",
+		"ALLOWED_ORIGIN": "https://visitdhaka.org"
+	}
+	// The visitdhaka.org/api/* route is added in #14, once the domain is on Cloudflare.
+}

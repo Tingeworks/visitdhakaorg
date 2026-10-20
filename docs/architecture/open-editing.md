@@ -45,7 +45,39 @@ The existing site (Astro + Starlight, `wrangler.jsonc` at the root, static asset
 | `turnstile` | Token, verified server side on every request. |
 | `licence` | Must be true. Text: contributions are released under CC BY-SA 4.0. |
 
-`GET /api/source?path=...` returns the current body and blob SHA for the editor. Responses are cached at the edge briefly to avoid spending GitHub API calls on reads.
+`GET /api/source?path=...` returns `{ ok, path, sha, title, body, pending }`: the current body and blob SHA for the editor. When the page already has a public edit waiting for review, it returns that edit's branch version instead, with `pending: { prUrl }`, so the next edit builds on it and joins the same pull request (like Wikipedia's pending changes). Otherwise `pending` is `null`. Responses are cached at the edge for 60 seconds to avoid spending GitHub API calls on reads. `GET /api/health` says whether the Worker can mint a GitHub token, and never returns a secret. Errors are always `{ ok: false, errors: [{ code, field? }] }`. Any other path under `/api/` returns 404.
+
+### Responses from `POST /api/edit`
+
+Checks run in this order, and nothing is written to GitHub until all of them pass.
+
+| Status | Code (`errors[].code`) | Meaning |
+| :--- | :--- | :--- |
+| 201 | | New pull request: `{ ok, prUrl, prNumber, updated: false }` |
+| 200 | | Added to the page's open pull request: `{ ok, prUrl, prNumber, updated: true }` |
+| 400 | `invalid_json` | The request isn't a JSON object |
+| 403 | `origin_not_allowed`, `turnstile_failed` | Wrong origin, or Turnstile rejected the token |
+| 404 | `not_found` | The page doesn't exist |
+| 409 | `stale` | The page changed since the editor loaded it. Reload and edit again |
+| 409 | `conflict` | Another edit to the same page started at the same moment. Try again |
+| 413 | `request_too_large` | Over 200 KB |
+| 422 | Field codes from `worker/src/validate.ts`, plus `licence_required`, `base_sha_invalid`, `no_change` | Every invalid field is listed, each with its `field` |
+| 429 | `daily_cap_reached` | The site-wide daily cap is reached, or editing is turned off (`DAILY_EDIT_CAP=0`) |
+| 503 | `not_configured` | A secret or variable is missing (#10) |
+
+Each page has one branch, `edit/<path in the docs folder>`, such as `edit/bn/attractions/lalbagh-fort`. A first edit costs 8 GitHub API calls and a second edit to the same page 6, plus one Turnstile check and an installation token about once an hour.
+
+### The editor
+
+The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than a dialog. Article pages load no extra JavaScript, Turnstile loads only when someone opens the editor, and phones get a full-width form. It's a plain `<textarea>` with no preview, which keeps it light and avoids rendering untrusted Markdown in the browser. It's switched on by site build variables, set on the existing site project in Cloudflare (or in `.env` locally):
+
+| Variable | Value |
+| :--- | :--- |
+| `PUBLIC_EDITOR_ENABLED` | `true` to send "Edit page" to the editor. Leave unset until the Worker is deployed and routed (#13, #14) and #17 is merged |
+| `PUBLIC_TURNSTILE_SITE_KEY` | The Turnstile site key (#10). Without it, the editor stays off in production |
+| `PUBLIC_EDIT_API_URL` | Leave unset in production, where the Worker is on the same origin. Locally, the `wrangler dev` address, such as `http://localhost:8787` |
+
+To try it locally, run the Worker with `pnpm dev` in `worker/`, with `ALLOWED_ORIGIN` set to the site's local origin in `worker/.dev.vars`. Then build or run the site with `PUBLIC_EDITOR_ENABLED=true PUBLIC_EDIT_API_URL=http://localhost:8787`. Without app credentials, the Worker can load pages but not write edits.
 
 ## Validation and abuse controls
 
