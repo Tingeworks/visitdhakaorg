@@ -1,12 +1,12 @@
 # Open editing architecture
 
-Status: proposed (decisions 0002, 0003, 0004). Nothing here is built yet except the "Edit page" link (0001).
+Status: proposed (decisions 0002, 0003, 0004, and 0006 for sign-in). Nothing here is built yet except the "Edit page" link (0001).
 
 ## Goals and non-goals
 
 Goals: let the public improve existing pages, keep full history and revert, credit contributors, cost close to nothing, and keep the static site as it is.
 
-Non-goals for v1: instant publishing, new pages, renames, deletes, image uploads, MDX pages, frontmatter edits, real-time collaboration, user accounts.
+Non-goals for v1: instant publishing, new pages, renames, deletes, image uploads, MDX pages, frontmatter edits, real-time collaboration, user accounts. Editing never requires an account. Optional sign-in, with Google as the first provider, comes in phase 3 (0006).
 
 ## Components
 
@@ -45,7 +45,27 @@ The existing site (Astro + Starlight, `wrangler.jsonc` at the root, static asset
 | `turnstile` | Token, verified server side on every request. |
 | `licence` | Must be true. Text: contributions are released under CC BY-SA 4.0. |
 
-`GET /api/source?path=...` returns the current body and blob SHA for the editor. Responses are cached at the edge briefly to avoid spending GitHub API calls on reads.
+`GET /api/source?path=...` returns `{ ok, path, sha, title, body, pending }`: the current body and blob SHA for the editor. When the page already has a public edit waiting for review, it returns that edit's branch version instead, with `pending: { prUrl }`, so the next edit builds on it and joins the same pull request (like Wikipedia's pending changes). Otherwise `pending` is `null`. Responses are cached at the edge for 60 seconds to avoid spending GitHub API calls on reads. `GET /api/health` says whether the Worker can mint a GitHub token, and never returns a secret. Errors are always `{ ok: false, errors: [{ code, field? }] }`. Any other path under `/api/` returns 404.
+
+### Responses from `POST /api/edit`
+
+Checks run in this order, and nothing is written to GitHub until all of them pass.
+
+| Status | Code (`errors[].code`) | Meaning |
+| :--- | :--- | :--- |
+| 201 | | New pull request: `{ ok, prUrl, prNumber, updated: false }` |
+| 200 | | Added to the page's open pull request: `{ ok, prUrl, prNumber, updated: true }` |
+| 400 | `invalid_json` | The request isn't a JSON object |
+| 403 | `origin_not_allowed`, `turnstile_failed` | Wrong origin, or Turnstile rejected the token |
+| 404 | `not_found` | The page doesn't exist |
+| 409 | `stale` | The page changed since the editor loaded it. Reload and edit again |
+| 409 | `conflict` | Another edit to the same page started at the same moment. Try again |
+| 413 | `request_too_large` | Over 200 KB |
+| 422 | Field codes from `worker/src/validate.ts`, plus `licence_required`, `base_sha_invalid`, `no_change` | Every invalid field is listed, each with its `field` |
+| 429 | `daily_cap_reached` | The site-wide daily cap is reached, or editing is turned off (`DAILY_EDIT_CAP=0`) |
+| 503 | `not_configured` | A secret or variable is missing (#10) |
+
+Each page has one branch, `edit/<path in the docs folder>`, such as `edit/bn/attractions/lalbagh-fort`. A first edit costs 8 GitHub API calls and a second edit to the same page 6, plus one Turnstile check and an installation token about once an hour.
 
 ### The editor
 
@@ -77,6 +97,7 @@ These matter more than the hosting choice.
 - A GitHub App installed on this one repo with only Contents and Pull requests write. It produces short-lived installation tokens and is not tied to a person's account, which a personal access token would be.
 - App private key and Turnstile secret are Worker secrets. Nothing secret is in the repo or the browser.
 - Anonymous author email is always `anonymous@visitdhaka.org` (see 0003).
+- The Worker works out who is editing in one place, which returns an anonymous identity with the optional name in phase 1. Phase 3 adds a session check there for signed-in editors, without changing the rest of `/api/edit` (0006).
 
 ## Data model changes
 
@@ -98,7 +119,7 @@ Cloudflare's branch controls for the site project should be set so `edit/*` bran
 
 1. **Phase 1, MVP (no D1):** editor, Worker, GitHub App, Turnstile, rate limiting, frontmatter rules, `contributors` credit, one branch per page. Recommended to test the credit and merge behaviour with a handful of real pull requests before public launch.
 2. **Phase 2, records:** D1 `contributions` table and webhook, reconcile job, recent-changes page.
-3. **Phase 3, identity and trust:** optional GitHub sign-in, verified credit, per-user trust levels, auto-merge for trusted users.
+3. **Phase 3, identity and trust:** optional sign-in, Google first and then GitHub, through a server-side redirect flow in the Worker with a first-party session cookie and a D1 `users` table. Also verified credit, per-user trust levels and auto-merge for trusted users. Anonymous editing stays available (0006).
 4. **Later:** new-page creation, image uploads, a reviewer UI outside GitHub.
 
 ## Open questions
@@ -106,5 +127,5 @@ Cloudflare's branch controls for the site project should be set so `edit/*` bran
 - Does a squash merge preserve or replace the commit author? Test on the first real pull request and record the answer in 0003.
 - Does the free Worker plan's CPU limit per request cover frontmatter parsing and validation, or is the $5 paid plan needed?
 - Where does the editor read the current source from: the Worker (GitHub API, cached) or raw GitHub (may lag)?
-- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them?
+- Who reviews, how quickly, and is GitHub's pull request UI acceptable for them? Reviewers and turnaround are in the [moderation runbook](moderation.md). Whether the pull request UI works for them is still open (#18).
 - Licence and terms wording, and a takedown process (see feasibility review).

@@ -25,3 +25,4 @@ Names are unverified until sign-in exists. They are shown with no profile link, 
 - `contributors` must be added to the Astro schema in `src/content.config.ts` and to the Sveltia collections in `public/admin/config.yml`. Per `CLAUDE.md`, a key missing from a collection may be dropped when an editor saves through the CMS, which would silently erase credits. This needs an explicit test.
 - Concurrent edits to one page both touch the `contributors` list and will conflict on merge. The Worker uses one open branch per page to avoid this (0002).
 - The list grows without bound on busy pages. Store only unique names and cap the rendered list.
+- Sign-in is planned for phase 3, with Google first (0006). Signed-in edits will use a pseudonymous author email such as `user-<id>@visitdhaka.org`, never the person's Google email. That will be recorded as an update to this decision.
