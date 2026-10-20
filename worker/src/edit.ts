@@ -27,9 +27,32 @@ const SITE = 'https://visitdhaka.org';
 
 /** The daily cap from DAILY_EDIT_CAP. A missing or unreadable value counts as 0, so a mistake closes editing. */
 const dailyCap = (env: Env) => {
-	const cap = Number.parseInt(env.DAILY_EDIT_CAP, 10);
-	return Number.isFinite(cap) && cap > 0 ? cap : 0;
+	const cap = Number(env.DAILY_EDIT_CAP);
+	return Number.isSafeInteger(cap) && cap > 0 ? cap : 0;
 };
+
+/** Bound reads even when a chunked request has no trustworthy Content-Length. */
+async function readRequest(request: Request) {
+	const reader = request.body?.getReader();
+	if (!reader) return '';
+	const decoder = new TextDecoder();
+	let size = 0;
+	let text = '';
+	try {
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) return text + decoder.decode();
+			size += value.byteLength;
+			if (size > MAX_REQUEST_BYTES) {
+				await reader.cancel();
+				return undefined;
+			}
+			text += decoder.decode(value, { stream: true });
+		}
+	} finally {
+		reader.releaseLock();
+	}
+}
 
 /** Plain text in a Markdown code span, so it can't format, link or @-mention anyone in a pull request. */
 const code = (text: string) => `\`${text.replace(/`/g, "'")}\``;
@@ -83,8 +106,8 @@ const commitMessage = (title: string, summary: string, name: string) =>
 export async function edit(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 	if (!isAllowedOrigin(request, env)) return error(403, 'origin_not_allowed');
 	if (Number(request.headers.get('Content-Length') ?? 0) > MAX_REQUEST_BYTES) return error(413, 'request_too_large');
-	const raw = await request.text();
-	if (new TextEncoder().encode(raw).length > MAX_REQUEST_BYTES) return error(413, 'request_too_large');
+	const raw = await readRequest(request);
+	if (raw === undefined) return error(413, 'request_too_large');
 	let input: Record<string, unknown>;
 	try {
 		input = JSON.parse(raw);

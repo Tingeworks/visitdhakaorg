@@ -252,6 +252,29 @@ describe('POST /api/edit: errors', () => {
 		assert.equal(off.status, 429);
 		assert.deepEqual(gh.calls, []);
 		assert.equal((await post(await anEdit(), {}, { ...env, DAILY_EDIT_CAP: 'oops' })).status, 429);
+		for (const cap of ['50oops', '1.5', 'Infinity', '-1']) {
+			assert.equal((await post(await anEdit(), {}, { ...env, DAILY_EDIT_CAP: cap })).status, 429);
+		}
+		assert.deepEqual(gh.calls, []);
+	});
+
+	test('cancels an oversized chunked request before consuming its remaining body', async () => {
+		let reads = 0;
+		let cancelled = false;
+		const stream = new ReadableStream({
+			pull(controller) {
+				reads++;
+				controller.enqueue(new Uint8Array(100_001));
+			},
+			cancel() { cancelled = true; },
+		}, { highWaterMark: 0 });
+		const request = new Request('https://visitdhaka.org/api/edit', {
+			method: 'POST', body: stream, duplex: 'half',
+		} as RequestInit);
+		assert.equal((await worker.fetch(request, env, ctx)).status, 413);
+		assert.equal(reads, 2);
+		assert.equal(cancelled, true);
+		assert.deepEqual(gh.calls, []);
 	});
 
 	test('counts the day from midnight in Dhaka, not UTC', () => {
