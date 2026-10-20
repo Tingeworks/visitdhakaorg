@@ -25,7 +25,7 @@ The site is new, and some pages haven't been through an editor's check yet. Alwa
 
 If something is wrong or out of date:
 
-- use the **Edit page** link at the bottom of the page to suggest a fix on GitHub, or
+- use the **Edit page** link at the bottom of the page to suggest a fix, or
 - email [team@tingeworks.com](mailto:team@tingeworks.com) with the page address and what needs changing
 
 Editors review every correction. We fix confirmed mistakes as quickly as we can.

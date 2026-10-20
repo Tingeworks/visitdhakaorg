@@ -155,7 +155,7 @@ Before launch, also decide whether the tag pages (`/tags/` and `/tags/<tag>/`) s
 - [x] Add a privacy policy, cookie notice and "About / who runs this" page (E-E-A-T, since travel-safety info is close to YMYL)
 - [ ] Check that Google signals is off in GA4 (Admin → Data collection and modification → Data collection), as `/privacy/` implies
 - [ ] Confirm privacy@tingeworks.com and team@tingeworks.com are monitored (they are the contact addresses on the about and legal pages)
-- [ ] Get a lawyer to review the about, privacy, terms and licence pages (including governing law and Bangladesh data protection rules), then set `verified: true`
+- [ ] Get a lawyer to review the about, privacy, terms and licence pages (including governing law, Bangladesh data protection rules, and the public-editing sections added in #17: anonymous contributors, Turnstile and takedown), then set `verified: true`
 - [x] Add analytics (Google Analytics 4 with a consent banner)
 - [ ] Remove the pre-launch `noindex` and `robots.txt`, then verify Search Console and Bing and submit the sitemap
 
