@@ -111,5 +111,13 @@
 	"references.title": "তথ্যসূত্র",
 	"references.sources": "সূত্র",
 	"references.accessed": "(যাচাই: {{date}})",
-	"references.backLabel": "{{n}} নম্বর উল্লেখে ফিরে যান"
+	"references.backLabel": "{{n}} নম্বর উল্লেখে ফিরে যান",
+
+	"tags.label": "ট্যাগ",
+	"tags.title": "ট্যাগ",
+	"tags.description": "ভিজিট ঢাকায় ব্যবহৃত সব ট্যাগ, প্রতিটির পাশে কতগুলো পাতায় আছে তার সংখ্যা।",
+	"tags.tagTitle": "ট্যাগ: “{{tag}}”",
+	"tags.tagDescription": "ভিজিট ঢাকার যেসব পাতায় “{{tag}}” ট্যাগ আছে।",
+	"tags.all": "সব ট্যাগ",
+	"backlinks.title": "যেসব পাতা এখানে লিংক করেছে"
 }

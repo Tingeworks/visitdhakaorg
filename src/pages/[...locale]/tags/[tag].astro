@@ -1,0 +1,30 @@
+---
+// The pages with one tag, at /tags/<tag>/ and /bn/tags/<tag>/, as cards with each page's own title and description.
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import CardGrid from '../../../components/home/CardGrid.astro';
+import HomeCard from '../../../components/home/HomeCard.astro';
+import { localizePath, translatedLocales } from '../../../lib/i18n';
+import { tagsFor, type Tag } from '../../../lib/tags';
+
+export const getStaticPaths = (async () => {
+	const paths = [];
+	for (const locale of [undefined, ...translatedLocales]) {
+		for (const tag of await tagsFor(locale, locale ?? 'en')) paths.push({ params: { locale, tag: tag.slug }, props: { tag } });
+	}
+	return paths;
+}) satisfies GetStaticPaths;
+
+const { tag } = Astro.props as { tag: Tag };
+const { locale } = Astro.params;
+const { t } = Astro.locals;
+---
+
+<StarlightPage
+	frontmatter={{ title: t('tags.tagTitle', { tag: tag.label }), description: t('tags.tagDescription', { tag: tag.label }) }}
+>
+	<p><a href={localizePath('/tags/', locale)}>{t('tags.all')}</a></p>
+	<CardGrid columns={2}>
+		{tag.pages.map((page) => <HomeCard href={page.href} title={page.data.title} description={page.data.description} />)}
+	</CardGrid>
+</StarlightPage>

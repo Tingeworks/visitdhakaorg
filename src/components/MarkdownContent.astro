@@ -1,10 +1,13 @@
 ---
-// Starlight's page content, with the page's infobox first so it can float beside the text.
+// Starlight's page content, with the page's infobox first so it can float beside the text, and its tags and the pages
+// that link to it last.
 import Default from '@astrojs/starlight/components/MarkdownContent.astro';
 import Infobox from './Infobox.astro';
+import PageLinks from './PageLinks.astro';
 ---
 
 <Default {...Astro.props}>
 	<Infobox />
 	<slot />
+	<PageLinks />
 </Default>

@@ -1,0 +1,105 @@
+---
+// The bottom of a page, Wikipedia style: its tags as links to the tag pages (like Wikipedia's category bar), then a
+// collapsed list of the pages that link to it. Either part is left out when empty, and splash homepages show neither.
+import { backlinksTo } from '../lib/backlinks';
+import { localeOf, localizePath, unlocalizePath } from '../lib/i18n';
+import { tagHref } from '../lib/tags';
+
+const route = Astro.locals.starlightRoute;
+const locale = localeOf(Astro.url);
+const slug = unlocalizePath(Astro.url.pathname).replace(/^\/|\/$/g, '');
+const isSplash = route.entry.data.template === 'splash';
+const tags = isSplash ? [] : route.entry.data.tags;
+const backlinks = isSplash ? [] : await backlinksTo(slug, locale);
+---
+
+{
+	(tags.length > 0 || backlinks.length > 0) && (
+		<div class="page-links not-content">
+			{tags.length > 0 && (
+				<div class="tags">
+					<a href={localizePath('/tags/', locale)} class="label">
+						{Astro.locals.t('tags.label')}
+					</a>
+					:{' '}
+					<ul class="list">
+						{tags.map((tag) => (
+							<li>
+								<a href={tagHref(tag, locale)}>{tag}</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+			{backlinks.length > 0 && (
+				<details>
+					<summary>
+						{Astro.locals.t('backlinks.title')} ({backlinks.length})
+					</summary>
+					<ul>
+						{backlinks.map((page) => (
+							<li>
+								<a href={page.href}>{page.data.title}</a>
+							</li>
+						))}
+					</ul>
+				</details>
+			)}
+		</div>
+	)
+}
+
+<style>
+	.page-links {
+		clear: both;
+		margin-top: 2rem;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: var(--vd-radius-md);
+		font-size: var(--sl-text-sm);
+	}
+
+	.page-links > * {
+		margin: 0;
+		padding: 0.625rem 1rem;
+	}
+
+	.page-links > * + * {
+		border-top: 1px solid var(--sl-color-hairline);
+	}
+
+	.label,
+	summary {
+		color: var(--sl-color-white);
+		font-weight: 600;
+	}
+
+	.list {
+		display: inline;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.list li {
+		display: inline;
+	}
+
+	.list li + li::before {
+		/* A separator that screen readers skip. */
+		content: ' · ' / '';
+		color: var(--sl-color-gray-3);
+	}
+
+	summary {
+		cursor: pointer;
+	}
+
+	details ul {
+		margin: 0.5rem 0 0;
+		padding-inline-start: 1.25rem;
+	}
+
+	a {
+		color: var(--sl-color-text-accent);
+	}
+</style>

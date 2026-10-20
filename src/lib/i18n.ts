@@ -24,7 +24,7 @@ export function unlocalizePath(path: string) {
 
 const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, '').replace(/\/?index$/, '');
 
-export type LocalizedPage = { slug: string; href: string; data: CollectionEntry<'docs'>['data'] };
+export type LocalizedPage = { slug: string; href: string; data: CollectionEntry<'docs'>['data']; body?: string };
 
 /**
  * Every docs page for `locale`, keyed by its English slug (`food/fuchka`). Uses the translation where there is one and
@@ -45,5 +45,6 @@ export async function localizedPages(locale: string | undefined): Promise<Locali
 		slug,
 		href: localizePath(slug ? `/${slug}/` : '/', locale),
 		data: entry.data,
+		body: entry.body,
 	}));
 }

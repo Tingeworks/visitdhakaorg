@@ -2,8 +2,10 @@
 // Starlight's page title, followed by a notice on pages an editor hasn't fact-checked yet (`verified: false`).
 // The notice only appears on pages inside a pillar folder (src/content/docs/<pillar>/ or docs/bn/<pillar>/), overviews
 // included. Top-level pages never show it: about, privacy, terms and licence are `verified: false` while they wait for
-// legal review, which is a different kind of check. Splash homepages render a hero instead of this title, and routes
-// outside the docs collection (such as /whats-on/) have no source file, so neither shows it either.
+// legal review, which is a different kind of check. Splash homepages render a hero instead of this title. Routes outside
+// the docs collection (/whats-on/, /tags/...) don't show it either: StarlightPage gives them a made-up file path under
+// src/content/docs/, so the file is checked to exist.
+import { existsSync } from 'node:fs';
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import { Icon } from '@astrojs/starlight/components';
 import { translatedLocales } from '../lib/i18n';
@@ -11,7 +13,7 @@ import { translatedLocales } from '../lib/i18n';
 const route = Astro.locals.starlightRoute;
 const [first, ...rest] = (route.entry.filePath ?? '').replace(/^src\/content\/docs\//, '').split('/');
 const inPillar = (translatedLocales.includes(first) ? rest : [first, ...rest]).length > 1;
-const showNotice = inPillar && !route.entry.data.verified;
+const showNotice = inPillar && !route.entry.data.verified && existsSync(route.entry.filePath);
 ---
 
 <Default {...Astro.props} />
