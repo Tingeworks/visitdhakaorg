@@ -136,6 +136,16 @@ export default defineConfig({
 					translations: { bn: 'ভ্রমণ পরিকল্পনা' },
 					items: [{ label: 'Practical Info', translations: { bn: 'প্রয়োজনীয় তথ্য' }, collapsed: true, items: [{ autogenerate: { directory: 'practical-info' } }] }],
 				},
+				// Wiki pages built from the whole site rather than one pillar (src/pages/[...locale]/).
+				{
+					label: 'Wiki',
+					translations: { bn: 'উইকি' },
+					items: [
+						{ label: 'Random page', translations: { bn: 'যেকোনো একটি পাতা' }, link: '/random/' },
+						{ label: 'Recent changes', translations: { bn: 'সাম্প্রতিক পরিবর্তন' }, link: '/recent-changes/' },
+						{ label: 'Tags', translations: { bn: 'ট্যাগ' }, link: '/tags/' },
+					],
+				},
 			],
 		}),
 	],
