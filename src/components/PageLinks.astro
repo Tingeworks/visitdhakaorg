@@ -1,6 +1,8 @@
 ---
-// The bottom of a page, Wikipedia style: its tags as links to the tag pages (like Wikipedia's category bar), then a
-// collapsed list of the pages that link to it. Either part is left out when empty, and splash homepages show neither.
+// The bottom of a page, Wikipedia style: its tags as links to the tag pages (like Wikipedia's category bar), the people
+// credited in its `contributors` frontmatter, then a collapsed list of the pages that link to it. Each part is left out
+// when empty, and splash homepages show none of them. Contributor names are unverified (decision 0003), so they're
+// plain text with no links, listed once each, and capped.
 import { backlinksTo } from '../lib/backlinks';
 import { localeOf, localizePath, unlocalizePath } from '../lib/i18n';
 import { tagHref } from '../lib/tags';
@@ -11,10 +13,25 @@ const slug = unlocalizePath(Astro.url.pathname).replace(/^\/|\/$/g, '');
 const isSplash = route.entry.data.template === 'splash';
 const tags = isSplash ? [] : route.entry.data.tags;
 const backlinks = isSplash ? [] : await backlinksTo(slug, locale);
+
+const maxContributors = 20;
+const lang = locale === 'bn' ? 'bn-BD' : 'en-GB';
+const seen = new Set<string>();
+const contributors = (isSplash ? [] : (route.entry.data.contributors ?? []))
+	.map((name) => name.trim())
+	.filter((name) => name && !seen.has(name.toLowerCase()) && seen.add(name.toLowerCase()))
+	// Public edits with no name are credited as "Anonymous" in English, so show it in the page's language.
+	.map((name) => (name.toLowerCase() === 'anonymous' ? Astro.locals.t('contributors.anonymous') : name));
+const shown = contributors.slice(0, maxContributors);
+const others = contributors.length - shown.length;
+const contributorText =
+	others > 0
+		? shown.join(', ') + ' ' + Astro.locals.t('contributors.more', { n: new Intl.NumberFormat(lang).format(others) })
+		: new Intl.ListFormat(lang, { type: 'conjunction' }).format(shown);
 ---
 
 {
-	(tags.length > 0 || backlinks.length > 0) && (
+	(tags.length > 0 || contributors.length > 0 || backlinks.length > 0) && (
 		<div class="page-links not-content">
 			{tags.length > 0 && (
 				<div class="tags">
@@ -30,6 +47,11 @@ const backlinks = isSplash ? [] : await backlinksTo(slug, locale);
 						))}
 					</ul>
 				</div>
+			)}
+			{contributors.length > 0 && (
+				<p class="contributors">
+					<span class="label">{Astro.locals.t('contributors.label')}</span>: {contributorText}
+				</p>
 			)}
 			{backlinks.length > 0 && (
 				<details>

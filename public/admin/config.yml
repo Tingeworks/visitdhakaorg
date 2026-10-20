@@ -65,6 +65,12 @@ collections:
           - { name: title, label: Title, widget: string }
           - { name: url, label: Link, widget: string, type: url }
           - { name: accessed, label: Date checked, widget: datetime, required: false, time_format: false, format: YYYY-MM-DD }
+      - &contributors-field
+        name: contributors
+        label: Contributors
+        widget: list
+        required: false
+        hint: Names credited under the page, shown as plain text. Public edits add their contributor's name automatically. Names are unverified, so remove any that are offensive or impersonate someone.
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -115,6 +121,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -187,6 +194,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -236,6 +244,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -280,6 +289,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -328,6 +338,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -377,6 +388,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -414,6 +426,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -467,6 +480,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -529,6 +543,7 @@ collections:
           - { name: label, label: Label, widget: string, required: false }
           - { name: order, label: Order, widget: number, value_type: int, required: false }
       - *sources-field
+      - *contributors-field
       - name: verified
         label: Fact-checked by an editor
         widget: boolean
@@ -554,6 +569,7 @@ collections:
             widget: text
             hint: One or two sentences. Used in search results and link previews.
           - *sources-field
+          - *contributors-field
           - name: verified
             label: Checked
             widget: boolean
