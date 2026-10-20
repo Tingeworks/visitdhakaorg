@@ -45,7 +45,27 @@ The existing site (Astro + Starlight, `wrangler.jsonc` at the root, static asset
 | `turnstile` | Token, verified server side on every request. |
 | `licence` | Must be true. Text: contributions are released under CC BY-SA 4.0. |
 
-`GET /api/source?path=...` returns `{ ok, path, sha, title, body }`: the current body and blob SHA for the editor. Responses are cached at the edge for 60 seconds to avoid spending GitHub API calls on reads. `GET /api/health` says whether the Worker can mint a GitHub token, and never returns a secret. Errors are always `{ ok: false, errors: [{ code, field? }] }`. Any other path under `/api/` returns 404.
+`GET /api/source?path=...` returns `{ ok, path, sha, title, body, pending }`: the current body and blob SHA for the editor. When the page already has a public edit waiting for review, it returns that edit's branch version instead, with `pending: { prUrl }`, so the next edit builds on it and joins the same pull request (like Wikipedia's pending changes). Otherwise `pending` is `null`. Responses are cached at the edge for 60 seconds to avoid spending GitHub API calls on reads. `GET /api/health` says whether the Worker can mint a GitHub token, and never returns a secret. Errors are always `{ ok: false, errors: [{ code, field? }] }`. Any other path under `/api/` returns 404.
+
+### Responses from `POST /api/edit`
+
+Checks run in this order, and nothing is written to GitHub until all of them pass.
+
+| Status | Code (`errors[].code`) | Meaning |
+| :--- | :--- | :--- |
+| 201 | | New pull request: `{ ok, prUrl, prNumber, updated: false }` |
+| 200 | | Added to the page's open pull request: `{ ok, prUrl, prNumber, updated: true }` |
+| 400 | `invalid_json` | The request isn't a JSON object |
+| 403 | `origin_not_allowed`, `turnstile_failed` | Wrong origin, or Turnstile rejected the token |
+| 404 | `not_found` | The page doesn't exist |
+| 409 | `stale` | The page changed since the editor loaded it. Reload and edit again |
+| 409 | `conflict` | Another edit to the same page started at the same moment. Try again |
+| 413 | `request_too_large` | Over 200 KB |
+| 422 | Field codes from `worker/src/validate.ts`, plus `licence_required`, `base_sha_invalid`, `no_change` | Every invalid field is listed, each with its `field` |
+| 429 | `daily_cap_reached` | The site-wide daily cap is reached, or editing is turned off (`DAILY_EDIT_CAP=0`) |
+| 503 | `not_configured` | A secret or variable is missing (#10) |
+
+Each page has one branch, `edit/<path in the docs folder>`, such as `edit/bn/attractions/lalbagh-fort`. A first edit costs 8 GitHub API calls and a second edit to the same page 6, plus one Turnstile check and an installation token about once an hour.
 
 ## Validation and abuse controls
 

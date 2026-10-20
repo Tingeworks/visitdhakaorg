@@ -79,14 +79,17 @@ describe('GET /api/source', () => {
 			sha: 'abc123',
 			title: 'লালবাগ কেল্লা',
 			body: '\nলালবাগ কেল্লা পুরান ঢাকার একটি মুঘল দুর্গ।\n',
+			pending: null,
 		});
+		// First it checks for a pending edit branch, then reads the page from main.
+		assert.match(calls[0].url, /\/git\/ref\/heads\/edit\/bn\/attractions\/lalbagh-fort$/);
 		assert.equal(
-			calls[0].url,
+			calls[1].url,
 			'https://api.github.com/repos/Tingeworks/visitdhakaorg/contents/src/content/docs/bn/attractions/lalbagh-fort.md?ref=main',
 		);
-		assert.equal(calls[0].headers.get('User-Agent'), 'visitdhaka-edit-worker');
+		assert.equal(calls[1].headers.get('User-Agent'), 'visitdhaka-edit-worker');
 		// Development without app credentials reads the public repo without signing in.
-		assert.equal(calls[0].headers.get('Authorization'), null);
+		assert.equal(calls[1].headers.get('Authorization'), null);
 	});
 
 	test('reads as the app when it has credentials', async () => {
