@@ -16,7 +16,7 @@ const { locale } = Astro.params;
 const { t } = Astro.locals;
 const enabled = editorEnabled && Boolean(turnstileSiteKey);
 
-// Text the script shows, in this page's language. `<` is escaped so no string can close the <script> element.
+// Escape opening angle brackets so translated text cannot close the JSON script element.
 const messageKeys = [
 	'edit.editing',
 	'edit.loadFailed',
