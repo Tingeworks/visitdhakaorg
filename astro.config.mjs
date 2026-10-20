@@ -62,6 +62,8 @@ export default defineConfig({
 				Header: './src/components/Header.astro',
 				// Adds the fluted glass effect to the homepage hero photo.
 				Hero: './src/components/Hero.astro',
+				// Adds the infobox of key facts from the page's frontmatter (src/components/Infobox.astro).
+				MarkdownContent: './src/components/MarkdownContent.astro',
 				PageFrame: './src/components/PageFrame.astro',
 				// Light by default, with no "auto" mode. Dark mode is switched on only from the accessibility menu.
 				ThemeProvider: './src/components/ThemeProvider.astro',
