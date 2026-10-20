@@ -31,7 +31,7 @@ Uses pnpm. There is no test runner or linter configured.
 - **About and legal pages:** `about.md`, `privacy.md`, `terms.md` and `licence.md` sit at the top of `src/content/docs/`, linked from the footer, not the sidebar. They are a file collection ("About & legal") in the CMS. The privacy policy lists every cookie, storage key and third-party service, so update it when any of those change. Content is CC BY-SA 4.0 and code is MIT (`LICENSE`, `LICENSE-CONTENT.md`).
 - **Pages outside Starlight:** files in `src/pages/` (such as `admin/`) are plain Astro routes that bypass Starlight's layout.
 
-- **Deploy:** Cloudflare builds with `pnpm run build`, then runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads `dist/` as static assets. The site is fully static, so don't add `@astrojs/cloudflare` or `wrangler` as a dependency. Without `wrangler.jsonc`, wrangler tries to auto-configure the project and the deploy fails.
+- **Deploy:** Cloudflare builds with `pnpm run build`, then runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads `dist/` as static assets. The site is fully static, so don't add `@astrojs/cloudflare` or `wrangler` as a dependency. Without `wrangler.jsonc`, wrangler tries to auto-configure the project and the deploy fails. Pages show a "Last updated" date read from git (`lastUpdated` in `astro.config.mjs`, with a "View history" link from `src/components/LastUpdated.astro`), so builds need full git history. When `WORKERS_CI` is set and the clone is shallow, `astro.config.mjs` runs `git fetch --unshallow` before building, so the Cloudflare build command doesn't need to change.
 
 ## Infrastructure decisions
 

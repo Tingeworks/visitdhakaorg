@@ -1,10 +1,25 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
+import { execFileSync } from 'node:child_process';
 import starlight from '@astrojs/starlight';
 import { satteri } from '@astrojs/markdown-satteri';
 import references from './src/lib/references.mjs';
 import en from './src/content/i18n/en.json' with { type: 'json' };
 import bn from './src/content/i18n/bn.json' with { type: 'json' };
+
+// "Last updated" dates come from git history. If Cloudflare's Workers Builds (which sets WORKERS_CI) cloned the repo
+// shallowly, every page would show the same date, so fetch the full history first. Does nothing anywhere else.
+if (process.env.WORKERS_CI) {
+	const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+	try {
+		if (git('rev-parse', '--is-shallow-repository') === 'true') {
+			console.log('Shallow clone: fetching full git history for "Last updated" dates.');
+			git('fetch', '--unshallow');
+		}
+	} catch (error) {
+		console.warn(`Couldn't fetch full git history, so "Last updated" dates may be wrong: ${error.message}`);
+	}
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -60,6 +75,8 @@ export default defineConfig({
 			],
 			// "Edit page" link on every docs page: readers propose changes as GitHub pull requests.
 			editLink: { baseUrl: 'https://github.com/Tingeworks/visitdhakaorg/edit/main/' },
+			// "Last updated" date from git on every page, with a "View history" link (src/components/LastUpdated.astro).
+			lastUpdated: true,
 			// Navbar logo, in place of the site title text: public/favicon-long.svg with its viewBox cropped to the artwork, so
 			// there is no empty margin around it. It's a separate copy, so recreate it whenever favicon-long.svg changes.
 			// The title is still in the link for screen readers, so the image has empty alt.
@@ -71,6 +88,7 @@ export default defineConfig({
 				// Loads Google Tag Manager once the visitor has agreed to analytics cookies.
 				Head: './src/components/Head.astro',
 				Header: './src/components/Header.astro',
+				LastUpdated: './src/components/LastUpdated.astro',
 				// Adds the fluted glass effect to the homepage hero photo.
 				Hero: './src/components/Hero.astro',
 				// Adds the infobox of key facts from the page's frontmatter (src/components/Infobox.astro).

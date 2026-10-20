@@ -48,6 +48,8 @@
 	"infobox.location": "Location",
 	"infobox.openMap": "Open in map",
 
+	"page.history": "View history",
+
 	"consent.title": "Can we use analytics cookies?",
 	"consent.text": "We'd like to use Google Analytics to see which pages visitors find useful. It sets cookies and sends details of your visit to Google, so it stays off unless you agree. You can change your mind at any time from “Cookie settings” at the bottom of every page.",
 	"consent.privacy": "Read the privacy policy",
