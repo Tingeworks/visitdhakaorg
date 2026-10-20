@@ -86,6 +86,8 @@ export default defineConfig({
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				// Loads Google Tag Manager once the visitor has agreed to analytics cookies.
+				// Adds a "Talk" link to the page's GitHub Discussions next to "Edit page".
+				EditLink: './src/components/EditLink.astro',
 				Head: './src/components/Head.astro',
 				Header: './src/components/Header.astro',
 				LastUpdated: './src/components/LastUpdated.astro',

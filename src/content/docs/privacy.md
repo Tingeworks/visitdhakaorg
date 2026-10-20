@@ -82,6 +82,8 @@ Anyone can suggest a change to a page with the "Edit page" link, which opens the
 
 If you contribute, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub. They stay there after your changes are published, because the history is how the site credits contributors and tracks where information came from. The name on each published change, its date and its description are also listed on the site's [Recent changes](/recent-changes/) page. GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
+Each page also has a "Talk" link to discussions about it on [GitHub Discussions](https://github.com/Tingeworks/visitdhakaorg/discussions). Taking part needs a GitHub account, and what you post, your GitHub username and the time are public on GitHub. The site only links there: nothing from GitHub loads on our pages until you follow the link.
+
 If you email us, we use your email only to reply and keep it only as long as the conversation needs.
 
 ## Links to other sites
