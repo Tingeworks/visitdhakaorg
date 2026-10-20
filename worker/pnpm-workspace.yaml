@@ -3,3 +3,7 @@
 # root workspace.
 packages:
   - .
+# Wrangler needs these install scripts: esbuild bundles the Worker and workerd is the local runtime for `wrangler dev`.
+allowBuilds:
+  esbuild: true
+  workerd: true

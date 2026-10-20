@@ -19,3 +19,8 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# edit Worker local settings and secrets (see worker/.dev.vars.example)
+worker/.dev.vars
+worker/.wrangler/
+worker/worker-configuration.d.ts
