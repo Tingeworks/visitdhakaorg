@@ -37,7 +37,15 @@ export async function identify(request: Request, env: Env, input: { name?: unkno
 
 /**
  * The commit author for an edit. Anonymous edits always use the placeholder email, never one the contributor typed,
- * because GitHub links commit emails to accounts (decision 0003). Signed-in edits will use a pseudonymous
- * `user-<id>@visitdhaka.org` address here, never the person's real email (decision 0006).
+ * because GitHub links commit emails to accounts (decision 0003). Signed-in edits use the pseudonymous
+ * `user-<id>@visitdhaka.org`, which links one account's edits without anything from its Google account (decision 0006).
+ * Contributor profile pages are built from these addresses (#62).
  */
-export const authorFor = (identity: Identity) => ({ name: identity.name, email: 'anonymous@visitdhaka.org' });
+export const authorFor = (identity: Identity) => ({
+	name: identity.name,
+	email: identity.kind === 'user' ? `user-${identity.id}@visitdhaka.org` : 'anonymous@visitdhaka.org',
+});
+
+/** How an edit's contributor is described in the commit and the pull request: `<name> (account <id>)` or `<name> (unverified)`. */
+export const creditFor = (identity: Identity) =>
+	identity.kind === 'user' ? { name: identity.name, note: `(account ${identity.id})` } : { name: identity.name, note: '(unverified)' };

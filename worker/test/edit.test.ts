@@ -4,7 +4,10 @@ import worker from '../src/index.ts';
 import { clearTokenCache } from '../src/github.ts';
 import { FakeGitHub, blobSha } from './fake-github.ts';
 import { dhakaDayStart } from '../src/pages.ts';
-import { pem, testEnv } from './helpers.ts';
+import { pem, signInEnv, testEnv } from './helpers.ts';
+import { FakeD1 } from './fake-d1.ts';
+import { SESSION_COOKIE, seal } from '../src/session.ts';
+import { banUser, createUser, deleteUser, unbanUser } from '../src/users.ts';
 import type { Env } from '../src/env.ts';
 
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} } as unknown as ExecutionContext;
@@ -320,5 +323,85 @@ describe('POST /api/edit: errors', () => {
 		const response = await post(await anEdit(), {}, { ...env, TURNSTILE_SECRET_KEY: undefined });
 		assert.equal(response.status, 503);
 		assert.deepEqual(await response.json(), { ok: false, errors: [{ code: 'not_configured' }] });
+	});
+});
+
+describe('POST /api/edit: signed-in edits', () => {
+	let d1: FakeD1;
+	let signedIn: Env;
+	let cookie: string;
+	let id: number;
+	beforeEach(async () => {
+		d1 = new FakeD1();
+		signedIn = signInEnv(d1.binding, {
+			GITHUB_APP_ID: '12345',
+			GITHUB_INSTALLATION_ID: '678',
+			GITHUB_APP_PRIVATE_KEY: pem,
+			TURNSTILE_SECRET_KEY: 'secret',
+		});
+		({ id } = await createUser(d1.binding, { sub: '110248495921238986420', name: 'রহিম' }));
+		cookie = `__Host-session=${await seal(signedIn, SESSION_COOKIE, { uid: id }, 3600)}`;
+	});
+
+	test('credits the account: pseudonymous author email, Edited-by line and contributors entry', async () => {
+		const response = await post(await anEdit({ name: 'Someone Else' }), { Cookie: cookie }, signedIn);
+		assert.equal(response.status, 201);
+
+		const commit = gh.commits.get(gh.branches.get('edit/attractions/lalbagh-fort')!)!;
+		assert.deepEqual(commit.author, { name: 'রহিম', email: `user-${id}@visitdhaka.org` });
+		assert.equal(commit.message, `Edit: Lalbagh Fort\n\nMention that it was never finished\n\nEdited-by: রহিম (account ${id})`);
+		const file = gh.filesOn('edit/attractions/lalbagh-fort').get(path)!;
+		assert.match(file, /contributors:\n {2}- রহিম\n---/);
+		assert.ok(!file.includes('Someone Else'), 'a signed-in edit ignores the name in the request');
+		assert.match(gh.pulls[0].body, new RegExp(`\\| Contributor \\| \`রহিম\` \\(account ${id}\\) \\|`));
+	});
+
+	test('leaves nothing from the Google account in the commit, branch or pull request', async () => {
+		await post(await anEdit(), { Cookie: cookie }, signedIn);
+		const commit = gh.commits.get(gh.branches.get('edit/attractions/lalbagh-fort')!)!;
+		const everything = JSON.stringify({ commit, branches: [...gh.branches.keys()], pulls: gh.pulls, comments: gh.comments });
+		assert.ok(!everything.includes('110248495921238986420'));
+		assert.ok(!everything.includes('gmail'));
+	});
+
+	test('a second, signed-in edit to the same page is noted on the pull request with the account', async () => {
+		await post(await anEdit(), {}, signedIn);
+		const pending = await source();
+		const second = await post(
+			{ ...(await anEdit()), body: pending.body + '\nIt has a mosque.\n', baseSha: pending.sha },
+			{ Cookie: cookie },
+			signedIn,
+		);
+		assert.equal(second.status, 200);
+		assert.match(gh.comments[0].body, new RegExp(`by \`রহিম\` \\(account ${id}\\)\\.`));
+		const file = gh.filesOn('edit/attractions/lalbagh-fort').get(path)!;
+		assert.match(file, /contributors:\n {2}- Rahim\n {2}- রহিম\n/);
+	});
+
+	test('refuses a banned account with 403, without falling back to anonymous', async () => {
+		await banUser(d1.binding, id, 'spam');
+		const response = await post(await anEdit(), { Cookie: cookie }, signedIn);
+		assert.equal(response.status, 403);
+		assert.deepEqual(await response.json(), { ok: false, errors: [{ code: 'banned' }] });
+		assert.equal(gh.pulls.length, 0);
+		assert.deepEqual(gh.calls, [], 'nothing reaches GitHub');
+
+		await unbanUser(d1.binding, id);
+		assert.equal((await post(await anEdit(), { Cookie: cookie }, signedIn)).status, 201);
+	});
+
+	test('a deleted account\'s cookie edits anonymously, with the name typed', async () => {
+		await deleteUser(d1.binding, id);
+		assert.equal((await post(await anEdit(), { Cookie: cookie }, signedIn)).status, 201);
+		const commit = gh.commits.get(gh.branches.get('edit/attractions/lalbagh-fort')!)!;
+		assert.deepEqual(commit.author, { name: 'Rahim', email: 'anonymous@visitdhaka.org' });
+		assert.match(commit.message!, /Edited-by: Rahim \(unverified\)$/);
+	});
+
+	test('anonymous edits are unchanged while sign-in is on', async () => {
+		await post(await anEdit(), {}, signedIn);
+		const commit = gh.commits.get(gh.branches.get('edit/attractions/lalbagh-fort')!)!;
+		assert.deepEqual(commit.author, { name: 'Rahim', email: 'anonymous@visitdhaka.org' });
+		assert.match(gh.pulls[0].body, /\| Contributor \| `Rahim` \(unverified\) \|/);
 	});
 });
