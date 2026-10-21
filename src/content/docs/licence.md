@@ -40,6 +40,8 @@ The code that runs the site is available under the [MIT licence](https://opensou
 
 These photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are used under their own licences. Each has been resized and cropped for the site.
 
+- **National Martyrs' Memorial, Savar** (Victory Day): [Kritzolina](https://commons.wikimedia.org/wiki/File:Jatiyo_Smriti_Soudho,_November_2017_02.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Publishers' stalls at the Ekushey Book Fair** (Amar Ekushey Book Fair): [Kritzolina](https://commons.wikimedia.org/wiki/File:Ekushey_Book_Fair_2020_01.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Central Shaheed Minar** (International Mother Language Day): [Biswarup Ganguly](https://commons.wikimedia.org/wiki/File:Central_Shaheed_Minar_-_Dhaka_Medical_College_Campus_-_Dhaka_2015-05-31_2577.JPG), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 - **National Parliament House lit for Independence Day** (Independence Day): [Sajeeb Ahmed Photography](https://commons.wikimedia.org/wiki/File:National_Assembly_of_Bangladesh_on_Independence_Day_2015_(16761162098).jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
 - **Mangal Shobhajatra** (Pohela Boishakh): [Abidhasan00](https://commons.wikimedia.org/wiki/File:Mangal_Shobhajatra_in_Dhaka.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
