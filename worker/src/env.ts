@@ -20,6 +20,11 @@ export interface Env {
 	 * repo without signing in, so the Worker can be tried before the app exists. Never set in production.
 	 */
 	ENVIRONMENT?: string;
+	/**
+	 * Development only: where to send GitHub API calls instead of api.github.com, such as the fake GitHub server
+	 * (`pnpm fake-github`) for a local end-to-end run (#18). Ignored unless `ENVIRONMENT` is `development`.
+	 */
+	GITHUB_API_URL?: string;
 }
 
 export const isDevelopment = (env: Env) => env.ENVIRONMENT === 'development';

@@ -13,3 +13,6 @@ GITHUB_REPO=visitdhakaorg
 GITHUB_BASE_BRANCH=main
 DAILY_EDIT_CAP=50
 ALLOWED_ORIGIN=http://localhost:4321
+# For a local end-to-end run of the editor (#18): start `pnpm fake-github` and uncomment this. Edits then go to the fake
+# GitHub, which starts from the site's pages and forgets everything when it stops. Ignored outside development.
+# GITHUB_API_URL=http://localhost:8788

@@ -1,6 +1,6 @@
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { NotConfiguredError, appJwt, clearTokenCache, importPrivateKey, installationToken } from '../src/github.ts';
+import { NotConfiguredError, appJwt, clearTokenCache, github, importPrivateKey, installationToken } from '../src/github.ts';
 import { keyPair, pem, testEnv } from './helpers.ts';
 
 const fromBase64url = (part: string) => Buffer.from(part, 'base64url');
@@ -72,5 +72,29 @@ describe('installationToken', () => {
 
 	test('refuses to run without app credentials in production', async () => {
 		await assert.rejects(installationToken(testEnv()), NotConfiguredError);
+	});
+});
+
+describe('github', () => {
+	const urls: string[] = [];
+	const record = () => {
+		urls.length = 0;
+		globalThis.fetch = async (input, init) => {
+			urls.push(new Request(input, init).url);
+			return Response.json({});
+		};
+	};
+
+	test('sends calls to the GITHUB_API_URL override in development', async () => {
+		record();
+		await github(testEnv({ ENVIRONMENT: 'development', GITHUB_API_URL: 'http://localhost:8788/' }), '/repos/a/b');
+		assert.deepEqual(urls, ['http://localhost:8788/repos/a/b']);
+	});
+
+	test('ignores GITHUB_API_URL outside development', async () => {
+		record();
+		const env = testEnv({ GITHUB_API_URL: 'http://localhost:8788', GITHUB_APP_ID: '1', GITHUB_INSTALLATION_ID: '2', GITHUB_APP_PRIVATE_KEY: pem });
+		await github(env, '/repos/a/b');
+		assert.deepEqual(urls, ['https://api.github.com/app/installations/2/access_tokens', 'https://api.github.com/repos/a/b']);
 	});
 });

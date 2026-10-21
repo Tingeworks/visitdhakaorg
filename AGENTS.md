@@ -8,7 +8,7 @@ A Dhaka city wiki / tourist guide (visitdhaka.org) built with Astro and the Star
 
 ## Commands
 
-Uses pnpm. The site has no test runner or linter. The edit Worker in `worker/` is a separate pnpm project with its own checks, run from `worker/`: `pnpm install`, `pnpm test` (Node's built-in test runner, which runs the TypeScript directly), `pnpm check` (regenerates the Workers runtime types, which aren't committed, then type-checks) and `pnpm dev` (`wrangler dev`, after copying `.dev.vars.example` to `.dev.vars`).
+Uses pnpm. The site has no test runner or linter. The edit Worker in `worker/` is a separate pnpm project with its own checks, run from `worker/`: `pnpm install`, `pnpm test` (Node's built-in test runner, which runs the TypeScript directly), `pnpm check` (regenerates the Workers runtime types, which aren't committed, then type-checks) `pnpm dev` (`wrangler dev`, after copying `.dev.vars.example` to `.dev.vars`) and `pnpm fake-github` (an in-memory GitHub, seeded with the site's pages, for trying the whole editor locally: set `GITHUB_API_URL` in `.dev.vars` and start the site with `PUBLIC_EDITOR_ENABLED=true PUBLIC_EDIT_API_URL=http://localhost:8787`).
 
 - `pnpm build`: production build to `dist/` (also builds the Pagefind search index). This is the main verification step.
 - `pnpm preview`: serve the built site.

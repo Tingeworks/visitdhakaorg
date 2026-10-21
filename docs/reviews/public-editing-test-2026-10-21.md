@@ -21,6 +21,23 @@ These were checked on production without submitting an edit:
 - **Settings** are listed in the [architecture](../architecture/open-editing.md#settings): Workers Builds, the rate
   limiting rule, branch protection and merge methods.
 
+## Local end-to-end run (21 October 2026)
+
+The whole flow was run locally before the real edits: the site's editor (`PUBLIC_EDITOR_ENABLED=true`), the Worker
+under `wrangler dev`, Cloudflare's always-pass Turnstile test keys and the fake GitHub (`pnpm fake-github` in
+`worker/`, which starts from the site's pages). Each edit went through "Edit page" in a browser. This covers the
+code paths; the real edits below still check GitHub, deploys, credit and the live limits.
+
+| Edit | Result |
+| :--- | :--- |
+| 1. First English edit (Fuchka) | Opened fake PR #1 from `edit/food/fuchka`, labelled `public-edit`. Author `Test Editor <anonymous@visitdhaka.org>`, message ending with `Edited-by: Test Editor (unverified)`, `contributors: [Test Editor]` and `verified: false` added, nothing else in the frontmatter changed. 8 GitHub calls |
+| 2. Repeat edit to the same page | The editor showed the pending-edit notice and loaded the version with edit 1. Added a commit to PR #1 and a comment crediting `Second Tester`. `contributors` lists both names |
+| 3. Bangla edit (`/bn/food/fuchka/`) | Opened PR #2 from `edit/bn/food/fuchka`, titled `Edit: ফুচকা`. The Bangla name, summary and text are intact in the commit, frontmatter and pull request. The editor used Bangla text and `lang="bn"` |
+| 4. External link added, no name | PR #3 labelled `public-edit` and `links-added`, with the link-check note. Credited to `Anonymous` |
+| 5. Stale edit from a second tab | Refused with the "page changed" message and a reload button, keeping the reader's text. Reloading showed the pending version from the first tab |
+| Daily cap at `0` | 429 with "try again tomorrow" and no GitHub calls |
+| Failed Turnstile (always-fail test secret) | Refused with "The security check didn't work" next to the check |
+
 ## Before you start
 
 - **Bangla page:** `/bn/food/fuchka/` is translated (#43), and its "Edit page" opens the Bangla editor. Use it for
