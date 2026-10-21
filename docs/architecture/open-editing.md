@@ -71,6 +71,34 @@ Checks run in this order, and nothing is written to GitHub until all of them pas
 
 Each page has one branch, `edit/<path in the docs folder>`, such as `edit/bn/attractions/lalbagh-fort`. A first edit costs 8 GitHub API calls and a second edit to the same page 6, plus one Turnstile check and an installation token about once an hour.
 
+### Sign-in
+
+Optional Google sign-in (0006, #57) is a server-side OpenID Connect redirect with PKCE, in `worker/src/auth.ts`. Nothing
+loads from Google until someone follows "Sign in with Google".
+
+| Route | What it does |
+| :--- | :--- |
+| `GET /api/auth/login?return=<path>` | Sends the browser to Google with `scope=openid profile`. `state`, `nonce`, the PKCE verifier and the return path (a same-site path, never a full URL) go in a signed 10-minute `__Host-signin` cookie |
+| `GET /api/auth/callback` | Checks `state`, exchanges the code with the verifier, and checks the ID token's `iss`, `aud`, `exp` and `nonce`. An existing account gets a session. A new one gets a signed 10-minute `__Host-signup` cookie holding only Google's `sub`, and no account is made until it chooses a name |
+| `POST /api/auth/name` | `{ name }`: creates the account from the sign-up cookie and signs it in, or renames the signed-in account. Same rules as the anonymous name, but required and never an email address |
+| `POST /api/auth/logout` | Clears the session |
+| `GET /api/auth/me` | `{ ok, user: { id, name } \| null }`, plus `pendingName: true` between Google and choosing a name. Never cached |
+
+Every route returns 403 `sign_in_disabled` unless `SIGN_IN_ENABLED` is `true`, and 503 `not_configured` while a secret
+or the database is missing. Callback failures are 400 `sign_in_expired`, `state_invalid`, `code_invalid` or
+`token_invalid`, and 502 `google_error`.
+
+The session is `__Host-session` (`HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, 30 days), holding only the user ID and
+its expiry, signed with HMAC-SHA256 from `SESSION_SECRET`. There's no session table: `identify()` in
+`worker/src/identity.ts`, the only code that reads the cookie, reads the account's row on every request, so a ban or a
+deleted account takes effect at once. While sign-in is off, sessions are ignored and every edit is anonymous. The ID
+token comes straight from Google's token endpoint over TLS, so its signature isn't checked again, as OpenID Connect
+allows.
+
+To try it locally, put the client ID and secret, a session secret and `SIGN_IN_ENABLED=true` in `worker/.dev.vars`,
+apply the migrations with `--local`, and sign in on `http://localhost:8787`. `__Host-` cookies need a secure context,
+which Chrome and Firefox give `localhost` and Safari doesn't.
+
 ### The editor
 
 The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than a dialog. Article pages load no extra JavaScript, Turnstile loads only when someone opens the editor, and phones get a full-width form. It's a plain `<textarea>` with no preview, which keeps it light and avoids rendering untrusted Markdown in the browser. It's switched on by site build variables, set on the existing site project in Cloudflare (or in `.env` locally):
