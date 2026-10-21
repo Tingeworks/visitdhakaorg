@@ -1,23 +1,32 @@
 ---
 // One homepage segment: eyebrow, heading, intro and "see all" links, with the section's cards in the slot.
 // `not-content` opts out of Starlight's Markdown styles, which the homepage MDX would otherwise apply.
+// An optional `image` sits to the left of the heading, such as the rickshaw beside Dhaka Now. It's decorative, so it has
+// empty alt text, and Astro resizes it to WebP at build time.
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
 interface Props {
 	id: string;
 	title: string;
 	eyebrow?: string;
 	intro?: string;
 	links?: { label: string; href: string; external?: boolean }[];
+	image?: ImageMetadata;
 }
 
-const { id, title, eyebrow, intro, links = [] } = Astro.props;
+const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 ---
 
 <section class="home-section not-content" aria-labelledby={`${id}-title`}>
 	<div class="head">
-		<div class="copy">
-			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
-			<h2 id={`${id}-title`}>{title}</h2>
-			{intro && <p class="intro">{intro}</p>}
+		<div class="lead">
+			{image && <Image src={image} alt="" class="art" widths={[96, 176, 192, 352]} sizes="(min-width: 50em) 176px, 96px" />}
+			<div class="copy">
+				{eyebrow && <p class="eyebrow">{eyebrow}</p>}
+				<h2 id={`${id}-title`}>{title}</h2>
+				{intro && <p class="intro">{intro}</p>}
+			</div>
 		</div>
 		{
 			links.length > 0 && (
@@ -63,6 +72,24 @@ const { id, title, eyebrow, intro, links = [] } = Astro.props;
 		justify-content: space-between;
 		gap: 1.25rem 2rem;
 		margin-bottom: 2rem;
+	}
+	.lead {
+		display: flex;
+		align-items: flex-end;
+		gap: 1rem;
+	}
+	.art {
+		flex: none;
+		width: 6rem;
+		height: auto;
+	}
+	@media (min-width: 50em) {
+		.lead {
+			gap: 1.75rem;
+		}
+		.art {
+			width: 11rem;
+		}
 	}
 	.copy {
 		max-width: 42rem;
