@@ -21,7 +21,7 @@ const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 <section class="home-section not-content" aria-labelledby={`${id}-title`}>
 	<div class="head">
 		<div class="lead">
-			{image && <Image src={image} alt="" class="art" widths={[96, 176, 192, 352]} sizes="(min-width: 50em) 176px, 96px" />}
+			{image && <Image src={image} alt="" class="art" widths={[128, 256, 384, 512]} sizes="(min-width: 50em) 256px, 128px" />}
 			<div class="copy">
 				{eyebrow && <p class="eyebrow">{eyebrow}</p>}
 				<h2 id={`${id}-title`}>{title}</h2>
@@ -80,7 +80,7 @@ const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 	}
 	.art {
 		flex: none;
-		width: 6rem;
+		width: 8rem;
 		height: auto;
 	}
 	@media (min-width: 50em) {
@@ -88,7 +88,7 @@ const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 			gap: 1.75rem;
 		}
 		.art {
-			width: 11rem;
+			width: 16rem;
 		}
 	}
 	.copy {
