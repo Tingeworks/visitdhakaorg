@@ -23,6 +23,11 @@ display_url: https://visitdhaka.org
 media_folder: public/uploads
 public_folder: /uploads
 
+# Leave empty optional fields out of saved files. Otherwise the CMS writes values such as `sidebar: null`,
+# which fails Starlight's schema and breaks the build.
+output:
+  omit_empty_optional_fields: true
+
 collections:
   - name: overview
     label: Overview
