@@ -18,9 +18,15 @@
 		"ALLOWED_ORIGIN": "https://visitdhaka.org"
 	},
 	// Accounts for optional Google sign-in (decision 0006, #55). Tables come from worker/migrations/, applied with
-	// `npx wrangler d1 migrations apply visitdhaka-edit --remote` (or `--local` for `pnpm dev`). With no database_id,
-	// Wrangler finds the database by name on deploy, or creates it if it doesn't exist yet.
-	"d1_databases": [{ "binding": "DB", "database_name": "visitdhaka-edit", "migrations_dir": "migrations" }],
+	// `npx wrangler d1 migrations apply visitdhaka-edit --remote` (or `--local` for `pnpm dev`), run from worker/.
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "visitdhaka-edit",
+			"database_id": "a5513ef4-95b6-458f-a1c1-a44840a5576e",
+			"migrations_dir": "migrations"
+		}
+	],
 	// Only /api/* reaches the Worker. Every other path on visitdhaka.org is served by the site project (#14).
 	"routes": [{ "pattern": "visitdhaka.org/api/*", "zone_name": "visitdhaka.org" }]
 }

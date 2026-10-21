@@ -195,7 +195,7 @@ can change the client. To set it up:
   centre" when the consent screen is set up: record what it says here.
 - **Client:** type "Web application", with redirect URIs `https://visitdhaka.org/api/auth/callback` and
   `http://localhost:8787/api/auth/callback`. Record the client ID here once it exists (it isn't secret).
-- **Database:** `npx wrangler d1 create visitdhaka-edit` from `worker/` (or let the first deploy create it), then
+- **Database:** `visitdhaka-edit` (ID `a5513ef4-95b6-458f-a1c1-a44840a5576e` in `worker/wrangler.jsonc`, created 21 October 2026, region APAC). Apply migrations from `worker/` with
   `npx wrangler d1 migrations apply visitdhaka-edit --remote`.
 - **Secrets:** `npx wrangler secret put GOOGLE_CLIENT_SECRET` and `npx wrangler secret put SESSION_SECRET` from
   `worker/`, and `GOOGLE_CLIENT_ID` and `SIGN_IN_ENABLED` as dashboard variables. None of these go in the site's build
