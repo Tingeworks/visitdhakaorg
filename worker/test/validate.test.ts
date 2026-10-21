@@ -259,6 +259,9 @@ describe('cleanName', () => {
 		assert.equal(errorCode(cleanName('a'.repeat(41))), 'name_too_long');
 		// 20 Bangla letters with vowel signs are 40 code points but 20 characters.
 		assert.equal(errorCode(cleanName('কি'.repeat(20))), 'ok');
+		// Over the limit in code points, so these are counted as characters.
+		assert.equal(errorCode(cleanName('কি'.repeat(40))), 'ok');
+		assert.equal(errorCode(cleanName('কি'.repeat(41))), 'name_too_long');
 	});
 
 	test('rejects links in names', () => {

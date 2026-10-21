@@ -223,7 +223,13 @@ export function validateBody(body: unknown, base: string): Result<{ body: string
 
 // ---------- Names and summaries ----------
 
-const graphemes = (text: string) => [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].length;
+/**
+ * True when `text` is at most `max` characters as people see them. A string never has more of those than code points,
+ * so the segmenter runs only for text over `max` code points: creating the first one costs a fresh Worker instance
+ * about as much CPU as the rest of an edit (#18).
+ */
+const fitsLength = (text: string, max: number) =>
+	[...text].length <= max || [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].length <= max;
 
 /**
  * Plain text for a name or summary: tags, control characters and Markdown punctuation removed, and whitespace
@@ -245,7 +251,7 @@ export function cleanName(raw: unknown): Result<string> {
 	const name = plainText(raw ?? '');
 	if (!name) return { ok: true, value: ANONYMOUS };
 	if (/(?:[a-z][a-z0-9+.-]*:\/\/|www\.)/i.test(name)) return fail('name', 'name_has_link');
-	if (graphemes(name) > MAX_NAME_LENGTH) return fail('name', 'name_too_long');
+	if (!fitsLength(name, MAX_NAME_LENGTH)) return fail('name', 'name_too_long');
 	return { ok: true, value: name };
 }
 
@@ -253,6 +259,6 @@ export function cleanName(raw: unknown): Result<string> {
 export function cleanSummary(raw: unknown): Result<string> {
 	if (raw !== undefined && raw !== null && typeof raw !== 'string') return fail('summary', 'summary_invalid');
 	const summary = plainText(raw ?? '');
-	if (graphemes(summary) > MAX_SUMMARY_LENGTH) return fail('summary', 'summary_too_long');
+	if (!fitsLength(summary, MAX_SUMMARY_LENGTH)) return fail('summary', 'summary_too_long');
 	return { ok: true, value: summary };
 }
