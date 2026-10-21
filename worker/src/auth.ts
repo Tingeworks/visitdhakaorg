@@ -20,7 +20,7 @@ import {
 	seal,
 	unseal,
 } from './session.ts';
-import { createUser, findUserBySub, renameUser, type User } from './users.ts';
+import { createUser, deleteUser, findUserBySub, renameUser, type User } from './users.ts';
 import { cleanAccountName } from './validate.ts';
 
 type Handler = (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
@@ -173,10 +173,26 @@ const name: Handler = async (request, env, ctx) => {
 	]);
 };
 
+/**
+ * DELETE /api/auth/account: deletes the signed-in account's row and signs it out (#60). Its past edits stay in git under
+ * the name and `user-<id>@visitdhaka.org` they were made with, its ID is never reused, and its profile page is gone from
+ * the next deploy. Banned accounts can delete themselves too: anonymous editing stays open to everyone, so a ban was
+ * never more than a stop on that account.
+ */
+const account: Handler = async (request, env, ctx) => {
+	if (!isAllowedOrigin(request, env)) return error(403, 'origin_not_allowed');
+	const user = await sessionUser(request, env);
+	if (!user) return error(401, 'signed_out');
+	await deleteUser(env.DB!, user.id);
+	forgetUsers(ctx);
+	return withCookies(json({ ok: true }), [clearCookie(SESSION_COOKIE), clearCookie(SIGN_UP_COOKIE)]);
+};
+
 export const authRoutes: Record<string, Partial<Record<string, Handler>>> = {
 	'/api/auth/login': { GET: guarded(login) },
 	'/api/auth/callback': { GET: guarded(callback) },
 	'/api/auth/logout': { POST: guarded(logout) },
 	'/api/auth/me': { GET: guarded(me) },
 	'/api/auth/name': { POST: guarded(name) },
+	'/api/auth/account': { DELETE: guarded(account) },
 };

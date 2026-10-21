@@ -167,6 +167,7 @@ function start(root: HTMLElement) {
 		choosingName = true;
 		chooseName.hidden = false;
 		form.hidden = true;
+		$('edit-account').hidden = true;
 		$('edit-skip-name').hidden = renaming;
 		$('edit-cancel-name').hidden = !renaming;
 		const input = $<HTMLInputElement>('edit-new-name');
@@ -179,6 +180,7 @@ function start(root: HTMLElement) {
 		choosingName = false;
 		chooseName.hidden = true;
 		form.hidden = !loaded;
+		showAccount(account ? 'signed-in' : 'signed-out');
 	}
 
 	async function loadAccount() {
@@ -223,7 +225,6 @@ function start(root: HTMLElement) {
 			if (response?.ok && data?.ok) {
 				account = data.user;
 				hideChooseName();
-				showAccount('signed-in');
 				$('edit-signed-in-as').focus();
 				return;
 			}
@@ -249,6 +250,24 @@ function start(root: HTMLElement) {
 			$('edit-change-name').focus();
 		});
 		$('edit-change-name').addEventListener('click', () => showChooseName(true));
+		// Deleting an account (#60): its row goes, and its past edits stay in git under the name they were made with.
+		$('edit-delete-account').addEventListener('click', async () => {
+			if (!confirm(message('edit.deleteConfirm'))) return;
+			let response: Response | undefined;
+			try {
+				response = await fetch(`${api}/api/auth/account`, { method: 'DELETE', credentials: 'include' });
+			} catch {
+				response = undefined;
+			}
+			const data = await response?.json().catch(() => undefined);
+			if (!response?.ok || !data?.ok) {
+				return showAlert(message(response ? `edit.error.${data?.errors?.[0]?.code}` : 'edit.error.network'));
+			}
+			account = undefined;
+			showAccount('signed-out');
+			const notice = $('edit-signed-out');
+			notice.replaceChildren(message('edit.deleted'), ' ', ...notice.childNodes);
+		});
 		$('edit-signed-in-as').tabIndex = -1;
 		loadAccount();
 	}

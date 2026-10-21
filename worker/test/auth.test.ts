@@ -317,6 +317,48 @@ describe('sessions', () => {
 	});
 });
 
+describe('DELETE /api/auth/account', () => {
+	const remove = (cookie?: string, origin = 'https://visitdhaka.org') =>
+		call('/api/auth/account', { method: 'DELETE', headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}) } });
+
+	test('deletes the row, signs out, and the old cookie is anonymous from then on', async () => {
+		const { id } = await createUser(d1.binding, { sub: SUB, name: 'Rahim' });
+		const cookie = `__Host-session=${await session(id)}`;
+		const response = await remove(cookie);
+		assert.deepEqual(await response.json(), { ok: true });
+		assert.equal(setCookies(response)['__Host-session'].attributes.split('; ')[0], 'Max-Age=0');
+		assert.equal(await findUser(d1.binding, id), undefined);
+		assert.equal((await (await call('/api/auth/me', { headers: { Cookie: cookie } })).json()).user, null);
+
+		const { identify } = await import('../src/identity.ts');
+		const request = new Request('https://visitdhaka.org/api/edit', { method: 'POST', headers: { Cookie: cookie } });
+		assert.deepEqual(await identify(request, env, { name: 'Karim' }), { ok: true, value: { kind: 'anonymous', name: 'Karim' } });
+
+		const users = await (await worker.fetch(new Request('https://visitdhaka.org/api/users'), env, ctx)).json();
+		assert.deepEqual(users, { ok: true, users: [] });
+	});
+
+	test('signing in again with the same Google account makes a new account with a new ID', async () => {
+		const { id } = await createUser(d1.binding, { sub: SUB, name: 'Rahim' });
+		await remove(`__Host-session=${await session(id)}`);
+		assert.equal((await createUser(d1.binding, { sub: SUB, name: 'Rahim' })).id, id + 1);
+	});
+
+	test('works for a banned account', async () => {
+		const { id } = await createUser(d1.binding, { sub: SUB, name: 'Rahim' });
+		await banUser(d1.binding, id, 'spam');
+		assert.equal((await remove(`__Host-session=${await session(id)}`)).status, 200);
+		assert.equal(await findUser(d1.binding, id), undefined);
+	});
+
+	test('needs a sign-in and an allowed origin', async () => {
+		const { id } = await createUser(d1.binding, { sub: SUB, name: 'Rahim' });
+		assert.equal((await remove()).status, 401);
+		assert.equal((await remove(`__Host-session=${await session(id)}`, 'https://evil.example')).status, 403);
+		assert.ok(await findUser(d1.binding, id));
+	});
+});
+
 describe('switching sign-in off', () => {
 	const routes: [string, string][] = [
 		['GET', '/api/auth/login'],
@@ -324,6 +366,7 @@ describe('switching sign-in off', () => {
 		['POST', '/api/auth/logout'],
 		['GET', '/api/auth/me'],
 		['POST', '/api/auth/name'],
+		['DELETE', '/api/auth/account'],
 	];
 
 	test('every route says sign-in is off unless SIGN_IN_ENABLED is true', async () => {
