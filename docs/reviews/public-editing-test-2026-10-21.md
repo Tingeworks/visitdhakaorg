@@ -23,9 +23,8 @@ These were checked on production without submitting an edit:
 
 ## Before you start
 
-- **A Bangla page is needed for the Bangla edits.** There is no Bangla content page yet, so every `/bn/` guide page
-  falls back to English and has no in-site editor link. Add at least one translation to `src/content/docs/bn/<pillar>/`
-  (through the CMS or a pull request) and merge it first.
+- **Bangla page:** `/bn/food/fuchka/` is translated (#43), and its "Edit page" opens the Bangla editor. Use it for
+  the Bangla edit. Every other `/bn/` guide page still falls back to English and links to GitHub instead.
 - **Two people**, each on their own device and network, so the per-IP rate limit and authorship are realistic.
 - Merge with **"Create a merge commit"** or **"Rebase and merge"**, as the [runbook](../architecture/moderation.md#merging)
   says. Use squash only for the one throwaway test below.
@@ -54,7 +53,7 @@ For each pull request, check:
 | Question | How to test | Answer |
 | :--- | :--- | :--- |
 | Does a squash merge keep the contributor as author? | Turn squash on briefly, squash-merge one throwaway edit, check the commit on `main`, then turn squash off again. Record the answer in decision 0003 | |
-| Does `/api/edit` stay within the free plan's 10 ms CPU per request? | Edit Worker → Metrics, CPU time for `/api/edit` after the edits. The median across all requests was 3.36 ms on 21 October, but that was only `/api/health` and `/api/source` | |
+| Does `/api/edit` stay within the free plan's 10 ms CPU per request? | Edit Worker → Observability, the `cpuTimeMs` of each `POST /api/edit` event. The median across all requests was 3.36 ms on 21 October, but that was only `/api/health` and `/api/source` | **Not on the first sample.** #39 used 15 ms of CPU (6.3 s wall time, mostly waiting for GitHub) and still succeeded. Check every edit in this test. If they stay over 10 ms, either move to the paid plan or cut the CPU, for example by caching the installation token instead of signing a new app token for every edit |
 | Does the cached `/api/source` cause false 409s right after a merge? | Merge an edit, wait for the deploy, then edit the same page again straight away | |
 | Does the CMS keep `contributors` after a public edit? | Save a merged, publicly edited page in the CMS and check `git diff` | |
 | Does the credit show? | After the merge and deploy, the name appears under the page and on Recent changes | |
