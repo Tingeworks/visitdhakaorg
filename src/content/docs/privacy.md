@@ -6,7 +6,7 @@ verified: false
 
 _Last updated: 21 October 2026_
 
-This policy explains what information is collected when you visit visitdhaka.org, why, and what choices you have. We try to collect as little as possible. You don't need an account to use the site, and we never ask for your name, email address or any other details to read it.
+This policy explains what information is collected when you visit visitdhaka.org, why, and what choices you have. We try to collect as little as possible. You don't need an account to use the site, and we never ask for your name, email address or any other details to read it. Editors can choose to sign in with Google, but nobody has to.
 
 ## Who runs this site
 
@@ -21,6 +21,7 @@ For anything about your privacy or your data, email [privacy@tingeworks.com](mai
 - **Fonts:** the site's fonts are served from this site, so your browser doesn't contact Google or anyone else for them.
 - **Settings:** your accessibility and cookie choices are saved in your own browser, not sent to us.
 - **Contributing:** if you suggest an edit, your changes and the name you give (or your GitHub username) become public, permanently, in the site's history on GitHub. Editing on the site doesn't need an account, and uses a Cloudflare security check that runs only on the editor page.
+- **Signing in (optional):** editors can sign in with Google so their edits are credited to one account. We receive only a stable ID from Google, never your email address, and nothing loads from Google until you click "Sign in with Google". You can delete your account at any time.
 - We don't sell your information, show ads or use your information for advertising.
 
 ## Analytics (Google Analytics)
@@ -62,8 +63,11 @@ Cookies are small files a site saves in your browser. Similar "local storage" le
 | `starlight-theme` | Local storage | Remembers whether you turned on dark mode | Until you clear it |
 | Sidebar state | Session storage | Remembers which sidebar sections are open while you browse | Until you close the tab |
 | Cloudflare Turnstile | Cookies or storage set by Cloudflare | Only on the editor page: the security check that tells people from bots | Set and controlled by Cloudflare |
+| `__Host-signin` | Cookie (this site) | Only if you click "Sign in with Google": carries the sign-in safely to Google and back | 10 minutes, deleted when you come back |
+| `__Host-signup` | Cookie (this site) | Only the first time you sign in: holds Google's ID for your account until you choose a display name | 10 minutes, deleted once you choose one |
+| `__Host-session` | Cookie (this site) | Only if you sign in: keeps you signed in. It holds your account number and nothing else | 30 days, or until you sign out or delete your account |
 
-Only the Google Analytics cookies need your consent. The site's own settings are needed for it to work the way you set it, and they never leave your browser. Turnstile's storage is needed for the editor's security check, and it's used only if you open the editor.
+Only the Google Analytics cookies need your consent. The site's own settings are needed for it to work the way you set it, and they never leave your browser. Turnstile's storage is needed for the editor's security check, and it's used only if you open the editor. The sign-in cookies are set only if you choose to sign in, are needed to keep you signed in, and are read only by the site's own editing service.
 
 ## Hosting (Cloudflare)
 
@@ -99,6 +103,28 @@ When you send it, your edit, the name, the summary and the time become part of t
 
 **Removing your name or edit.** To have your name removed from the site or from a pull request description, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with the page and roughly when you made the edit. Removing something from the git history itself is possible in serious cases, but GitHub may keep copies for a while.
 
+### Signing in with Google (optional)
+
+You can edit without an account. If you choose to sign in with Google in the editor, your edits are credited to one display name without typing it each time, and your published edits are listed on your own contributor page.
+
+**What happens when you sign in.** The editor shows a plain link, not a Google button or script, so nothing loads from Google and nothing is sent to Google until you click "Sign in with Google". Google then asks you to sign in and agree to share your basic profile with Visit Dhaka. Google handles that step under [Google's privacy policy](https://policies.google.com/privacy).
+
+**What we receive and keep.** We ask Google only for the `openid` and `profile` permissions, and keep only Google's stable ID for your account, which lets us recognise you next time. We never ask for or receive your email address, and we don't keep your Google name or picture. The first time you sign in, you choose a display name. We store, in a database run by Cloudflare for the site's editing service:
+
+- an account number
+- Google's ID for your account, which is never shown anywhere
+- the display name you chose
+- the date you joined
+- if the account is banned for abuse, when and why
+
+We keep these until you delete your account.
+
+**What becomes public.** Your display name is shown with every edit you make, as for any contributor. Signed-in edits are recorded in the site's public history on GitHub under your display name and an address made from your account number, such as `user-12@visitdhaka.org`, which isn't a real mailbox and isn't linked to your Google account. That address and the note "account 12" link all your signed-in edits to each other, **publicly and permanently**. Nothing from your Google account is ever written to the site's history.
+
+**Your contributor page.** Once one of your edits is published, you have a public page at `/contributors/<your account number>/` listing your published edits under your current display name. It's linked from the editor and from [Recent changes](/recent-changes/).
+
+**Changing your name or deleting your account.** In the editor, choose **Change your name** or **Delete your account**. A new name is used for your future edits and on your contributor page from the next time the site is updated. Deleting your account removes it from our database straight away and signs you out, and your contributor page is removed the next time the site is updated. Your past edits stay in the site's history and in pages' contributor lists under the name you used at the time, as for any published edit, and your account number is never given to anyone else. To have your name removed from past edits too, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com).
+
 ### Editing on GitHub
 
 If you edit through GitHub, your GitHub username, the changes you made, any comments and the time you made them become part of the site's public history on GitHub, and the name on each published change is listed on [Recent changes](/recent-changes/). GitHub handles your account under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
@@ -117,7 +143,7 @@ Pages link to official sources, venues and other sites. Once you leave visitdhak
 
 ## Where your information is processed
 
-Google, Cloudflare (including Turnstile) and GitHub are based in the United States and run services around the world, so information may be processed outside the country you are in. Each of them applies its own legal safeguards to international transfers.
+Google (including Google sign-in), Cloudflare (including Turnstile and the database for accounts) and GitHub are based in the United States and run services around the world, so information may be processed outside the country you are in. Each of them applies its own legal safeguards to international transfers.
 
 ## Legal basis (for visitors in the EU and UK)
 
@@ -125,6 +151,7 @@ Google, Cloudflare (including Turnstile) and GitHub are based in the United Stat
 - **Hosting and security:** our legitimate interest in delivering a working, secure site.
 - **Contributions and emails:** our legitimate interest in running a community-edited guide, crediting contributors and replying to you.
 - **The editor's security check and limits:** our legitimate interest in protecting the editor from spam and abuse.
+- **Accounts:** you choose to sign in, and we keep your account to provide what you asked for: crediting your edits to one name, your contributor page and keeping you signed in. Bans rely on our legitimate interest in protecting the site from abuse. You can delete your account at any time.
 
 ## Your rights
 
@@ -136,7 +163,7 @@ Depending on where you live, you may have the right to:
 - withdraw consent at any time, without affecting what happened before
 - complain to your data protection authority
 
-Analytics data is not linked to your name, so we usually can't find a specific person in it. Email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with any request and we'll reply within one month.
+Analytics data is not linked to your name, so we usually can't find a specific person in it. If you have an account, you can change your name or delete it yourself in the editor. Email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with any request and we'll reply within one month.
 
 ## Children
 

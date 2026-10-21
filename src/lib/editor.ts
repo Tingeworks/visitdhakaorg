@@ -6,6 +6,8 @@
 // - PUBLIC_EDIT_API_URL: where the edit Worker is. Empty in production, where it's served on the site's own origin at
 //   /api/* (#14). Locally, the `wrangler dev` address, such as http://localhost:8787.
 // - PUBLIC_TURNSTILE_SITE_KEY: the Turnstile widget's site key (#10). Development uses Cloudflare's always-pass test key.
+// - PUBLIC_SIGN_IN_ENABLED: `true` to offer optional Google sign-in in the editor (#59) and build contributor profile
+//   pages (#62). Set it only once the edit Worker's SIGN_IN_ENABLED is `true` (epic #54).
 
 import { localizePath } from './i18n';
 
@@ -16,6 +18,8 @@ export const turnstileSiteKey: string | undefined =
 	import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? testSiteKey : undefined);
 
 export const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true' && Boolean(turnstileSiteKey);
+
+export const signInEnabled = editorEnabled && import.meta.env.PUBLIC_SIGN_IN_ENABLED === 'true';
 
 /**
  * Whether a page's source file can be edited in the site's editor: a Markdown page inside a pillar folder, in English

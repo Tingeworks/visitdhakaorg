@@ -5,6 +5,7 @@ are merged. Infrastructure setup and deployed integration tests
 remain open. The editor is switched on in production for the end-to-end testing in #18, with `DAILY_EDIT_CAP=50` as the
 only limit until the rate limiting rule exists. The go-live decision is still to be recorded (#18). Decisions 0003 and 0004 remain proposed;
 0006 accepts anonymous editing first and optional sign-in later. See the [epic readiness review](../reviews/wiki-epic-readiness-2026-10-21.md).
+Optional Google sign-in (epic #54) is built and switched off until decision 0008 is accepted: see "Sign-in" below.
 
 ## Goals and non-goals
 
@@ -71,6 +72,39 @@ Checks run in this order, and nothing is written to GitHub until all of them pas
 
 Each page has one branch, `edit/<path in the docs folder>`, such as `edit/bn/attractions/lalbagh-fort`. A first edit costs 8 GitHub API calls and a second edit to the same page 6, plus one Turnstile check and an installation token about once an hour.
 
+### Sign-in
+
+Optional Google sign-in (0006, #57) is a server-side OpenID Connect redirect with PKCE, in `worker/src/auth.ts`. Nothing
+loads from Google until someone follows "Sign in with Google".
+
+| Route | What it does |
+| :--- | :--- |
+| `GET /api/auth/login?return=<path>` | Sends the browser to Google with `scope=openid profile`. `state`, `nonce`, the PKCE verifier and the return path (a same-site path, never a full URL) go in a signed 10-minute `__Host-signin` cookie |
+| `GET /api/auth/callback` | Checks `state`, exchanges the code with the verifier, and checks the ID token's `iss`, `aud`, `exp` and `nonce`. An existing account gets a session. A new one gets a signed 10-minute `__Host-signup` cookie holding only Google's `sub`, and no account is made until it chooses a name |
+| `POST /api/auth/name` | `{ name }`: creates the account from the sign-up cookie and signs it in, or renames the signed-in account. Same rules as the anonymous name, but required and never an email address |
+| `POST /api/auth/logout` | Clears the session |
+| `DELETE /api/auth/account` | Deletes the signed-in account's row and clears the session (#60). Its past edits stay in git, its ID is never reused, and its profile page is gone from the next deploy |
+| `GET /api/auth/me` | `{ ok, user: { id, name } \| null }`, plus `pendingName: true` between Google and choosing a name. Never cached |
+
+`GET /api/users` returns `{ ok, users: [{ id, name }] }` for every account that hasn't been deleted, banned or not,
+for building contributor profile pages (#62). It returns nothing else about an account, is cached at the edge for five
+minutes (a rename clears that data centre's copy), and works whether or not sign-in is switched on.
+
+Every `/api/auth/*` route returns 403 `sign_in_disabled` unless `SIGN_IN_ENABLED` is `true`, and 503 `not_configured` while a secret
+or the database is missing. Callback failures are 400 `sign_in_expired`, `state_invalid`, `code_invalid` or
+`token_invalid`, and 502 `google_error`.
+
+The session is `__Host-session` (`HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, 30 days), holding only the user ID and
+its expiry, signed with HMAC-SHA256 from `SESSION_SECRET`. There's no session table: `identify()` in
+`worker/src/identity.ts`, the only code that reads the cookie, reads the account's row on every request, so a ban or a
+deleted account takes effect at once. While sign-in is off, sessions are ignored and every edit is anonymous. The ID
+token comes straight from Google's token endpoint over TLS, so its signature isn't checked again, as OpenID Connect
+allows.
+
+To try it locally, put the client ID and secret, a session secret and `SIGN_IN_ENABLED=true` in `worker/.dev.vars`,
+apply the migrations with `--local`, and sign in on `http://localhost:8787`. `__Host-` cookies need a secure context,
+which Chrome and Firefox give `localhost` and Safari doesn't.
+
 ### The editor
 
 The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than a dialog. Article pages load no extra JavaScript, Turnstile loads only when someone opens the editor, and phones get a full-width form. It's a plain `<textarea>` with no preview, which keeps it light and avoids rendering untrusted Markdown in the browser. It's switched on by site build variables, set on the existing site project in Cloudflare (or in `.env` locally):
@@ -80,6 +114,13 @@ The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than
 | `PUBLIC_EDITOR_ENABLED` | `true` to send "Edit page" to the editor. Leave unset until the Worker is deployed and routed (#13, #14) and #17 is merged |
 | `PUBLIC_TURNSTILE_SITE_KEY` | The Turnstile site key (#10). Without it, the editor stays off in production |
 | `PUBLIC_EDIT_API_URL` | Leave unset in production, where the Worker is on the same origin. Locally, the `wrangler dev` address, such as `http://localhost:8787` |
+| `PUBLIC_SIGN_IN_ENABLED` | `true` to offer optional Google sign-in in the editor (#59). Set it only once the Worker's `SIGN_IN_ENABLED` is `true` |
+
+With sign-in on, the editor asks the Worker who is signed in (`/api/auth/me`). Signed out, it shows the name field and a
+plain "Sign in with Google" link to `/api/auth/login`, never Google's button or script. Signed in, it shows "Editing as
+<name>", a link to the account's contributor page once it has one (#62), "Change your name" and "Sign out", and sends no
+name with the edit. After a first sign-in it asks for a display name before anything else, saying the name is public and
+permanent.
 
 To try it locally, run the Worker with `pnpm dev` in `worker/`, with `ALLOWED_ORIGIN` set to the site's local origin in `worker/.dev.vars`. Then build or run the site with `PUBLIC_EDITOR_ENABLED=true PUBLIC_EDIT_API_URL=http://localhost:8787`. Without app credentials, the Worker can load pages but not write edits.
 
@@ -117,6 +158,12 @@ These names are the contract the Worker code reads (#10). Values are never writt
 | `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, `ALLOWED_ORIGIN` | Variable | `vars` in `worker/wrangler.jsonc` |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Build variable | Site project. Public by design: the `PUBLIC_` prefix puts it in the page |
 | `PUBLIC_EDITOR_ENABLED` | Build variable | Site project. `true` makes "Edit page" open the in-site editor |
+| `GOOGLE_CLIENT_SECRET` | Secret | Edit Worker secret, for Google sign-in (#55). The original is in the team password manager |
+| `SESSION_SECRET` | Secret | Edit Worker secret: at least 32 random bytes (`openssl rand -base64 48`), which sign the session and sign-in cookies. Rotating it signs everyone out |
+| `GOOGLE_CLIENT_ID` | Variable | Edit Worker dashboard, next to the secret. Not secret: it appears in the sign-in redirect |
+| `SIGN_IN_ENABLED` | Variable | Edit Worker dashboard only, never `worker/wrangler.jsonc`. `true` allows sign-in. Missing or anything else means off, and existing sessions are ignored, so every edit is anonymous |
+| `DB` | D1 binding | The `visitdhaka-edit` D1 database, bound in `worker/wrangler.jsonc`. Holds only the `users` table (0006) |
+| `PUBLIC_SIGN_IN_ENABLED` | Build variable | Site project. `true` shows sign-in in the editor and builds contributor profile pages (#59, #62) |
 
 `keep_vars: true` in `worker/wrangler.jsonc` stops deploys removing the dashboard variables. For local development,
 `worker/.dev.vars.example` lists every Worker name with empty or test values, including Cloudflare's always-pass
@@ -132,6 +179,30 @@ organisation can manage the GitHub App. To rotate:
 - **Turnstile secret:** rotate it in the Turnstile widget's settings and set the new value with `npx wrangler secret put
   TURNSTILE_SECRET_KEY`. The site key stays the same unless the widget is replaced. If it is, update
   `PUBLIC_TURNSTILE_SITE_KEY` and rebuild the site.
+
+### Google sign-in setup
+
+Optional sign-in (0006) uses a Google OAuth client and a D1 database (#55). Owners of the Tingeworks Google Cloud project
+can change the client. To set it up:
+
+- **Consent screen:** app name "Visit Dhaka", user type External, the verified domain `visitdhaka.org`, the privacy
+  policy (`https://visitdhaka.org/privacy/`) and terms (`https://visitdhaka.org/terms/`) URLs, and a shared support
+  address rather than a person's.
+- **Scopes:** `openid` and `profile` only, never `email`. Both are non-sensitive, so the sensitive and restricted scope
+  verification doesn't apply. Google's help on [when verification is needed](https://support.google.com/cloud/answer/13464321)
+  says every app still needs brand verification (verified domain, homepage and privacy policy), apart from some exempt
+  cases. Whether that applies to this app, and whether adding a logo needs it, is shown in the console's "Verification
+  centre" when the consent screen is set up: record what it says here.
+- **Client:** type "Web application", with redirect URIs `https://visitdhaka.org/api/auth/callback` and
+  `http://localhost:8787/api/auth/callback`. Record the client ID here once it exists (it isn't secret).
+- **Database:** `visitdhaka-edit` (ID `a5513ef4-95b6-458f-a1c1-a44840a5576e` in `worker/wrangler.jsonc`, created 21 October 2026, region APAC). Apply migrations from `worker/` with
+  `npx wrangler d1 migrations apply visitdhaka-edit --remote`.
+- **Secrets:** `npx wrangler secret put GOOGLE_CLIENT_SECRET` and `npx wrangler secret put SESSION_SECRET` from
+  `worker/`, and `GOOGLE_CLIENT_ID` and `SIGN_IN_ENABLED` as dashboard variables. None of these go in the site's build
+  variables.
+
+To rotate the client secret, add a new secret to the client in the console, set it with `wrangler secret put`, check a
+sign-in, then delete the old one.
 
 ## Data model changes
 

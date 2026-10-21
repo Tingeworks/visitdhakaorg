@@ -17,3 +17,18 @@ export const testEnv = (overrides: Partial<Env> = {}): Env => ({
 	ALLOWED_ORIGIN: 'https://visitdhaka.org',
 	...overrides,
 });
+
+/** A configuration with Google sign-in switched on and set up, using `db` for accounts. */
+export const signInEnv = (db: D1Database, overrides: Partial<Env> = {}): Env =>
+	testEnv({
+		SIGN_IN_ENABLED: 'true',
+		GOOGLE_CLIENT_ID: 'client-123.apps.googleusercontent.com',
+		GOOGLE_CLIENT_SECRET: 'google-secret',
+		SESSION_SECRET: 'a-session-secret-of-at-least-32-bytes!',
+		DB: db,
+		...overrides,
+	});
+
+/** An unsigned JWT with these claims, standing in for the ID token Google's token endpoint returns. */
+export const idToken = (claims: Record<string, unknown>) =>
+	[{ alg: 'RS256', typ: 'JWT' }, claims].map((part) => Buffer.from(JSON.stringify(part)).toString('base64url')).join('.') + '.sig';

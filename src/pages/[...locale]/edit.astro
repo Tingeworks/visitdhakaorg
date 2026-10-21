@@ -3,10 +3,12 @@
 // PUBLIC_EDITOR_ENABLED is on (src/components/EditLink.astro). It loads the page's Markdown from the edit Worker
 // (GET /api/source) and sends the edit back (POST /api/edit), which turns it into a pull request for review. It needs no
 // GitHub account. Turnstile, the only third-party script, loads only here and only once the page text has loaded.
+// With PUBLIC_SIGN_IN_ENABLED, it also offers optional Google sign-in (#59): a plain link to the Worker's
+// /api/auth/login, so nothing loads from Google until someone follows it.
 // The form works with the keyboard alone, and every message comes from en.json and bn.json.
 import type { GetStaticPaths } from 'astro';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import { editApiUrl, editorEnabled, turnstileSiteKey } from '../../lib/editor';
+import { editApiUrl, editorEnabled, signInEnabled, turnstileSiteKey } from '../../lib/editor';
 import { localizePath, translatedLocales } from '../../lib/i18n';
 
 export const getStaticPaths = (() =>
@@ -47,11 +49,21 @@ const messageKeys = [
 	'edit.error.name_has_link',
 	'edit.error.summary_too_long',
 	'edit.error.licence_required',
+	'edit.error.name_required',
+	'edit.error.name_reserved',
+	'edit.error.name_has_email',
+	'edit.error.banned',
+	'edit.error.signed_out',
+	'edit.signedInAs',
+	'edit.contributions',
+	'edit.saveName',
+	'edit.deleteConfirm',
+	'edit.deleted',
 	'edit.error.network',
 	'edit.error.generic',
 ] as const;
 const messages = Object.fromEntries(
-	messageKeys.map((key) => [key, t(key, { title: '{{title}}', interpolation: { escapeValue: false } })]),
+	messageKeys.map((key) => [key, t(key, { title: '{{title}}', name: '{{name}}', interpolation: { escapeValue: false } })]),
 );
 const messagesJson = JSON.stringify(messages).replace(/</g, '\\u003c');
 // Placeholders the script fills in, kept as {{name}} so it can swap them for links.
@@ -81,6 +93,8 @@ const licenceText = t('edit.licence', {
 				data-locale={locale ?? ''}
 				data-pending={pendingText}
 				data-success={successText}
+				data-sign-in={signInEnabled ? 'true' : undefined}
+				data-contributors={localizePath('/contributors/', locale)}
 			>
 				<p id="edit-status" role="status">
 					{t('edit.loading')}
@@ -91,6 +105,62 @@ const licenceText = t('edit.licence', {
 						{t('edit.reload')}
 					</button>
 				</div>
+
+				{
+					signInEnabled && (
+						<section id="edit-choose-name" class="choose-name" aria-labelledby="edit-choose-name-title" hidden>
+							<h2 id="edit-choose-name-title" tabindex="-1">
+								{t('edit.chooseNameTitle')}
+							</h2>
+							<p>{t('edit.chooseNameText')}</p>
+							<form id="edit-name-form" novalidate>
+								<div class="field">
+									<label for="edit-new-name">{t('edit.newNameLabel')}</label>
+									<input id="edit-new-name" type="text" autocomplete="nickname" maxlength="80" aria-describedby="edit-new-name-error" />
+									<p id="edit-new-name-error" class="field-error" hidden />
+								</div>
+								<div class="actions">
+									<button type="submit" id="edit-save-name">
+										{t('edit.saveName')}
+									</button>
+									<button type="button" id="edit-skip-name" class="secondary">
+										{t('edit.skipSignIn')}
+									</button>
+									<button type="button" id="edit-cancel-name" class="secondary" hidden>
+										{t('edit.cancel')}
+									</button>
+								</div>
+							</form>
+						</section>
+					)
+				}
+
+				{
+					signInEnabled && (
+						<div id="edit-account" class="account" hidden>
+							<p id="edit-signed-out" hidden>
+								{t('edit.signInPrompt')} <a id="edit-sign-in" href="#">{t('edit.signIn')}</a>
+							</p>
+							<div id="edit-signed-in" hidden>
+								<p id="edit-signed-in-as" class="signed-in-as" />
+								<p id="edit-contributions" class="hint">
+									{t('edit.contributionsPending')}
+								</p>
+								<div class="account-actions">
+									<button type="button" id="edit-change-name" class="secondary">
+										{t('edit.changeName')}
+									</button>
+									<button type="button" id="edit-sign-out" class="secondary">
+										{t('edit.signOut')}
+									</button>
+									<button type="button" id="edit-delete-account" class="secondary danger">
+										{t('edit.deleteAccount')}
+									</button>
+								</div>
+							</div>
+						</div>
+					)
+				}
 
 				<form id="edit-form" novalidate hidden>
 					<h2 id="edit-heading" />
@@ -103,7 +173,7 @@ const licenceText = t('edit.licence', {
 						<p id="edit-body-error" class="field-error" hidden />
 					</div>
 
-					<div class="field">
+					<div class="field" id="edit-name-field">
 						<label for="edit-name">{t('edit.nameLabel')}</label>
 						<input id="edit-name" name="name" type="text" autocomplete="nickname" aria-describedby="edit-name-hint edit-name-error" />
 						<p id="edit-name-hint" class="hint">
@@ -156,6 +226,7 @@ const licenceText = t('edit.licence', {
 		)
 	}
 	{enabled && <script type="application/json" id="edit-messages" set:html={messagesJson} />}
+
 </StarlightPage>
 
 <script>
@@ -285,6 +356,44 @@ const licenceText = t('edit.licence', {
 	button:disabled {
 		opacity: 0.6;
 		cursor: progress;
+	}
+
+	button.secondary {
+		border: 1px solid var(--sl-color-gray-5);
+		background: transparent;
+		color: var(--sl-color-white);
+	}
+
+	button.secondary:hover {
+		background: var(--sl-color-gray-6);
+	}
+
+	.account,
+	.choose-name {
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-md);
+	}
+
+	.account {
+		margin-top: 1.25rem;
+	}
+
+	button.danger {
+		border-color: var(--sl-color-red);
+		color: var(--sl-color-red-high);
+	}
+
+	.signed-in-as {
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+
+	.account-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
 	}
 
 	.success {

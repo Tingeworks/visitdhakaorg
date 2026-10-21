@@ -1,19 +1,24 @@
 // The edit Worker (decision 0002, docs/architecture/open-editing.md). It answers only under /api/. Routes are matched
-// on the exact path, so phase 3's /api/auth/* (decision 0006) slots into `routes` without changing the others.
-// Phase 1 sets no cookies.
+// on the exact path. Only optional Google sign-in (/api/auth/*, decision 0006, #57) sets cookies, and only once someone
+// clicks "Sign in". The other routes set none.
+import { authRoutes } from './auth.ts';
 import { edit } from './edit.ts';
 import type { Env } from './env.ts';
 import { splitFile, readFrontmatter } from './frontmatter.ts';
 import { GitHubError, NotConfiguredError, getFile, installationToken } from './github.ts';
+import { GoogleError } from './google.ts';
 import { error, json, preflight, validationErrors, withCors } from './http.ts';
-import { branchFor, sourceCacheKey } from './pages.ts';
+import { branchFor, sourceCacheKey, usersCacheKey } from './pages.ts';
 import { branchSha, openPullFrom } from './repo.ts';
+import { listUsers } from './users.ts';
 import { validatePath } from './validate.ts';
 
 type Handler = (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
 
 /** How long GET /api/source responses are cached at the edge, so page views don't spend GitHub API calls. */
 const SOURCE_CACHE_SECONDS = 60;
+/** How long GET /api/users responses are cached at the edge. Only site builds read it. */
+const USERS_CACHE_SECONDS = 300;
 
 /** Whether the Worker is up and can authenticate to GitHub. Never includes a secret. */
 const health: Handler = async (_request, env) => {
@@ -65,10 +70,30 @@ const source: Handler = async (request, env, ctx) => {
 	return response;
 };
 
+/**
+ * Every account that hasn't been deleted, with its current display name, for building contributor profile pages (#62):
+ * `{ ok, users: [{ id, name }] }`. Banned accounts are included, because a ban stops new edits but doesn't hide past
+ * ones. Nothing else about an account is returned: no join date, Google ID or ban status. It doesn't depend on
+ * SIGN_IN_ENABLED, so switching sign-in off doesn't remove anyone's profile.
+ */
+const users: Handler = async (_request, env, ctx) => {
+	if (!env.DB) return error(503, 'not_configured');
+	const cache = typeof caches === 'undefined' ? undefined : caches.default;
+	const cached = await cache?.match(usersCacheKey());
+	if (cached) return cached;
+	const response = json({ ok: true, users: await listUsers(env.DB) }, 200, {
+		'Cache-Control': `public, max-age=${USERS_CACHE_SECONDS}`,
+	});
+	if (cache) ctx.waitUntil(cache.put(usersCacheKey(), response.clone()));
+	return response;
+};
+
 const routes: Record<string, Partial<Record<string, Handler>>> = {
 	'/api/health': { GET: health },
 	'/api/source': { GET: source },
 	'/api/edit': { POST: edit },
+	'/api/users': { GET: users },
+	...authRoutes,
 };
 
 export default {
@@ -96,7 +121,9 @@ export default {
 					? error(503, 'not_configured')
 					: cause instanceof GitHubError
 						? error(502, 'github_error')
-						: error(500, 'internal_error');
+						: cause instanceof GoogleError
+							? error(502, 'google_error')
+							: error(500, 'internal_error');
 		}
 		return withCors(response, request, env);
 	},

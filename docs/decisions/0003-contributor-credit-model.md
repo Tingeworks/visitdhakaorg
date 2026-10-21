@@ -26,3 +26,34 @@ Names are unverified until sign-in exists. They are shown with no profile link, 
 - Concurrent edits to one page both touch the `contributors` list and will conflict on merge. The Worker uses one open branch per page to avoid this (0002).
 - The list grows without bound on busy pages. Store only unique names and cap the rendered list.
 - Sign-in is planned for phase 3, with Google first (0006). Signed-in edits will use a pseudonymous author email such as `user-<id>@visitdhaka.org`, never the person's Google email. That will be recorded as an update to this decision.
+
+## Update (decision 0006, #58)
+
+Optional Google sign-in is built (epic #54). A signed-in edit is credited like this:
+
+- **Frontmatter:** the account's display name is added to `contributors`, as for any name. A `name` sent with a
+  signed-in edit is ignored.
+- **Commit author:** the display name, with the pseudonymous email `user-<id>@visitdhaka.org`, where `<id>` is the
+  account's public ID in the D1 `users` table. Nothing from the Google account is ever written to git: no email,
+  Google ID or profile data. GitHub doesn't link these addresses to anyone's GitHub account.
+- **Commit message and pull request:** `Edited-by: <name> (account <id>)`, in place of `(unverified)`. The pull request
+  says `Contributor | <name> (account <id>)`.
+
+The address and the `(account <id>)` line link one account's edits to each other, publicly and permanently. That is the
+point, and the privacy policy says so. The display name itself is still chosen by the person, not checked. Anonymous
+edits are unchanged: `anonymous@visitdhaka.org` and `Edited-by: <name> (unverified)`.
+
+### Contributor profiles (#62)
+
+Each signed-in editor with a published edit has a profile page, `/contributors/<id>/` (and `/bn/contributors/<id>/`),
+listing their published edits under their current display name. Profiles are static and built from git, like Recent
+changes: the build finds commits whose author email is `user-<id>@visitdhaka.org`. These are the only emails ever read
+from git, and no email is shown. Only merged edits are in the history the site builds from, so pending and declined
+edits never appear, in keeping with credit for merged edits only.
+
+The build also asks the edit Worker (`GET /api/users`) for each account's current name and which accounts still exist.
+A rename shows on the profile from the next deploy, and a deleted account's profile is gone from the next deploy, while
+its past edits stay in git and in pages' `contributors` lists under the name used at the time. If the Worker can't be
+reached, the build makes no profile pages rather than rebuilding them from git alone. Recent changes links a signed-in
+edit's author to the profile. Names in pages' "Contributors" lists stay plain text for now, because linking them needs
+the account ID in `contributors`.

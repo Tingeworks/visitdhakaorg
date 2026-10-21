@@ -1,46 +1,19 @@
 ---
 // Recent changes, at /recent-changes/ and /bn/recent-changes/: the latest commits to pages, grouped by day in Dhaka time,
 // newest first. Built from git at build time (src/lib/changes.ts), so it updates on every deploy and needs no JavaScript.
+// A signed-in edit's author links to their contributor profile (#62).
 import type { GetStaticPaths } from 'astro';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import { recentChanges, repoUrl, type ChangedFile } from '../../lib/changes';
-import { localizedPages, localizePath, translatedLocales } from '../../lib/i18n';
+import ChangeList from '../../components/ChangeList.astro';
+import { recentChanges, repoUrl } from '../../lib/changes';
+import { translatedLocales } from '../../lib/i18n';
 
 export const getStaticPaths = (() =>
 	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
 
 const { locale } = Astro.params;
 const { t } = Astro.locals;
-const lang = locale === 'bn' ? 'bn-BD' : 'en-GB';
-const timeZone = 'Asia/Dhaka';
-
-// Page titles in each language, to name the pages a change touched. A change to a Bangla file links to the Bangla page.
-// A change to an English file links to the page in this page's language, which shows the English text where there is
-// no translation. Changes to a translation are tagged with its language when listed in another language.
-const titles = new Map<string | undefined, Map<string, string>>();
-for (const fileLocale of [undefined, ...translatedLocales]) {
-	titles.set(fileLocale, new Map((await localizedPages(fileLocale)).map((page) => [page.slug, page.data.title])));
-}
-const languageNames: Record<string, string> = { bn: 'বাংলা' };
-
-const pageOf = (file: ChangedFile) => {
-	const title = titles.get(file.locale)?.get(file.slug);
-	const href = localizePath(file.slug ? `/${file.slug}/` : '/', file.locale ?? locale);
-	const language = file.locale && file.locale !== locale ? languageNames[file.locale] : undefined;
-	return { title: title ?? (file.slug || '/'), href: file.status !== 'deleted' && title ? href : undefined, language };
-};
-
-const maxPages = 5;
-const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' });
-const dayName = new Intl.DateTimeFormat(lang, { timeZone, dateStyle: 'full' });
-const time = new Intl.DateTimeFormat(lang, { timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
-const number = new Intl.NumberFormat(lang);
-
-const days = new Map<string, ReturnType<typeof recentChanges>>();
-for (const change of recentChanges()) {
-	const key = dayKey.format(change.date);
-	days.set(key, [...(days.get(key) ?? []), change]);
-}
+const changes = recentChanges();
 
 const intro = t('recentChanges.intro', {
 	link: `<a href="${repoUrl}/commits/main/src/content/docs">GitHub</a>`,
@@ -50,60 +23,6 @@ const intro = t('recentChanges.intro', {
 
 <StarlightPage frontmatter={{ title: t('recentChanges.title'), description: t('recentChanges.description') }}>
 	<p set:html={intro} />
-	{days.size === 0 && <p>{t('recentChanges.empty')}</p>}
-	{
-		[...days.values()].map((changes) => (
-			<section>
-				<h2>{dayName.format(changes[0].date)}</h2>
-				<ul class="changes">
-					{changes.map((change) => {
-						const pages = change.files.map(pageOf);
-						return (
-							<li>
-								<time datetime={change.date.toISOString()}>{time.format(change.date)}</time>{' '}
-								<span class="pages">
-									{pages.slice(0, maxPages).map((page, index) => (
-										<>
-											{index > 0 && ', '}
-											{page.href ? <a href={page.href}>{page.title}</a> : <span>{page.title}</span>}
-											{page.language && <span class="tag"> ({page.language})</span>}
-										</>
-									))}
-									{pages.length > maxPages && ` ${t('recentChanges.more', { n: number.format(pages.length - maxPages) })}`}
-								</span>
-								<span class="detail">
-									{' · '}
-									<a href={`${repoUrl}/commit/${change.hash}`}>
-										{change.subject}
-									</a>
-									{' · '}
-									{change.author}
-								</span>
-							</li>
-						);
-					})}
-				</ul>
-			</section>
-		))
-	}
+	{changes.length === 0 && <p>{t('recentChanges.empty')}</p>}
+	<ChangeList changes={changes} locale={locale} variant="recent" />
 </StarlightPage>
-
-<style>
-	.changes {
-		padding-inline-start: 1.25rem;
-	}
-
-	time,
-	.tag,
-	.detail {
-		color: var(--sl-color-gray-3);
-	}
-
-	time {
-		font-variant-numeric: tabular-nums;
-	}
-
-	.detail a {
-		color: inherit;
-	}
-</style>

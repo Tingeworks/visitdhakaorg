@@ -255,6 +255,19 @@ export function cleanName(raw: unknown): Result<string> {
 	return { ok: true, value: name };
 }
 
+/**
+ * A signed-in account's display name (#56, #59): the same rules as the anonymous name, but required, and never an
+ * email address, because it's public and permanent once an edit is merged.
+ */
+export function cleanAccountName(raw: unknown): Result<string> {
+	if (typeof raw !== 'string' || !plainText(raw)) return fail('name', 'name_required');
+	const name = cleanName(raw);
+	if (!name.ok) return name;
+	if (name.value.toLowerCase() === ANONYMOUS.toLowerCase()) return fail('name', 'name_reserved');
+	if (/\S@\S+\.\S/.test(name.value)) return fail('name', 'name_has_email');
+	return name;
+}
+
 /** The edit summary for the pull request, or an empty string. */
 export function cleanSummary(raw: unknown): Result<string> {
 	if (raw !== undefined && raw !== null && typeof raw !== 'string') return fail('summary', 'summary_invalid');
