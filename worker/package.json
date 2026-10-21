@@ -7,7 +7,8 @@
     "deploy": "wrangler deploy",
     "types": "wrangler types --include-env=false",
     "check": "wrangler types --include-env=false && tsc",
-    "test": "node --test"
+    "test": "node --test",
+    "fake-github": "node scripts/fake-github-server.ts"
   },
   "dependencies": {
     "yaml": "^2.9.1"
