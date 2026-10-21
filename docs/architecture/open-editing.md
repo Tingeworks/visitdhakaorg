@@ -2,7 +2,8 @@
 
 Status (2026-10-21): phase 1 is accepted (0002) and its validation, Worker, editor, policy and contributor-credit changes
 are merged. Infrastructure setup and deployed integration tests
-remain open; public editing must stay disabled until the launch checks pass. Decisions 0003 and 0004 remain proposed;
+remain open. The editor is switched on in production for the end-to-end testing in #18, with `DAILY_EDIT_CAP=50` as the
+only limit until the rate limiting rule exists. The go-live decision is still to be recorded (#18). Decisions 0003 and 0004 remain proposed;
 0006 accepts anonymous editing first and optional sign-in later. See the [epic readiness review](../reviews/wiki-epic-readiness-2026-10-21.md).
 
 ## Goals and non-goals
