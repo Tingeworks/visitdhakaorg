@@ -1,6 +1,8 @@
 import { beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { banUser, createUser, deleteUser, findUser, findUserBySub, renameUser, unbanUser } from '../src/users.ts';
+import { banUser, createUser, deleteUser, findUser, findUserBySub, listUsers, renameUser, unbanUser } from '../src/users.ts';
+import worker from '../src/index.ts';
+import { signInEnv, testEnv } from './helpers.ts';
 import { cleanAccountName } from '../src/validate.ts';
 import { FakeD1 } from './fake-d1.ts';
 
@@ -98,5 +100,39 @@ describe('cleanAccountName', () => {
 		assert.equal(code('anonymous'), 'name_reserved');
 		assert.equal(code('rahim@example.com'), 'name_has_email');
 		assert.equal(code('Rahim @ Dhaka'), 'Rahim @ Dhaka');
+	});
+});
+
+describe('GET /api/users', () => {
+	const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} } as unknown as ExecutionContext;
+	const call = (env = signInEnv(db)) => worker.fetch(new Request('https://visitdhaka.org/api/users'), env, ctx);
+
+	test('lists every account that exists, banned or not, with only its ID and current name', async () => {
+		const rahim = await createUser(db, { sub: 'sub-1', name: 'Rahim', now });
+		const karim = await createUser(db, { sub: 'sub-2', name: 'Karim' });
+		const gone = await createUser(db, { sub: 'sub-3', name: 'Gone' });
+		await renameUser(db, rahim.id, 'রহিম');
+		await banUser(db, karim.id, 'spam');
+		await deleteUser(db, gone.id);
+
+		const response = await call();
+		assert.equal(response.status, 200);
+		assert.equal(response.headers.get('Cache-Control'), 'public, max-age=300');
+		const text = await response.text();
+		assert.deepEqual(JSON.parse(text), { ok: true, users: [{ id: 1, name: 'রহিম' }, { id: 2, name: 'Karim' }] });
+		for (const hidden of ['sub-1', 'spam', '2026-10-21', 'Gone']) assert.ok(!text.includes(hidden), hidden);
+		assert.deepEqual(await listUsers(db), [{ id: 1, name: 'রহিম' }, { id: 2, name: 'Karim' }]);
+	});
+
+	test('works with sign-in switched off, so profiles survive the kill switch', async () => {
+		await createUser(db, { sub: 'sub-1', name: 'Rahim' });
+		const response = await call(signInEnv(db, { SIGN_IN_ENABLED: 'false' }));
+		assert.deepEqual((await response.json()).users, [{ id: 1, name: 'Rahim' }]);
+	});
+
+	test('reports a missing database as not_configured', async () => {
+		const response = await call(testEnv());
+		assert.equal(response.status, 503);
+		assert.deepEqual(await response.json(), { ok: false, errors: [{ code: 'not_configured' }] });
 	});
 });

@@ -84,7 +84,11 @@ loads from Google until someone follows "Sign in with Google".
 | `POST /api/auth/logout` | Clears the session |
 | `GET /api/auth/me` | `{ ok, user: { id, name } \| null }`, plus `pendingName: true` between Google and choosing a name. Never cached |
 
-Every route returns 403 `sign_in_disabled` unless `SIGN_IN_ENABLED` is `true`, and 503 `not_configured` while a secret
+`GET /api/users` returns `{ ok, users: [{ id, name }] }` for every account that hasn't been deleted, banned or not,
+for building contributor profile pages (#62). It returns nothing else about an account, is cached at the edge for five
+minutes (a rename clears that data centre's copy), and works whether or not sign-in is switched on.
+
+Every `/api/auth/*` route returns 403 `sign_in_disabled` unless `SIGN_IN_ENABLED` is `true`, and 503 `not_configured` while a secret
 or the database is missing. Callback failures are 400 `sign_in_expired`, `state_invalid`, `code_invalid` or
 `token_invalid`, and 502 `google_error`.
 

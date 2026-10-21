@@ -143,6 +143,11 @@
 	"recentChanges.intro": "The latest changes to pages on Visit Dhaka, newest first, in Dhaka time. Edits from the public are reviewed before they're published. Names are as each contributor gave them and aren't verified. The full history is on {{link}}.",
 	"recentChanges.empty": "No changes to show yet.",
 	"recentChanges.more": "and {{n}} more",
+	"profile.description": "Edits to Visit Dhaka by {{name}}, a signed-in contributor.",
+	"profile.intro": "{{name}} has had {{count}} edits published on Visit Dhaka. Every edit is checked by a reviewer before it appears on the site.",
+	"profile.introOne": "{{name}} has had {{count}} edit published on Visit Dhaka. Every edit is checked by a reviewer before it appears on the site.",
+	"profile.noSummary": "No edit summary",
+	"profile.note": "This page lists edits made while signed in, under the account's current display name. Each edit also keeps the name it was made under in the page's history.",
 
 	"random.title": "Random page",
 	"random.description": "Go to a random page on Visit Dhaka.",
