@@ -7,8 +7,9 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-10-15",
 	"observability": { "enabled": true },
-	// GITHUB_APP_ID, GITHUB_INSTALLATION_ID and DAILY_EDIT_CAP are managed in the dashboard (#10).
-	// Keep DAILY_EDIT_CAP out of vars so a deploy cannot reopen editing after the kill switch is set to 0 (#35).
+	// GITHUB_APP_ID, GITHUB_INSTALLATION_ID, DAILY_EDIT_CAP and SIGN_IN_ENABLED are managed in the dashboard (#10, #55).
+	// Keep DAILY_EDIT_CAP and SIGN_IN_ENABLED out of vars so a deploy cannot reopen editing after the kill switch is set
+	// to 0, or switch sign-in back on after it was turned off (#35).
 	"keep_vars": true,
 	"vars": {
 		"GITHUB_OWNER": "Tingeworks",
@@ -16,6 +17,10 @@
 		"GITHUB_BASE_BRANCH": "main",
 		"ALLOWED_ORIGIN": "https://visitdhaka.org"
 	},
+	// Accounts for optional Google sign-in (decision 0006, #55). Tables come from worker/migrations/, applied with
+	// `npx wrangler d1 migrations apply visitdhaka-edit --remote` (or `--local` for `pnpm dev`). With no database_id,
+	// Wrangler finds the database by name on deploy, or creates it if it doesn't exist yet.
+	"d1_databases": [{ "binding": "DB", "database_name": "visitdhaka-edit", "migrations_dir": "migrations" }],
 	// Only /api/* reaches the Worker. Every other path on visitdhaka.org is served by the site project (#14).
 	"routes": [{ "pattern": "visitdhaka.org/api/*", "zone_name": "visitdhaka.org" }]
 }

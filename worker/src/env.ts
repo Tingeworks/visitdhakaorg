@@ -6,6 +6,10 @@ export interface Env {
 	GITHUB_APP_PRIVATE_KEY?: string;
 	/** Secret: Cloudflare Turnstile secret key (used by POST /api/edit, #15). */
 	TURNSTILE_SECRET_KEY?: string;
+	/** Secret: the Google OAuth client's secret, for sign-in (#55). */
+	GOOGLE_CLIENT_SECRET?: string;
+	/** Secret: at least 32 random bytes, which sign the session and sign-in cookies (#55). */
+	SESSION_SECRET?: string;
 	GITHUB_APP_ID?: string;
 	GITHUB_INSTALLATION_ID?: string;
 	GITHUB_OWNER: string;
@@ -13,6 +17,12 @@ export interface Env {
 	GITHUB_BASE_BRANCH: string;
 	/** Pull requests per day, site-wide (#15). 0 turns public editing off. */
 	DAILY_EDIT_CAP?: string;
+	/** The Google OAuth client ID (#55). Not secret, but kept with the client secret. */
+	GOOGLE_CLIENT_ID?: string;
+	/** `true` to allow Google sign-in. Dashboard-managed like DAILY_EDIT_CAP, so it can be switched off without a deploy. */
+	SIGN_IN_ENABLED?: string;
+	/** The accounts database (D1, decision 0006). Optional so the Worker still runs, signed out, without it. */
+	DB?: D1Database;
 	/** Origins allowed to call the API from a browser, comma-separated. */
 	ALLOWED_ORIGIN: string;
 	/**

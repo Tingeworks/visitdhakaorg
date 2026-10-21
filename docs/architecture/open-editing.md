@@ -117,6 +117,12 @@ These names are the contract the Worker code reads (#10). Values are never writt
 | `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, `ALLOWED_ORIGIN` | Variable | `vars` in `worker/wrangler.jsonc` |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Build variable | Site project. Public by design: the `PUBLIC_` prefix puts it in the page |
 | `PUBLIC_EDITOR_ENABLED` | Build variable | Site project. `true` makes "Edit page" open the in-site editor |
+| `GOOGLE_CLIENT_SECRET` | Secret | Edit Worker secret, for Google sign-in (#55). The original is in the team password manager |
+| `SESSION_SECRET` | Secret | Edit Worker secret: at least 32 random bytes (`openssl rand -base64 48`), which sign the session and sign-in cookies. Rotating it signs everyone out |
+| `GOOGLE_CLIENT_ID` | Variable | Edit Worker dashboard, next to the secret. Not secret: it appears in the sign-in redirect |
+| `SIGN_IN_ENABLED` | Variable | Edit Worker dashboard only, never `worker/wrangler.jsonc`. `true` allows sign-in. Missing or anything else means off, and existing sessions are ignored, so every edit is anonymous |
+| `DB` | D1 binding | The `visitdhaka-edit` D1 database, bound in `worker/wrangler.jsonc`. Holds only the `users` table (0006) |
+| `PUBLIC_SIGN_IN_ENABLED` | Build variable | Site project. `true` shows sign-in in the editor and builds contributor profile pages (#59, #62) |
 
 `keep_vars: true` in `worker/wrangler.jsonc` stops deploys removing the dashboard variables. For local development,
 `worker/.dev.vars.example` lists every Worker name with empty or test values, including Cloudflare's always-pass
@@ -132,6 +138,30 @@ organisation can manage the GitHub App. To rotate:
 - **Turnstile secret:** rotate it in the Turnstile widget's settings and set the new value with `npx wrangler secret put
   TURNSTILE_SECRET_KEY`. The site key stays the same unless the widget is replaced. If it is, update
   `PUBLIC_TURNSTILE_SITE_KEY` and rebuild the site.
+
+### Google sign-in setup
+
+Optional sign-in (0006) uses a Google OAuth client and a D1 database (#55). Owners of the Tingeworks Google Cloud project
+can change the client. To set it up:
+
+- **Consent screen:** app name "Visit Dhaka", user type External, the verified domain `visitdhaka.org`, the privacy
+  policy (`https://visitdhaka.org/privacy/`) and terms (`https://visitdhaka.org/terms/`) URLs, and a shared support
+  address rather than a person's.
+- **Scopes:** `openid` and `profile` only, never `email`. Both are non-sensitive, so the sensitive and restricted scope
+  verification doesn't apply. Google's help on [when verification is needed](https://support.google.com/cloud/answer/13464321)
+  says every app still needs brand verification (verified domain, homepage and privacy policy), apart from some exempt
+  cases. Whether that applies to this app, and whether adding a logo needs it, is shown in the console's "Verification
+  centre" when the consent screen is set up: record what it says here.
+- **Client:** type "Web application", with redirect URIs `https://visitdhaka.org/api/auth/callback` and
+  `http://localhost:8787/api/auth/callback`. Record the client ID here once it exists (it isn't secret).
+- **Database:** `npx wrangler d1 create visitdhaka-edit` from `worker/` (or let the first deploy create it), then
+  `npx wrangler d1 migrations apply visitdhaka-edit --remote`.
+- **Secrets:** `npx wrangler secret put GOOGLE_CLIENT_SECRET` and `npx wrangler secret put SESSION_SECRET` from
+  `worker/`, and `GOOGLE_CLIENT_ID` and `SIGN_IN_ENABLED` as dashboard variables. None of these go in the site's build
+  variables.
+
+To rotate the client secret, add a new secret to the client in the console, set it with `wrangler secret put`, check a
+sign-in, then delete the old one.
 
 ## Data model changes
 
