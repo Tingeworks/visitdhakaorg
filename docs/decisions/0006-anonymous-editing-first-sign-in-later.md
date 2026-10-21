@@ -68,3 +68,24 @@ validation, the editor and the review process are all needed either way.
   privacy policy URL. With only basic scopes, Google's app review shouldn't be needed. Check this, and the current
   rules for showing a logo on the consent screen, when the work starts.
 - Until sign-in exists, all credit stays unverified, as 0003 describes.
+
+## Update (epic #54): what was built
+
+Optional Google sign-in is built (#55 to #62), following this decision, with these details settled along the way:
+
+- **Scopes:** `openid` and `profile` only, not `email`. Nothing needs the email address, so the Worker never receives
+  it.
+- **Flow:** a server-side OpenID Connect redirect with PKCE and a nonce, in `worker/src/auth.ts`, using `fetch` and
+  WebCrypto only. The site shows a plain link, so nothing loads from Google until someone follows it.
+- **No row before a name:** a new Google account is held in a signed 10-minute cookie until it chooses a display name,
+  so an abandoned sign-up stores nothing.
+- **Sessions:** a signed `__Host-session` cookie holding only the user ID and expiry, with no session table.
+  `identify()` reads the account's row on every request, so a ban, rename or deletion applies at once. While
+  `SIGN_IN_ENABLED` isn't `true`, sessions are ignored and every edit is anonymous.
+- **D1 `users` table:** ID, Google's subject ID, display name, join date and ban fields. No email or Google profile data
+  (0004).
+- **Credit:** `user-<id>@visitdhaka.org` as the commit author and `Edited-by: <name> (account <id>)` (0003).
+- **Profiles:** static contributor pages built from git and the Worker's `GET /api/users` (0003).
+- **Accounts:** renaming and deletion in the editor. Deleted IDs are never reused.
+
+Switching it on in production is decision [0008](0008-launch-google-sign-in.md).
