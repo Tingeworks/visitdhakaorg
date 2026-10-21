@@ -11,12 +11,11 @@
 // "Edit page" does, which is every page with a source file, and not on StarlightPage routes such as /whats-on/.
 import Default from '@astrojs/starlight/components/EditLink.astro';
 import { Icon } from '@astrojs/starlight/components';
-import { editorEnabled, isEditablePath } from '../lib/editor';
-import { localeOf, localizePath, unlocalizePath } from '../lib/i18n';
+import { inSiteEditorUrl } from '../lib/editor';
+import { localeOf, unlocalizePath } from '../lib/i18n';
 
 const route = Astro.locals.starlightRoute;
-const inSiteEditor = editorEnabled && Boolean(route.editUrl) && !route.isFallback && isEditablePath(route.entry.filePath);
-const editorUrl = localizePath('/edit/', localeOf(Astro.url)) + '?' + new URLSearchParams({ path: route.entry.filePath ?? '' });
+const editorUrl = inSiteEditorUrl(route, localeOf(Astro.url));
 const path = unlocalizePath(Astro.url.pathname);
 const { title } = route.entry.data;
 
@@ -34,7 +33,7 @@ const newUrl = discussions + '/new?' + prefill;
 
 <div class="page-actions sl-flex">
 	{
-		inSiteEditor ? (
+		editorUrl ? (
 			<a href={editorUrl} class="edit sl-flex print:hidden">
 				<Icon name="pencil" size="1.2em" />
 				{Astro.locals.t('page.editLink')}
