@@ -1,10 +1,12 @@
 // The edit Worker (decision 0002, docs/architecture/open-editing.md). It answers only under /api/. Routes are matched
-// on the exact path, so phase 3's /api/auth/* (decision 0006) slots into `routes` without changing the others.
-// Phase 1 sets no cookies.
+// on the exact path. Only optional Google sign-in (/api/auth/*, decision 0006, #57) sets cookies, and only once someone
+// clicks "Sign in". The other routes set none.
+import { authRoutes } from './auth.ts';
 import { edit } from './edit.ts';
 import type { Env } from './env.ts';
 import { splitFile, readFrontmatter } from './frontmatter.ts';
 import { GitHubError, NotConfiguredError, getFile, installationToken } from './github.ts';
+import { GoogleError } from './google.ts';
 import { error, json, preflight, validationErrors, withCors } from './http.ts';
 import { branchFor, sourceCacheKey } from './pages.ts';
 import { branchSha, openPullFrom } from './repo.ts';
@@ -69,6 +71,7 @@ const routes: Record<string, Partial<Record<string, Handler>>> = {
 	'/api/health': { GET: health },
 	'/api/source': { GET: source },
 	'/api/edit': { POST: edit },
+	...authRoutes,
 };
 
 export default {
@@ -96,7 +99,9 @@ export default {
 					? error(503, 'not_configured')
 					: cause instanceof GitHubError
 						? error(502, 'github_error')
-						: error(500, 'internal_error');
+						: cause instanceof GoogleError
+							? error(502, 'google_error')
+							: error(500, 'internal_error');
 		}
 		return withCors(response, request, env);
 	},

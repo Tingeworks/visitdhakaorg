@@ -59,7 +59,7 @@ describe('routing', () => {
 		assert.equal(response.headers.get('Allow'), 'GET');
 	});
 
-	test('never sets a cookie', async () => {
+	test('sets no cookie outside sign-in', async () => {
 		stubGitHub({ 'src/content/docs/bn/attractions/lalbagh-fort.md': page });
 		for (const path of ['/api/health', '/api/source?path=src/content/docs/bn/attractions/lalbagh-fort.md', '/api/nope']) {
 			assert.equal((await call(path)).headers.get('Set-Cookie'), null, path);
@@ -156,9 +156,15 @@ describe('GET /api/health', () => {
 
 	test('never returns a secret', async () => {
 		const secret = '-----BEGIN RSA PRIVATE KEY-----\nTOPSECRET\n-----END RSA PRIVATE KEY-----';
-		const env = testEnv({ GITHUB_APP_ID: '1', GITHUB_INSTALLATION_ID: '2', GITHUB_APP_PRIVATE_KEY: secret });
+		const env = testEnv({
+			GITHUB_APP_ID: '1',
+			GITHUB_INSTALLATION_ID: '2',
+			GITHUB_APP_PRIVATE_KEY: secret,
+			GOOGLE_CLIENT_SECRET: 'GOOGLESECRET',
+			SESSION_SECRET: 'SESSIONSECRET-of-at-least-32-bytes-long',
+		});
 		const text = await (await call('/api/health', {}, env)).text();
-		assert.ok(!text.includes('TOPSECRET'));
+		for (const value of ['TOPSECRET', 'GOOGLESECRET', 'SESSIONSECRET']) assert.ok(!text.includes(value), value);
 		assert.match(text, /"github":"not_configured"/);
 	});
 });
@@ -189,10 +195,10 @@ describe('CORS', () => {
 });
 
 describe('identify', () => {
-	test('is anonymous in phase 1, with the cleaned display name', () => {
+	test('is anonymous without a session, with the cleaned display name', async () => {
 		const request = new Request('http://localhost/api/edit', { method: 'POST' });
-		assert.deepEqual(identify(request, { name: '  <b>Rahim</b> ' }), { ok: true, value: { kind: 'anonymous', name: 'Rahim' } });
-		assert.deepEqual(identify(request, {}), { ok: true, value: { kind: 'anonymous', name: 'Anonymous' } });
-		assert.equal(identify(request, { name: 'x'.repeat(41) }).ok, false);
+		assert.deepEqual(await identify(request, dev, { name: '  <b>Rahim</b> ' }), { ok: true, value: { kind: 'anonymous', name: 'Rahim' } });
+		assert.deepEqual(await identify(request, dev, {}), { ok: true, value: { kind: 'anonymous', name: 'Anonymous' } });
+		assert.equal((await identify(request, dev, { name: 'x'.repeat(41) })).ok, false);
 	});
 });

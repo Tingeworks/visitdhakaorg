@@ -1,5 +1,6 @@
 // GitHub access as the GitHub App (#10): an RS256 JWT signed with WebCrypto, exchanged for an installation token that
 // is cached until shortly before it expires. No Octokit: the Worker needs a handful of REST calls.
+import { base64url } from './base64.ts';
 import { isDevelopment, type Env } from './env.ts';
 
 const API = 'https://api.github.com';
@@ -22,13 +23,6 @@ export class GitHubError extends Error {
 }
 
 export class NotConfiguredError extends Error {}
-
-const base64url = (data: ArrayBuffer | Uint8Array | string) => {
-	const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
-	let binary = '';
-	for (const byte of bytes) binary += String.fromCharCode(byte);
-	return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-};
 
 /** Imports a PKCS#8 PEM private key. GitHub downloads keys as PKCS#1, which has to be converted first (#10). */
 export async function importPrivateKey(pem: string) {

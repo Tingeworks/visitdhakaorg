@@ -131,7 +131,7 @@ export async function edit(request: Request, env: Env, ctx: ExecutionContext): P
 	if (input.licence !== true) errors.push({ field: 'licence', code: 'licence_required' });
 	const path = validatePath(input.path);
 	if (!path.ok) errors.push(...path.errors);
-	const who = identify(request, input);
+	const who = await identify(request, env, input);
 	if (!who.ok) errors.push(...who.errors);
 	const summary = cleanSummary(input.summary);
 	if (!summary.ok) errors.push(...summary.errors);

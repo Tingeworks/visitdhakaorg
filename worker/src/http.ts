@@ -17,7 +17,7 @@ export const error = (status: number, code: string, field?: string) =>
 
 export const validationErrors = (errors: ValidationError[], status = 400) => json({ ok: false, errors }, status);
 
-const allowedOrigins = (env: Env) =>
+export const allowedOrigins = (env: Env) =>
 	env.ALLOWED_ORIGIN.split(',')
 		.map((origin) => origin.trim())
 		.filter(Boolean);
@@ -28,12 +28,17 @@ export function isAllowedOrigin(request: Request, env: Env) {
 	return origin === null || allowedOrigins(env).includes(origin);
 }
 
-/** Adds CORS headers for allowed origins. Other origins get none, so the browser blocks the response. */
+/**
+ * Adds CORS headers for allowed origins. Other origins get none, so the browser blocks the response. Credentials are
+ * allowed so the session cookie reaches the Worker when it's on another port in development. In production it's on the
+ * site's own origin and CORS doesn't apply.
+ */
 export function withCors(response: Response, request: Request, env: Env) {
 	const origin = request.headers.get('Origin');
 	if (!origin || !allowedOrigins(env).includes(origin)) return response;
 	const headers = new Headers(response.headers);
 	headers.set('Access-Control-Allow-Origin', origin);
+	headers.set('Access-Control-Allow-Credentials', 'true');
 	headers.append('Vary', 'Origin');
 	return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
