@@ -20,6 +20,7 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 | [0004](decisions/0004-d1-for-contribution-records.md) | Cloudflare D1 for contribution records | Proposed, deferred to phase 2 |
 | [0005](decisions/0005-google-analytics-with-consent.md) | Google Analytics 4 through Tag Manager, loaded only after consent | Accepted, implemented |
 | [0006](decisions/0006-anonymous-editing-first-sign-in-later.md) | Anonymous editing first, optional Google sign-in later | Accepted |
+| [0007](decisions/0007-launch-public-editing.md) | Launch public editing | Proposed, waiting for the end-to-end test (#18) |
 
 ## Documents
 

@@ -3,6 +3,8 @@
 import { isDevelopment, type Env } from './env.ts';
 
 const API = 'https://api.github.com';
+/** GitHub's API, or in development the `GITHUB_API_URL` override, such as the fake GitHub server (#18). */
+const apiBase = (env: Env) => (isDevelopment(env) && env.GITHUB_API_URL ? env.GITHUB_API_URL.replace(/\/$/, '') : API);
 // GitHub rejects API requests without a User-Agent, and Workers' fetch doesn't send one.
 const baseHeaders = {
 	Accept: 'application/vnd.github+json',
@@ -71,7 +73,7 @@ export async function installationToken(env: Env): Promise<string | undefined> {
 	if (cachedToken && cachedToken.expiresAt - Date.now() > 5 * 60_000) return cachedToken.token;
 
 	const jwt = await appJwt(env.GITHUB_APP_ID!, await importPrivateKey(env.GITHUB_APP_PRIVATE_KEY!));
-	const response = await fetch(`${API}/app/installations/${env.GITHUB_INSTALLATION_ID}/access_tokens`, {
+	const response = await fetch(`${apiBase(env)}/app/installations/${env.GITHUB_INSTALLATION_ID}/access_tokens`, {
 		method: 'POST',
 		headers: { ...baseHeaders, Authorization: `Bearer ${jwt}` },
 	});
@@ -84,7 +86,7 @@ export async function installationToken(env: Env): Promise<string | undefined> {
 /** A GitHub REST call as the app, with a path relative to the API root (`/repos/...`). */
 export async function github(env: Env, path: string, init: RequestInit = {}) {
 	const token = await installationToken(env);
-	return fetch(`${API}${path}`, {
+	return fetch(`${apiBase(env)}${path}`, {
 		...init,
 		headers: { ...baseHeaders, ...(token ? { Authorization: `Bearer ${token}` } : {}), ...init.headers },
 	});

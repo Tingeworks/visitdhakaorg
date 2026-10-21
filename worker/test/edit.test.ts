@@ -232,6 +232,17 @@ describe('POST /api/edit: errors', () => {
 		nothingWritten();
 	});
 
+	test('clears the cached source when an edit is stale, so a reload gets the current text', async () => {
+		const deleted: string[] = [];
+		Object.assign(globalThis, { caches: { default: { delete: async (request: Request) => deleted.push(request.url) } } });
+		try {
+			await post(await anEdit({ baseSha: await blobSha('an older version') }));
+		} finally {
+			delete (globalThis as { caches?: unknown }).caches;
+		}
+		assert.deepEqual(deleted, [`https://edit-worker.cache/api/source?path=${encodeURIComponent(path)}`]);
+	});
+
 	test('reports a write race as stale', async () => {
 		gh.failNextCommit = true;
 		const response = await post(await anEdit());

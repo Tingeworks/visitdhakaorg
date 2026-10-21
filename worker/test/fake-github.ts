@@ -39,7 +39,8 @@ export class FakeGitHub {
 		globalThis.fetch = async (input, init) => this.handle(new Request(input, init));
 	}
 
-	private async handle(request: Request): Promise<Response> {
+	/** Answers one request to GitHub or Turnstile, as `install()` does for every fetch. */
+	async handle(request: Request): Promise<Response> {
 		const url = new URL(request.url);
 		if (url.host === 'challenges.cloudflare.com') {
 			const form = new URLSearchParams(await request.text());

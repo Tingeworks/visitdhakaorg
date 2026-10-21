@@ -8,9 +8,12 @@
 import { existsSync } from 'node:fs';
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import { Icon } from '@astrojs/starlight/components';
-import { translatedLocales } from '../lib/i18n';
+import { inSiteEditorUrl } from '../lib/editor';
+import { localeOf, translatedLocales } from '../lib/i18n';
 
 const route = Astro.locals.starlightRoute;
+// "Help check it" goes where "Edit page" does: the in-site editor when it can edit this page, otherwise GitHub.
+const helpUrl = inSiteEditorUrl(route, localeOf(Astro.url)) ?? route.editUrl?.href;
 const [first, ...rest] = (route.entry.filePath ?? '').replace(/^src\/content\/docs\//, '').split('/');
 const inPillar = (translatedLocales.includes(first) ? rest : [first, ...rest]).length > 1;
 const showNotice = inPillar && !route.entry.data.verified && existsSync(route.entry.filePath);
@@ -23,8 +26,8 @@ const showNotice = inPillar && !route.entry.data.verified && existsSync(route.en
 			<Icon name="warning" size="1.5em" color="var(--sl-color-orange-high)" />
 			<span>
 				{Astro.locals.t('unverified.text')}
-				{route.editUrl && ' '}
-				{route.editUrl && <a href={route.editUrl.href}>{Astro.locals.t('unverified.help')}</a>}
+				{helpUrl && ' '}
+				{helpUrl && <a href={helpUrl}>{Astro.locals.t('unverified.help')}</a>}
 			</span>
 		</p>
 	)
