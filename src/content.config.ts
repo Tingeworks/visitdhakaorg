@@ -57,6 +57,11 @@ export const collections = {
 			page: z.string().optional(),
 			// Official or organiser source for dates and details.
 			link: z.string().url().optional(),
+			// A photo for the card, uploaded through the CMS (/uploads/...). Its alt text describes the photo, and its
+			// credit (photographer and licence) is shown under it, as the licence page requires.
+			image: z.string().startsWith('/').optional(),
+			imageAlt: z.string().optional(),
+			imageCredit: z.string().optional(),
 			verified: z.boolean().default(false),
 		}),
 	}),

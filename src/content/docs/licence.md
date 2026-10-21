@@ -4,7 +4,7 @@ description: How you can reuse Visit Dhaka's text and code, how to credit the si
 verified: false
 ---
 
-_Last updated: 21 October 2026_
+_Last updated: 22 October 2026_
 
 Visit Dhaka is a community guide, and its content is free to share and reuse. This page explains the licences that apply and how to credit the site.
 
@@ -35,6 +35,14 @@ The code that runs the site is available under the [MIT licence](https://opensou
 - **Photos and other media:** images may have their own licence or credit, shown with the image. Where none is shown, ask us before reusing it.
 - **Names and logos:** the Visit Dhaka name and logo and the Tingeworks name and logo aren't covered by these licences. Please don't use them in a way that suggests we endorse you or your work.
 - **Material from others:** quotations, trademarks and content credited to someone else belong to their owners.
+
+## Photo credits
+
+These photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are used under their own licences. Each has been resized and cropped for the site.
+
+- **Central Shaheed Minar** (International Mother Language Day): [Biswarup Ganguly](https://commons.wikimedia.org/wiki/File:Central_Shaheed_Minar_-_Dhaka_Medical_College_Campus_-_Dhaka_2015-05-31_2577.JPG), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- **National Parliament House lit for Independence Day** (Independence Day): [Sajeeb Ahmed Photography](https://commons.wikimedia.org/wiki/File:National_Assembly_of_Bangladesh_on_Independence_Day_2015_(16761162098).jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
+- **Mangal Shobhajatra** (Pohela Boishakh): [Abidhasan00](https://commons.wikimedia.org/wiki/File:Mangal_Shobhajatra_in_Dhaka.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ## Contributing
 

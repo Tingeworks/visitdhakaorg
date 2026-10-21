@@ -1,6 +1,6 @@
 ---
-// A text card used by the homepage lists. Renders as a link when `href` is set. Any extra props (such as data-*
-// attributes) are passed through to the card element.
+// A card used by the homepage lists, with an optional photo on top (event cards). Renders as a link when `href` is set.
+// Any extra props (such as data-* attributes) are passed through to the card element.
 interface Props {
 	title: string;
 	href?: string;
@@ -10,15 +10,27 @@ interface Props {
 	meta?: string;
 	badge?: string;
 	hidden?: boolean;
+	/** A photo for the top of the card, its description, and its credit (shown under it). */
+	image?: string;
+	imageAlt?: string;
+	imageCredit?: string;
 	[attr: `data-${string}`]: string | boolean | undefined;
 }
 
-const { title, href, external, eyebrow, description, meta, badge, ...attrs } = Astro.props;
+const { title, href, external, eyebrow, description, meta, badge, image, imageAlt = '', imageCredit, ...attrs } = Astro.props;
 const Tag = href ? 'a' : 'div';
 const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}) } : {};
 ---
 
-<Tag class:list={['home-card', { link: href }]} {...linkAttrs} {...attrs}>
+<Tag class:list={['home-card', { link: href, 'has-image': image }]} {...linkAttrs} {...attrs}>
+	{
+		image && (
+			<figure class="media">
+				<img src={image} alt={imageAlt} width="600" height="400" loading="lazy" decoding="async" />
+				{imageCredit && <figcaption class="credit">{imageCredit}</figcaption>}
+			</figure>
+		)
+	}
 	{
 		(eyebrow || badge) && (
 			<div class="top">
@@ -55,6 +67,25 @@ const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopen
 	}
 	.home-card[hidden] {
 		display: none;
+	}
+	/* The photo runs to the card's edges, above the text. */
+	.media {
+		margin: -1.25rem -1.25rem 0.5rem;
+	}
+	.media img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 3 / 2;
+		object-fit: cover;
+		border-radius: var(--vd-radius-lg) var(--vd-radius-lg) 0 0;
+		background: var(--sl-color-gray-6);
+	}
+	.credit {
+		padding: 0.375rem 1.25rem 0;
+		font-size: 0.6875rem;
+		line-height: 1.4;
+		color: var(--sl-color-gray-3);
 	}
 	.link {
 		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
