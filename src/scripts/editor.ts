@@ -2,9 +2,11 @@
 // the form, load Turnstile, and send the edit. The Worker's responses are documented in
 // docs/architecture/open-editing.md ("Responses from POST /api/edit"). Every message comes from the page, already in
 // the reader's language, and is inserted as text, never as HTML. With sign-in on (#59), it also shows whether the reader
-// is signed in (GET /api/auth/me), and asks a new account for its display name (POST /api/auth/name) before anything
-// else. Requests that may carry the session cookie use `credentials: 'include'`, because locally the Worker is on
-// another port.
+// is signed in, and asks a new account for its display name before anything else (src/scripts/account.ts). Everything
+// else about the account is on the account page (/account/). Requests that may carry the session cookie use
+// `credentials: 'include'`, because locally the Worker is on another port.
+
+import { linkContributions, nameForm, signInUrl, signOut, whoAmI, type Account } from './account';
 
 type Turnstile = {
 	render: (element: HTMLElement, options: Record<string, unknown>) => string;
@@ -57,7 +59,7 @@ function start(root: HTMLElement) {
 	/** A new account is choosing its display name, so the form waits. */
 	let choosingName = false;
 	/** The signed-in account, if any. Its name is sent by the session, not the form. */
-	let account: { id: number; name: string } | undefined;
+	let account: Account | undefined;
 
 	/** Replaces {{link}} in a message with a link, keeping the rest as text. */
 	function fillWithLink(element: HTMLElement, text: string, href: string, linkText: string) {
@@ -144,34 +146,22 @@ function start(root: HTMLElement) {
 
 	/** Shows the signed-in or signed-out state, or hides sign-in altogether when the Worker doesn't offer it. */
 	function showAccount(state: 'signed-in' | 'signed-out' | 'unavailable') {
-		const panel = $('edit-account');
-		panel.hidden = state === 'unavailable';
+		$('edit-account').hidden = state === 'unavailable';
 		$('edit-signed-out').hidden = state !== 'signed-out';
 		$('edit-signed-in').hidden = state !== 'signed-in';
 		$('edit-name-field').hidden = state === 'signed-in';
 		if (state !== 'signed-in' || !account) return;
 		$('edit-signed-in-as').textContent = message('edit.signedInAs').replace('{{name}}', account.name);
-		// The profile page exists once one of the account's edits is published and the site rebuilt (#62).
-		const profile = `${root.dataset.contributors ?? '/contributors/'}${account.id}/`;
-		fetch(profile, { method: 'HEAD' })
-			.then((response) => {
-				if (!response.ok) return;
-				const link = Object.assign(document.createElement('a'), { href: profile, textContent: message('edit.contributions') });
-				$('edit-contributions').replaceChildren(link);
-			})
-			.catch(() => {});
+		linkContributions($('edit-contributions'), `${root.dataset.contributors ?? '/contributors/'}${account.id}/`, message('edit.contributions'));
 	}
 
-	function showChooseName(renaming: boolean) {
+	/** A new account chooses its display name before anything else. Renaming is on the account page. */
+	function showChooseName() {
 		if (!chooseName) return;
 		choosingName = true;
 		chooseName.hidden = false;
 		form.hidden = true;
 		$('edit-account').hidden = true;
-		$('edit-skip-name').hidden = renaming;
-		$('edit-cancel-name').hidden = !renaming;
-		const input = $<HTMLInputElement>('edit-new-name');
-		input.value = renaming && account ? account.name : '';
 		$('edit-choose-name-title').focus();
 	}
 
@@ -183,93 +173,36 @@ function start(root: HTMLElement) {
 		showAccount(account ? 'signed-in' : 'signed-out');
 	}
 
-	async function loadAccount() {
-		let data: { ok?: boolean; user?: { id: number; name: string } | null; pendingName?: boolean } | undefined;
-		try {
-			const response = await fetch(`${api}/api/auth/me`, { credentials: 'include', cache: 'no-store' });
-			data = await response.json();
-		} catch {
-			data = undefined;
-		}
-		if (!data?.ok) return showAccount('unavailable');
-		account = data.user ?? undefined;
-		showAccount(account ? 'signed-in' : 'signed-out');
-		if (!account && data.pendingName) showChooseName(false);
-	}
-
 	if (signIn && chooseName) {
-		$<HTMLAnchorElement>('edit-sign-in').href =
-			`${api}/api/auth/login?${new URLSearchParams({ return: location.pathname + location.search })}`;
+		const here = location.pathname + location.search;
+		$<HTMLAnchorElement>('edit-sign-in').href = signInUrl(api, here);
+		const manage = $<HTMLAnchorElement>('edit-manage-account');
+		manage.href = `${manage.getAttribute('href')}?${new URLSearchParams({ return: here })}`;
 
-		$('edit-name-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const input = $<HTMLInputElement>('edit-new-name');
-			const error = $('edit-new-name-error');
-			error.hidden = true;
-			input.removeAttribute('aria-invalid');
-			const save = $<HTMLButtonElement>('edit-save-name');
-			save.disabled = true;
-			let response: Response | undefined;
-			try {
-				response = await fetch(`${api}/api/auth/name`, {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ name: input.value }),
-				});
-			} catch {
-				response = undefined;
-			}
-			save.disabled = false;
-			const data = await response?.json().catch(() => undefined);
-			if (response?.ok && data?.ok) {
-				account = data.user;
+		nameForm({
+			api,
+			message: (code) => {
+				// A sign-up that took longer than ten minutes: start again.
+				if (code === 'signed_out') showAccount('signed-out');
+				return message(`edit.error.${code}`);
+			},
+			onSaved(saved) {
+				account = saved;
 				hideChooseName();
 				$('edit-signed-in-as').focus();
-				return;
-			}
-			const code = data?.errors?.[0]?.code;
-			error.textContent = message(response ? `edit.error.${code}` : 'edit.error.network');
-			error.hidden = false;
-			input.setAttribute('aria-invalid', 'true');
-			input.focus();
-			// A sign-up that took longer than ten minutes: start again.
-			if (code === 'signed_out') showAccount('signed-out');
+			},
+		});
+		$('edit-skip-name').addEventListener('click', async () => {
+			await signOut(api);
+			hideChooseName();
 		});
 
-		const signOut = async () => {
-			await fetch(`${api}/api/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
-			account = undefined;
-			hideChooseName();
-			showAccount('signed-out');
-		};
-		$('edit-skip-name').addEventListener('click', signOut);
-		$('edit-sign-out').addEventListener('click', signOut);
-		$('edit-cancel-name').addEventListener('click', () => {
-			hideChooseName();
-			$('edit-change-name').focus();
+		whoAmI(api).then((me) => {
+			if (!me) return showAccount('unavailable');
+			account = me.user;
+			showAccount(account ? 'signed-in' : 'signed-out');
+			if (!account && me.pendingName) showChooseName();
 		});
-		$('edit-change-name').addEventListener('click', () => showChooseName(true));
-		// Deleting an account (#60): its row goes, and its past edits stay in git under the name they were made with.
-		$('edit-delete-account').addEventListener('click', async () => {
-			if (!confirm(message('edit.deleteConfirm'))) return;
-			let response: Response | undefined;
-			try {
-				response = await fetch(`${api}/api/auth/account`, { method: 'DELETE', credentials: 'include' });
-			} catch {
-				response = undefined;
-			}
-			const data = await response?.json().catch(() => undefined);
-			if (!response?.ok || !data?.ok) {
-				return showAlert(message(response ? `edit.error.${data?.errors?.[0]?.code}` : 'edit.error.network'));
-			}
-			account = undefined;
-			showAccount('signed-out');
-			const notice = $('edit-signed-out');
-			notice.replaceChildren(message('edit.deleted'), ' ', ...notice.childNodes);
-		});
-		$('edit-signed-in-as').tabIndex = -1;
-		loadAccount();
 	}
 
 	function showErrors(response: Response, errors: ApiError[] | undefined) {
@@ -352,4 +285,3 @@ function start(root: HTMLElement) {
 	else status.textContent = message('edit.notFound');
 }
 
-export {};

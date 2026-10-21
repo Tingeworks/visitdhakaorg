@@ -118,9 +118,14 @@ The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than
 
 With sign-in on, the editor asks the Worker who is signed in (`/api/auth/me`). Signed out, it shows the name field and a
 plain "Sign in with Google" link to `/api/auth/login`, never Google's button or script. Signed in, it shows "Editing as
-<name>", a link to the account's contributor page once it has one (#62), "Change your name" and "Sign out", and sends no
-name with the edit. After a first sign-in it asks for a display name before anything else, saying the name is public and
+<name>", a link to the account's contributor page once it has one (#62) and "Manage your account", and sends no name
+with the edit. After a first sign-in it asks for a display name before anything else, saying the name is public and
 permanent.
+
+The account page, `/account/` and `/bn/account/` (`src/pages/[...locale]/account.astro`), is where a signed-in editor
+changes their display name, signs out or deletes the account (#60). The editor links to it with `?return=` so it can
+link back. It's built only with `PUBLIC_SIGN_IN_ENABLED`. The name form and the `/api/auth/*` calls are shared between
+the two pages (`src/components/AccountNameForm.astro`, `src/scripts/account.ts`).
 
 To try it locally, run the Worker with `pnpm dev` in `worker/`, with `ALLOWED_ORIGIN` set to the site's local origin in `worker/.dev.vars`. Then build or run the site with `PUBLIC_EDITOR_ENABLED=true PUBLIC_EDIT_API_URL=http://localhost:8787`. Without app credentials, the Worker can load pages but not write edits.
 

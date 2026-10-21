@@ -1,0 +1,171 @@
+/* Form styles shared by the editor (src/pages/[...locale]/edit.astro) and the account page
+   (src/pages/[...locale]/account.astro). Everything is under .vd-form, so Starlight's own buttons and inputs on those
+   pages are untouched. */
+
+.vd-form :is(label, legend) {
+	display: block;
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.vd-form .field {
+	margin-top: 1.25rem;
+}
+
+.vd-form fieldset.field {
+	border: 0;
+	padding: 0;
+}
+
+.vd-form textarea,
+.vd-form input[type='text'] {
+	box-sizing: border-box;
+	width: 100%;
+	margin-top: 0.375rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: var(--vd-radius-md);
+	background: var(--sl-color-bg);
+	color: var(--sl-color-white);
+	font: inherit;
+	line-height: 1.6;
+}
+
+.vd-form textarea {
+	resize: vertical;
+	min-height: 16rem;
+}
+
+.vd-form textarea:focus-visible,
+.vd-form input:focus-visible,
+.vd-form button:focus-visible {
+	outline: 2px solid var(--vd-ring);
+	outline-offset: 2px;
+}
+
+.vd-form .checkbox {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25rem 0.625rem;
+	align-items: start;
+}
+
+.vd-form .checkbox input {
+	width: 1.125rem;
+	height: 1.125rem;
+	margin-top: 0.2rem;
+}
+
+.vd-form .checkbox label {
+	font-weight: 400;
+}
+
+.vd-form .checkbox .field-error {
+	grid-column: 2;
+}
+
+.vd-form .hint,
+.vd-form .rules {
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+}
+
+.vd-form .hint {
+	margin-top: 0.25rem;
+}
+
+.vd-form .field-error {
+	margin-top: 0.375rem;
+	color: var(--sl-color-red-high);
+	font-weight: 600;
+	font-size: var(--sl-text-sm);
+}
+
+.vd-form [aria-invalid='true'] {
+	border-color: var(--sl-color-red) !important;
+}
+
+.vd-form .alert,
+.vd-form .pending {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--sl-color-orange);
+	border-radius: var(--vd-radius-md);
+	background: var(--sl-color-orange-low);
+	color: var(--sl-color-orange-high);
+}
+
+.vd-form .alert button {
+	margin-top: 0.5rem;
+}
+
+.vd-form .actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	margin-top: 1.5rem;
+}
+
+.vd-form button {
+	padding: 0.625rem 1.25rem;
+	border: 0;
+	border-radius: var(--vd-radius-md);
+	background: var(--vd-button);
+	color: var(--vd-button-text);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.vd-form button:hover {
+	background: var(--vd-button-hover);
+}
+
+.vd-form button:disabled {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.vd-form button.secondary {
+	border: 1px solid var(--sl-color-gray-5);
+	background: transparent;
+	color: var(--sl-color-white);
+}
+
+.vd-form button.secondary:hover {
+	background: var(--sl-color-gray-6);
+}
+
+.vd-form .account,
+.vd-form .choose-name {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--vd-radius-md);
+}
+
+.vd-form .account {
+	margin-top: 1.25rem;
+}
+
+.vd-form button.danger {
+	border-color: var(--sl-color-red);
+	color: var(--sl-color-red-high);
+}
+
+.vd-form .signed-in-as {
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.vd-form .account-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+}
+
+.vd-form .success {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--vd-radius-lg);
+}

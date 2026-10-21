@@ -68,7 +68,7 @@ Signing in with Google is optional. Editing works the same without an account. I
 - the display name you choose is public, and must follow the same rules as any contributor name
 - you're responsible for edits made while signed in to your account
 - we may ban an account that sends spam or abuse, which stops it making edits, or rename an abusive display name
-- you can change your name or delete your account at any time in the editor. Deleting it doesn't remove your published edits, which stay in the site's history as explained in the [privacy policy](/privacy/)
+- you can change your name or delete your account at any time on the [account page](/account/). Deleting it doesn't remove your published edits, which stay in the site's history as explained in the [privacy policy](/privacy/)
 
 We may turn the site's editor or sign-in off, limit how many edits it accepts, or block edits from a connection or an account that sends spam or abuse.
 

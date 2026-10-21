@@ -123,7 +123,7 @@ We keep these until you delete your account.
 
 **Your contributor page.** Once one of your edits is published, you have a public page at `/contributors/<your account number>/` listing your published edits under your current display name. It's linked from the editor and from [Recent changes](/recent-changes/).
 
-**Changing your name or deleting your account.** In the editor, choose **Change your name** or **Delete your account**. A new name is used for your future edits and on your contributor page from the next time the site is updated. Deleting your account removes it from our database straight away and signs you out, and your contributor page is removed the next time the site is updated. Your past edits stay in the site's history and in pages' contributor lists under the name you used at the time, as for any published edit, and your account number is never given to anyone else. To have your name removed from past edits too, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com).
+**Changing your name or deleting your account.** Both are on the [account page](/account/), which the editor links to as **Manage your account**. A new name is used for your future edits and on your contributor page from the next time the site is updated. Deleting your account removes it from our database straight away and signs you out, and your contributor page is removed the next time the site is updated. Your past edits stay in the site's history and in pages' contributor lists under the name you used at the time, as for any published edit, and your account number is never given to anyone else. To have your name removed from past edits too, email [privacy@tingeworks.com](mailto:privacy@tingeworks.com).
 
 ### Editing on GitHub
 
@@ -163,7 +163,7 @@ Depending on where you live, you may have the right to:
 - withdraw consent at any time, without affecting what happened before
 - complain to your data protection authority
 
-Analytics data is not linked to your name, so we usually can't find a specific person in it. If you have an account, you can change your name or delete it yourself in the editor. Email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with any request and we'll reply within one month.
+Analytics data is not linked to your name, so we usually can't find a specific person in it. If you have an account, you can change your name or delete it yourself on the [account page](/account/). Email [privacy@tingeworks.com](mailto:privacy@tingeworks.com) with any request and we'll reply within one month.
 
 ## Children
 
