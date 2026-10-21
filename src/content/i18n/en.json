@@ -50,8 +50,6 @@
 
 	"page.history": "View history",
 	"talk.link": "Talk",
-	"talk.new": "Start a discussion",
-	"talk.body": "Discussion about this page:",
 	"contributors.label": "Contributors",
 	"contributors.more": "and {{n}} others",
 	"contributors.anonymous": "Anonymous",
