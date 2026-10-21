@@ -17,6 +17,6 @@ Banani is next to [Gulshan](/areas/gulshan/) and shares much of its character: o
 - A large choice of restaurants and cafes
 - Hotels and guesthouses in a central-north location
 
-## Things to know
+## Good to know
 
 - Like Gulshan, it is far from Old Dhaka by road, and the trip can take a long time at busy hours.
