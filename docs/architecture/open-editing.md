@@ -2,7 +2,8 @@
 
 Status (2026-10-21): phase 1 is accepted (0002) and its validation, Worker, editor, policy and contributor-credit changes
 are merged. Infrastructure setup and deployed integration tests
-remain open; public editing must stay disabled until the launch checks pass. Decisions 0003 and 0004 remain proposed;
+remain open. The editor is switched on in production for the end-to-end testing in #18, with `DAILY_EDIT_CAP=50` as the
+only limit until the rate limiting rule exists. The go-live decision is still to be recorded (#18). Decisions 0003 and 0004 remain proposed;
 0006 accepts anonymous editing first and optional sign-in later. See the [epic readiness review](../reviews/wiki-epic-readiness-2026-10-21.md).
 
 ## Goals and non-goals
@@ -102,6 +103,36 @@ These matter more than the hosting choice.
 - Anonymous author email is always `anonymous@visitdhaka.org` (see 0003).
 - The Worker works out who is editing in one place, which returns an anonymous identity with the optional name in phase 1. Phase 3 adds a session check there for signed-in editors, without changing the rest of `/api/edit` (0006).
 
+### Secrets and variables
+
+These names are the contract the Worker code reads (#10). Values are never written in the repo, issues or chat.
+
+| Name | Kind | Where it lives |
+| :--- | :--- | :--- |
+| `GITHUB_APP_PRIVATE_KEY` | Secret | Edit Worker secret. The app's private key converted to PKCS#8, because Workers' WebCrypto can't read GitHub's PKCS#1 download. The original key is in the team password manager |
+| `TURNSTILE_SECRET_KEY` | Secret | Edit Worker secret |
+| `GITHUB_APP_ID` | Variable | Edit Worker dashboard |
+| `GITHUB_INSTALLATION_ID` | Variable | Edit Worker dashboard |
+| `DAILY_EDIT_CAP` | Variable | Edit Worker dashboard only, never `worker/wrangler.jsonc`, so the kill switch survives deploys (#35) |
+| `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BASE_BRANCH`, `ALLOWED_ORIGIN` | Variable | `vars` in `worker/wrangler.jsonc` |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Build variable | Site project. Public by design: the `PUBLIC_` prefix puts it in the page |
+| `PUBLIC_EDITOR_ENABLED` | Build variable | Site project. `true` makes "Edit page" open the in-site editor |
+
+`keep_vars: true` in `worker/wrangler.jsonc` stops deploys removing the dashboard variables. For local development,
+`worker/.dev.vars.example` lists every Worker name with empty or test values, including Cloudflare's always-pass
+Turnstile test secret. Anything that writes must point at a fork or test repo, never this one.
+
+Admins of the Cloudflare account can change the Worker's secrets and variables. Owners of the Tingeworks GitHub
+organisation can manage the GitHub App. To rotate:
+
+- **GitHub App private key:** generate a new key in the app's settings, convert it to PKCS#8
+  (`openssl pkcs8 -topk8 -nocrypt -in app.pem -out app-pkcs8.pem`), set it with `npx wrangler secret put
+  GITHUB_APP_PRIVATE_KEY` from `worker/`, check that `/api/health` still reports `canMintToken: true`, then delete the
+  old key in the app's settings. Keep the new original in the password manager and delete the local files.
+- **Turnstile secret:** rotate it in the Turnstile widget's settings and set the new value with `npx wrangler secret put
+  TURNSTILE_SECRET_KEY`. The site key stays the same unless the widget is replaced. If it is, update
+  `PUBLIC_TURNSTILE_SITE_KEY` and rebuild the site.
+
 ## Data model changes
 
 - `src/content.config.ts`: add `contributors` (array of strings, optional) to the docs schema.
@@ -113,10 +144,30 @@ These matter more than the hosting choice.
 | Piece | Where | Deploys from |
 | :--- | :--- | :--- |
 | Static site | Existing Cloudflare project, `wrangler.jsonc` at repo root | `main`, root directory |
-| Edit Worker | New Cloudflare project, `worker/wrangler.jsonc` | `main`, root directory `worker/` |
-| Route | `visitdhaka.org/api/*` mapped to the Worker | Cloudflare zone (requires the domain on Cloudflare, already on the roadmap) |
+| Edit Worker | Its own Cloudflare project, `visitdhaka-edit`, `worker/wrangler.jsonc` | `main`, root directory `worker/` |
+| Route | `visitdhaka.org/api/*` mapped to the Worker, declared in `worker/wrangler.jsonc` | The Worker's deploy |
 
-Cloudflare's branch controls for the site project should be set so `edit/*` branches do not trigger preview builds.
+### Settings
+
+Platform and repository settings the edit flow relies on (#14), as of 21 October 2026:
+
+- **Route:** `visitdhaka.org/api/*` goes to the edit Worker, which takes priority over the site for those paths. Every
+  other path is served by the site. `www.visitdhaka.org` doesn't resolve, so `ALLOWED_ORIGIN=https://visitdhaka.org`
+  covers every page. If `www` is added later, redirect it to the apex.
+- **Branch protection on `main`:** a pull request with one approving review is required, and approvals are dismissed
+  when new commits arrive. A second public edit added to an approved pull request therefore needs approving again.
+  Force pushes and deletion are blocked, and code-owner reviews aren't required. "Include administrators" is off on
+  purpose: every collaborator is an admin, and authors can't approve their own pull requests. The edit bot isn't an
+  admin, so it can never write to `main`.
+- **Merge methods:** merge commits and rebase are allowed. Squash is off until #18 records whether it keeps authorship.
+- **Head branches** are deleted automatically after merging.
+- **Labels:** `public-edit` and `links-added`.
+- **Still to do (#14):**
+  - connect the Worker to Workers Builds, which is still deployed by hand with `wrangler deploy`
+  - a rate limiting rule on `POST /api/edit`, with its numbers recorded here
+  - exclude `edit/*` branches from the site project's preview builds, so public edits don't use build minutes or queue
+    the production build
+  - check that the Turnstile widget's hostnames include `visitdhaka.org`
 
 `DAILY_EDIT_CAP` is a dashboard-managed runtime variable, deliberately absent from `worker/wrangler.jsonc`.
 Set it to `50` during setup (#10), or `0` to stop edits. `keep_vars: true` preserves it across deploys (#35).

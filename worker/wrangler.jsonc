@@ -15,6 +15,7 @@
 		"GITHUB_REPO": "visitdhakaorg",
 		"GITHUB_BASE_BRANCH": "main",
 		"ALLOWED_ORIGIN": "https://visitdhaka.org"
-	}
-	// The visitdhaka.org/api/* route is added in #14, once the domain is on Cloudflare.
+	},
+	// Only /api/* reaches the Worker. Every other path on visitdhaka.org is served by the site project (#14).
+	"routes": [{ "pattern": "visitdhaka.org/api/*", "zone_name": "visitdhaka.org" }]
 }
