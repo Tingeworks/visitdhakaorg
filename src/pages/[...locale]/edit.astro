@@ -4,12 +4,15 @@
 // (GET /api/source) and sends the edit back (POST /api/edit), which turns it into a pull request for review. It needs no
 // GitHub account. Turnstile, the only third-party script, loads only here and only once the page text has loaded.
 // With PUBLIC_SIGN_IN_ENABLED, it also offers optional Google sign-in (#59): a plain link to the Worker's
-// /api/auth/login, so nothing loads from Google until someone follows it.
+// /api/auth/login, so nothing loads from Google until someone follows it. Renaming, signing out and deleting the
+// account are on the account page (/account/).
 // The form works with the keyboard alone, and every message comes from en.json and bn.json.
 import type { GetStaticPaths } from 'astro';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import AccountNameForm from '../../components/AccountNameForm.astro';
 import { editApiUrl, editorEnabled, signInEnabled, turnstileSiteKey } from '../../lib/editor';
 import { localizePath, translatedLocales } from '../../lib/i18n';
+import '../../styles/edit-form.css';
 
 export const getStaticPaths = (() =>
 	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
@@ -56,9 +59,6 @@ const messageKeys = [
 	'edit.error.signed_out',
 	'edit.signedInAs',
 	'edit.contributions',
-	'edit.saveName',
-	'edit.deleteConfirm',
-	'edit.deleted',
 	'edit.error.network',
 	'edit.error.generic',
 ] as const;
@@ -86,7 +86,7 @@ const licenceText = t('edit.licence', {
 			<p set:html={disabledText} />
 		) : (
 			<div
-				class="editor"
+				class="editor vd-form"
 				id="editor"
 				data-api={editApiUrl}
 				data-sitekey={turnstileSiteKey}
@@ -112,25 +112,11 @@ const licenceText = t('edit.licence', {
 							<h2 id="edit-choose-name-title" tabindex="-1">
 								{t('edit.chooseNameTitle')}
 							</h2>
-							<p>{t('edit.chooseNameText')}</p>
-							<form id="edit-name-form" novalidate>
-								<div class="field">
-									<label for="edit-new-name">{t('edit.newNameLabel')}</label>
-									<input id="edit-new-name" type="text" autocomplete="nickname" maxlength="80" aria-describedby="edit-new-name-error" />
-									<p id="edit-new-name-error" class="field-error" hidden />
-								</div>
-								<div class="actions">
-									<button type="submit" id="edit-save-name">
-										{t('edit.saveName')}
-									</button>
-									<button type="button" id="edit-skip-name" class="secondary">
-										{t('edit.skipSignIn')}
-									</button>
-									<button type="button" id="edit-cancel-name" class="secondary" hidden>
-										{t('edit.cancel')}
-									</button>
-								</div>
-							</form>
+							<AccountNameForm>
+								<button type="button" id="edit-skip-name" class="secondary">
+									{t('edit.skipSignIn')}
+								</button>
+							</AccountNameForm>
 						</section>
 					)
 				}
@@ -142,21 +128,15 @@ const licenceText = t('edit.licence', {
 								{t('edit.signInPrompt')} <a id="edit-sign-in" href="#">{t('edit.signIn')}</a>
 							</p>
 							<div id="edit-signed-in" hidden>
-								<p id="edit-signed-in-as" class="signed-in-as" />
+								<p id="edit-signed-in-as" class="signed-in-as" tabindex="-1" />
 								<p id="edit-contributions" class="hint">
 									{t('edit.contributionsPending')}
 								</p>
-								<div class="account-actions">
-									<button type="button" id="edit-change-name" class="secondary">
-										{t('edit.changeName')}
-									</button>
-									<button type="button" id="edit-sign-out" class="secondary">
-										{t('edit.signOut')}
-									</button>
-									<button type="button" id="edit-delete-account" class="secondary danger">
-										{t('edit.deleteAccount')}
-									</button>
-								</div>
+								<p>
+									<a id="edit-manage-account" href={localizePath('/account/', locale)}>
+										{t('edit.manageAccount')}
+									</a>
+								</p>
 							</div>
 						</div>
 					)
@@ -232,173 +212,3 @@ const licenceText = t('edit.licence', {
 <script>
 	import '../../scripts/editor';
 </script>
-
-<style>
-	.editor :is(label, legend) {
-		display: block;
-		font-weight: 600;
-		color: var(--sl-color-white);
-	}
-
-	.field {
-		margin-top: 1.25rem;
-	}
-
-	fieldset.field {
-		border: 0;
-		padding: 0;
-	}
-
-	textarea,
-	input[type='text'] {
-		box-sizing: border-box;
-		width: 100%;
-		margin-top: 0.375rem;
-		padding: 0.5rem 0.75rem;
-		border: 1px solid var(--sl-color-gray-5);
-		border-radius: var(--vd-radius-md);
-		background: var(--sl-color-bg);
-		color: var(--sl-color-white);
-		font: inherit;
-		line-height: 1.6;
-	}
-
-	textarea {
-		resize: vertical;
-		min-height: 16rem;
-	}
-
-	textarea:focus-visible,
-	input:focus-visible,
-	button:focus-visible {
-		outline: 2px solid var(--vd-ring);
-		outline-offset: 2px;
-	}
-
-	.checkbox {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 0.25rem 0.625rem;
-		align-items: start;
-	}
-
-	.checkbox input {
-		width: 1.125rem;
-		height: 1.125rem;
-		margin-top: 0.2rem;
-	}
-
-	.checkbox label {
-		font-weight: 400;
-	}
-
-	.checkbox .field-error {
-		grid-column: 2;
-	}
-
-	.hint,
-	.rules {
-		color: var(--sl-color-gray-3);
-		font-size: var(--sl-text-sm);
-	}
-
-	.hint {
-		margin-top: 0.25rem;
-	}
-
-	.field-error {
-		margin-top: 0.375rem;
-		color: var(--sl-color-red-high);
-		font-weight: 600;
-		font-size: var(--sl-text-sm);
-	}
-
-	[aria-invalid='true'] {
-		border-color: var(--sl-color-red) !important;
-	}
-
-	.alert,
-	.pending {
-		padding: 0.75rem 1rem;
-		border: 1px solid var(--sl-color-orange);
-		border-radius: var(--vd-radius-md);
-		background: var(--sl-color-orange-low);
-		color: var(--sl-color-orange-high);
-	}
-
-	.alert button {
-		margin-top: 0.5rem;
-	}
-
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		align-items: center;
-		margin-top: 1.5rem;
-	}
-
-	button {
-		padding: 0.625rem 1.25rem;
-		border: 0;
-		border-radius: var(--vd-radius-md);
-		background: var(--vd-button);
-		color: var(--vd-button-text);
-		font: inherit;
-		font-weight: 600;
-		cursor: pointer;
-	}
-
-	button:hover {
-		background: var(--vd-button-hover);
-	}
-
-	button:disabled {
-		opacity: 0.6;
-		cursor: progress;
-	}
-
-	button.secondary {
-		border: 1px solid var(--sl-color-gray-5);
-		background: transparent;
-		color: var(--sl-color-white);
-	}
-
-	button.secondary:hover {
-		background: var(--sl-color-gray-6);
-	}
-
-	.account,
-	.choose-name {
-		padding: 0.75rem 1rem;
-		border: 1px solid var(--sl-color-hairline-light);
-		border-radius: var(--vd-radius-md);
-	}
-
-	.account {
-		margin-top: 1.25rem;
-	}
-
-	button.danger {
-		border-color: var(--sl-color-red);
-		color: var(--sl-color-red-high);
-	}
-
-	.signed-in-as {
-		font-weight: 600;
-		color: var(--sl-color-white);
-	}
-
-	.account-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-top: 0.75rem;
-	}
-
-	.success {
-		padding: 1rem 1.25rem;
-		border: 1px solid var(--sl-color-hairline-light);
-		border-radius: var(--vd-radius-lg);
-	}
-</style>

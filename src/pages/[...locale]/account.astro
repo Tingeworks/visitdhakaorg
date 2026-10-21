@@ -1,0 +1,125 @@
+---
+// The account page, at /account/ and /bn/account/, for optional Google sign-in (#59, #60): change the display name,
+// sign out, or delete the account. The editor links here with "Manage your account", passing `?return=` so the page
+// can link back. It's built only with PUBLIC_SIGN_IN_ENABLED, and everything on it comes from the edit Worker's
+// /api/auth/* routes (src/scripts/account-page.ts). Nothing loads from Google until someone follows "Sign in with Google".
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import AccountNameForm from '../../components/AccountNameForm.astro';
+import { editApiUrl, signInEnabled } from '../../lib/editor';
+import { localizePath, translatedLocales } from '../../lib/i18n';
+import '../../styles/edit-form.css';
+
+export const getStaticPaths = (() =>
+	[undefined, ...translatedLocales].map((locale) => ({ params: { locale } }))) satisfies GetStaticPaths;
+
+const { locale } = Astro.params;
+const { t } = Astro.locals;
+
+const messageKeys = [
+	'account.signedInAs',
+	'account.deleted',
+	'account.unavailable',
+	'edit.chooseNameTitle',
+	'edit.changeName',
+	'edit.contributions',
+	'edit.deleteConfirm',
+	'edit.error.name_required',
+	'edit.error.name_reserved',
+	'edit.error.name_has_email',
+	'edit.error.name_too_long',
+	'edit.error.name_has_link',
+	'edit.error.banned',
+	'edit.error.signed_out',
+	'edit.error.network',
+	'edit.error.generic',
+] as const;
+// Escape opening angle brackets so translated text cannot close the JSON script element.
+const messages = Object.fromEntries(messageKeys.map((key) => [key, t(key, { name: '{{name}}', interpolation: { escapeValue: false } })]));
+const messagesJson = JSON.stringify(messages).replace(/</g, '\\u003c');
+---
+
+<StarlightPage
+	frontmatter={{ title: t('account.title'), description: t('account.description'), editUrl: false, pagefind: false, prev: false, next: false }}
+>
+	{
+		!signInEnabled ? (
+			<p>{t('account.disabled')}</p>
+		) : (
+			<div class="vd-form account-page" id="account" data-api={editApiUrl} data-contributors={localizePath('/contributors/', locale)}>
+				<p id="account-status" role="status">
+					{t('account.loading')}
+				</p>
+				<div id="account-alert" class="alert" role="alert" tabindex="-1" hidden>
+					<p id="account-alert-text" />
+				</div>
+
+				<section id="account-signed-out" hidden>
+					<p id="account-deleted" class="done" hidden />
+					<p>{t('account.signedOut')}</p>
+					<p>
+						<a id="account-sign-in" href="#">
+							{t('edit.signIn')}
+						</a>
+					</p>
+				</section>
+
+				<section id="account-summary" class="account" hidden>
+					<p id="account-signed-in-as" class="signed-in-as" tabindex="-1" />
+					<p id="account-contributions" class="hint">
+						{t('edit.contributionsPending')}
+					</p>
+					<div class="account-actions">
+						<button type="button" id="account-sign-out" class="secondary">
+							{t('edit.signOut')}
+						</button>
+					</div>
+				</section>
+
+				<section id="account-name" aria-labelledby="account-name-title" hidden>
+					<h2 id="account-name-title" tabindex="-1" />
+					<AccountNameForm>
+						<button type="button" id="account-skip-name" class="secondary" hidden>
+							{t('edit.skipSignIn')}
+						</button>
+					</AccountNameForm>
+				</section>
+
+				<section id="account-delete" aria-labelledby="account-delete-title" hidden>
+					<h2 id="account-delete-title">{t('edit.deleteAccount')}</h2>
+					<p>{t('account.deleteText')}</p>
+					<button type="button" id="account-delete-button" class="secondary danger">
+						{t('edit.deleteAccount')}
+					</button>
+				</section>
+
+				<p id="account-back" hidden>
+					<a id="account-back-link" href="#">
+						{t('account.back')}
+					</a>
+				</p>
+			</div>
+		)
+	}
+	{signInEnabled && <script type="application/json" id="account-messages" set:html={messagesJson} />}
+</StarlightPage>
+
+<script>
+	import '../../scripts/account-page';
+</script>
+
+<style>
+	.account-page section {
+		margin-top: 2rem;
+	}
+
+	.account-page section:first-of-type,
+	#account-summary {
+		margin-top: 1.25rem;
+	}
+
+	.done {
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+</style>
