@@ -1,32 +1,25 @@
 ---
 // One homepage segment: eyebrow, heading, intro and "see all" links, with the section's cards in the slot.
 // `not-content` opts out of Starlight's Markdown styles, which the homepage MDX would otherwise apply.
-// An optional `image` sits to the left of the heading, such as the rickshaw beside Dhaka Now. It's decorative, so it has
-// empty alt text, and Astro resizes it to WebP at build time.
-import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
-
+// `centered` centres the heading, intro and links above the cards, in a larger size, as for Dhaka Now.
 interface Props {
 	id: string;
 	title: string;
 	eyebrow?: string;
 	intro?: string;
 	links?: { label: string; href: string; external?: boolean }[];
-	image?: ImageMetadata;
+	centered?: boolean;
 }
 
-const { id, title, eyebrow, intro, links = [], image } = Astro.props;
+const { id, title, eyebrow, intro, links = [], centered = false } = Astro.props;
 ---
 
-<section class:list={['home-section', 'not-content', { 'has-art': image }]} aria-labelledby={`${id}-title`}>
+<section class:list={['home-section', 'not-content', { centered }]} aria-labelledby={`${id}-title`}>
 	<div class="head">
-		<div class="lead">
-			{image && <Image src={image} alt="" class="art" widths={[128, 256, 384, 512]} sizes="(min-width: 50em) 256px, 128px" />}
-			<div class="copy">
-				{eyebrow && <p class="eyebrow">{eyebrow}</p>}
-				<h2 id={`${id}-title`}>{title}</h2>
-				{intro && <p class="intro">{intro}</p>}
-			</div>
+		<div class="copy">
+			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
+			<h2 id={`${id}-title`}>{title}</h2>
+			{intro && <p class="intro">{intro}</p>}
 		</div>
 		{
 			links.length > 0 && (
@@ -73,40 +66,30 @@ const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 		gap: 1.25rem 2rem;
 		margin-bottom: 2rem;
 	}
-	.lead {
-		display: flex;
-		align-items: flex-end;
-		gap: 1rem;
-	}
-	.art {
-		flex: none;
-		width: 8rem;
-		height: auto;
-	}
-	@media (min-width: 50em) {
-		.lead {
-			gap: 1.75rem;
-		}
-		.art {
-			width: 16rem;
-		}
-	}
 	.copy {
 		max-width: 42rem;
 	}
-	/* Beside an image, the heading is scaled up to hold its own against it. The sizes come from the site's type scale,
-	   so the reader's text-size setting still applies. */
-	.has-art h2 {
+	/* A centred heading stacks the copy and links in the middle, in a larger size from the site's type scale, so the
+	   reader's text-size setting still applies. */
+	.centered .head {
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	.centered .intro {
+		margin-inline: auto;
+	}
+	.centered .links {
+		justify-content: center;
+	}
+	.centered h2 {
 		font-size: calc(var(--sl-text-h2) * 1.6);
 	}
 	@media (min-width: 50em) {
-		.has-art .eyebrow {
-			font-size: var(--sl-text-base);
-		}
-		.has-art h2 {
+		.centered h2 {
 			font-size: calc(var(--sl-text-h1) * 1.85);
 		}
-		.has-art .intro {
+		.centered .intro {
 			max-width: 38rem;
 			font-size: var(--sl-text-2xl);
 		}
