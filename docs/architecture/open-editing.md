@@ -82,6 +82,7 @@ loads from Google until someone follows "Sign in with Google".
 | `GET /api/auth/callback` | Checks `state`, exchanges the code with the verifier, and checks the ID token's `iss`, `aud`, `exp` and `nonce`. An existing account gets a session. A new one gets a signed 10-minute `__Host-signup` cookie holding only Google's `sub`, and no account is made until it chooses a name |
 | `POST /api/auth/name` | `{ name }`: creates the account from the sign-up cookie and signs it in, or renames the signed-in account. Same rules as the anonymous name, but required and never an email address |
 | `POST /api/auth/logout` | Clears the session |
+| `DELETE /api/auth/account` | Deletes the signed-in account's row and clears the session (#60). Its past edits stay in git, its ID is never reused, and its profile page is gone from the next deploy |
 | `GET /api/auth/me` | `{ ok, user: { id, name } \| null }`, plus `pendingName: true` between Google and choosing a name. Never cached |
 
 `GET /api/users` returns `{ ok, users: [{ id, name }] }` for every account that hasn't been deleted, banned or not,

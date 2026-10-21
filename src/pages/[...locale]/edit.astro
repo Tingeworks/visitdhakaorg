@@ -57,6 +57,8 @@ const messageKeys = [
 	'edit.signedInAs',
 	'edit.contributions',
 	'edit.saveName',
+	'edit.deleteConfirm',
+	'edit.deleted',
 	'edit.error.network',
 	'edit.error.generic',
 ] as const;
@@ -133,6 +135,33 @@ const licenceText = t('edit.licence', {
 					)
 				}
 
+				{
+					signInEnabled && (
+						<div id="edit-account" class="account" hidden>
+							<p id="edit-signed-out" hidden>
+								{t('edit.signInPrompt')} <a id="edit-sign-in" href="#">{t('edit.signIn')}</a>
+							</p>
+							<div id="edit-signed-in" hidden>
+								<p id="edit-signed-in-as" class="signed-in-as" />
+								<p id="edit-contributions" class="hint">
+									{t('edit.contributionsPending')}
+								</p>
+								<div class="account-actions">
+									<button type="button" id="edit-change-name" class="secondary">
+										{t('edit.changeName')}
+									</button>
+									<button type="button" id="edit-sign-out" class="secondary">
+										{t('edit.signOut')}
+									</button>
+									<button type="button" id="edit-delete-account" class="secondary danger">
+										{t('edit.deleteAccount')}
+									</button>
+								</div>
+							</div>
+						</div>
+					)
+				}
+
 				<form id="edit-form" novalidate hidden>
 					<h2 id="edit-heading" />
 					<p id="edit-pending" class="pending" hidden />
@@ -143,30 +172,6 @@ const licenceText = t('edit.licence', {
 						<textarea id="edit-body" name="body" rows="24" spellcheck="true" aria-describedby="edit-body-error" />
 						<p id="edit-body-error" class="field-error" hidden />
 					</div>
-
-					{
-						signInEnabled && (
-							<div id="edit-account" class="field account" hidden>
-								<p id="edit-signed-out" hidden>
-									{t('edit.signInPrompt')} <a id="edit-sign-in" href="#">{t('edit.signIn')}</a>
-								</p>
-								<div id="edit-signed-in" hidden>
-									<p id="edit-signed-in-as" class="signed-in-as" />
-									<p id="edit-contributions" class="hint">
-										{t('edit.contributionsPending')}
-									</p>
-									<div class="account-actions">
-										<button type="button" id="edit-change-name" class="secondary">
-											{t('edit.changeName')}
-										</button>
-										<button type="button" id="edit-sign-out" class="secondary">
-											{t('edit.signOut')}
-										</button>
-									</div>
-								</div>
-							</div>
-						)
-					}
 
 					<div class="field" id="edit-name-field">
 						<label for="edit-name">{t('edit.nameLabel')}</label>
@@ -368,6 +373,15 @@ const licenceText = t('edit.licence', {
 		padding: 0.75rem 1rem;
 		border: 1px solid var(--sl-color-hairline-light);
 		border-radius: var(--vd-radius-md);
+	}
+
+	.account {
+		margin-top: 1.25rem;
+	}
+
+	button.danger {
+		border-color: var(--sl-color-red);
+		color: var(--sl-color-red-high);
 	}
 
 	.signed-in-as {

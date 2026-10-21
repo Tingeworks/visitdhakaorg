@@ -182,7 +182,7 @@ describe('CORS', () => {
 	test('answers preflight requests', async () => {
 		const ok = await call('/api/source', { method: 'OPTIONS', headers: { Origin: 'http://localhost:4321' } });
 		assert.equal(ok.status, 204);
-		assert.equal(ok.headers.get('Access-Control-Allow-Methods'), 'GET, POST, OPTIONS');
+		assert.equal(ok.headers.get('Access-Control-Allow-Methods'), 'GET, POST, DELETE, OPTIONS');
 		const blocked = await call('/api/source', { method: 'OPTIONS', headers: { Origin: 'https://evil.example' } });
 		assert.equal(blocked.status, 403);
 	});
