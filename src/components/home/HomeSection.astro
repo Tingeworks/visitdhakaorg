@@ -18,7 +18,7 @@ interface Props {
 const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 ---
 
-<section class="home-section not-content" aria-labelledby={`${id}-title`}>
+<section class:list={['home-section', 'not-content', { 'has-art': image }]} aria-labelledby={`${id}-title`}>
 	<div class="head">
 		<div class="lead">
 			{image && <Image src={image} alt="" class="art" widths={[128, 256, 384, 512]} sizes="(min-width: 50em) 256px, 128px" />}
@@ -93,6 +93,23 @@ const { id, title, eyebrow, intro, links = [], image } = Astro.props;
 	}
 	.copy {
 		max-width: 42rem;
+	}
+	/* Beside an image, the heading is scaled up to hold its own against it. The sizes come from the site's type scale,
+	   so the reader's text-size setting still applies. */
+	.has-art h2 {
+		font-size: calc(var(--sl-text-h2) * 1.35);
+	}
+	@media (min-width: 50em) {
+		.has-art .eyebrow {
+			font-size: var(--sl-text-sm);
+		}
+		.has-art h2 {
+			font-size: calc(var(--sl-text-h1) * 1.4);
+		}
+		.has-art .intro {
+			max-width: 34rem;
+			font-size: var(--sl-text-xl);
+		}
 	}
 	/* Eyebrow: a short Krishnachura rule leading into the label, in the same type as the cards' eyebrows. */
 	.eyebrow {
