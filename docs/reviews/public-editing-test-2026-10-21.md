@@ -36,7 +36,7 @@ Make at least five edits through "Edit page" on the live site. Note each pull re
 
 | # | Who | Page and language | What it tests | Pull request | Result |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | | English page | First edit opens a pull request (#15) | | |
+| 1 | Imtiaz | Mohammadpur, English | First edit opens a pull request (#15) | [#39](https://github.com/Tingeworks/visitdhakaorg/pull/39) | Passed all four checks below. Closed without merging on 21 October, so edit 2 needs a new first edit with its pull request left open |
 | 2 | | Same page as 1 | A repeat edit adds a commit to the same pull request (#15) | | |
 | 3 | | Bangla page | Bangla edit through `/bn/edit/` edits the Bangla file (#16) | | |
 | 4 | | Any page | Adds an external link: the pull request is labelled `links-added` | | |
