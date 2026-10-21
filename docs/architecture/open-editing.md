@@ -162,12 +162,21 @@ Platform and repository settings the edit flow relies on (#14), as of 21 October
 - **Merge methods:** merge commits and rebase are allowed. Squash is off until #18 records whether it keeps authorship.
 - **Head branches** are deleted automatically after merging.
 - **Labels:** `public-edit` and `links-added`.
-- **Still to do (#14):**
-  - connect the Worker to Workers Builds, which is still deployed by hand with `wrangler deploy`
-  - a rate limiting rule on `POST /api/edit`, with its numbers recorded here
-  - exclude `edit/*` branches from the site project's preview builds, so public edits don't use build minutes or queue
-    the production build
-  - check that the Turnstile widget's hostnames include `visitdhaka.org`
+- **Turnstile:** the widget's hostnames are `visitdhaka.org`, `localhost` and `127.0.0.1`. Development uses Cloudflare's
+  always-pass test keys rather than this widget.
+- **Edit Worker builds:** Workers Builds deploys `visitdhaka-edit` from `main` with root directory `worker/`, build
+  command `pnpm test` (failing tests stop the deploy) and deploy command `npx wrangler deploy`. Its watch path is
+  `worker/*`, so only changes to the Worker deploy it. Preview builds are off for the Worker.
+- **Site preview builds:** still on for every branch, including `edit/*`. Workers Builds can only turn preview builds
+  on or off for all branches, not exclude a pattern. Keeping them gives reviewers a preview link for each public edit.
+  The daily cap limits public edits to about 50 builds a day, but builds run one at a time, so a burst can delay a
+  production build. Revisit before launch (#18).
+- **Rate limiting rule** "Public edit submissions (/api/edit)": requests whose path is `/api/edit` are counted per IP,
+  and more than 3 in 10 seconds are blocked for 10 seconds. The zone is on the Free plan, which allows one rule, only
+  10-second periods and blocks, and matching on path but not method. Turnstile and the daily cap remain the main limits.
+- **Site build variables:** only `PUBLIC_EDITOR_ENABLED` and `PUBLIC_TURNSTILE_SITE_KEY`. The GitHub App's private key,
+  App ID and installation ID live only on the edit Worker, because every branch build of the site can read the site's
+  build variables.
 
 `DAILY_EDIT_CAP` is a dashboard-managed runtime variable, deliberately absent from `worker/wrangler.jsonc`.
 Set it to `50` during setup (#10), or `0` to stop edits. `keep_vars: true` preserves it across deploys (#35).
