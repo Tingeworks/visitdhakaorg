@@ -162,12 +162,13 @@ Platform and repository settings the edit flow relies on (#14), as of 21 October
 - **Merge methods:** merge commits and rebase are allowed. Squash is off until #18 records whether it keeps authorship.
 - **Head branches** are deleted automatically after merging.
 - **Labels:** `public-edit` and `links-added`.
+- **Turnstile:** the widget's hostnames are `visitdhaka.org`, `localhost` and `127.0.0.1`. Development uses Cloudflare's
+  always-pass test keys rather than this widget.
 - **Still to do (#14):**
   - connect the Worker to Workers Builds, which is still deployed by hand with `wrangler deploy`
   - a rate limiting rule on `POST /api/edit`, with its numbers recorded here
   - exclude `edit/*` branches from the site project's preview builds, so public edits don't use build minutes or queue
     the production build
-  - check that the Turnstile widget's hostnames include `visitdhaka.org`
 
 `DAILY_EDIT_CAP` is a dashboard-managed runtime variable, deliberately absent from `worker/wrangler.jsonc`.
 Set it to `50` during setup (#10), or `0` to stop edits. `keep_vars: true` preserves it across deploys (#35).
