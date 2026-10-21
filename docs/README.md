@@ -26,6 +26,7 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 - [Open editing architecture](architecture/open-editing.md)
 - [Moderation runbook](architecture/moderation.md): who reviews public edits, what to check, reverting, reports and takedown, and how to turn editing off
 - [Open editing feasibility review](reviews/open-editing-feasibility.md): feasibility, risks, technical debt and the go/no-go verdict
+- [Wiki epic readiness, 21 October 2026](reviews/wiki-epic-readiness-2026-10-21.md): branch ownership, completed work and the remaining checks for issue #1
 
 ## Conventions
 
