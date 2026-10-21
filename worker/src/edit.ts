@@ -25,6 +25,11 @@ import { cleanSummary, validateBody, validatePath, type BodyFlags, type Validati
 const MAX_REQUEST_BYTES = 200_000;
 const SITE = 'https://visitdhaka.org';
 
+/** Drops this data centre's cached /api/source response for a page (#15). */
+const forgetSource = (ctx: ExecutionContext, path: string) => {
+	if (typeof caches !== 'undefined') ctx.waitUntil(caches.default.delete(sourceCacheKey(path)));
+};
+
 /** The daily cap from DAILY_EDIT_CAP. A missing or unreadable value counts as 0, so a mistake closes editing. */
 const dailyCap = (env: Env) => {
 	const cap = Number(env.DAILY_EDIT_CAP);
@@ -148,7 +153,12 @@ export async function edit(request: Request, env: Env, ctx: ExecutionContext): P
 	if (!file) return error(404, 'not_found', 'path');
 
 	// 5. Never overwrite newer content: the edit must be based on the version it would replace.
-	if (file.sha !== input.baseSha) return error(409, 'stale', 'baseSha');
+	// A stale edit usually means this data centre's cached /api/source is out of date, for example just after a merge, so
+	// clear it: the editor's "Reload the latest version" then gets the current text rather than the same old one.
+	if (file.sha !== input.baseSha) {
+		forgetSource(ctx, path.value);
+		return error(409, 'stale', 'baseSha');
+	}
 
 	const current = splitFile(file.text);
 	const body = validateBody(input.body, current.body);
@@ -185,7 +195,10 @@ export async function edit(request: Request, env: Env, ctx: ExecutionContext): P
 		});
 	} catch (cause) {
 		// The file changed between reading and writing it.
-		if (cause instanceof GitHubError && (cause.status === 409 || cause.status === 422)) return error(409, 'stale', 'baseSha');
+		if (cause instanceof GitHubError && (cause.status === 409 || cause.status === 422)) {
+			forgetSource(ctx, path.value);
+			return error(409, 'stale', 'baseSha');
+		}
 		throw cause;
 	}
 
@@ -203,6 +216,6 @@ export async function edit(request: Request, env: Env, ctx: ExecutionContext): P
 	}
 
 	// The next editor in this data centre should see this version straight away rather than a cached one.
-	if (typeof caches !== 'undefined') ctx.waitUntil(caches.default.delete(sourceCacheKey(path.value)));
+	forgetSource(ctx, path.value);
 	return json({ ok: true, prUrl: pr.html_url, prNumber: pr.number, updated: Boolean(pull) }, pull ? 200 : 201);
 }

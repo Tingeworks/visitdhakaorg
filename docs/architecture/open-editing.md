@@ -200,10 +200,11 @@ or carried forward in decision 0007.
   mostly one-off costs in a fresh Worker instance, and #45 removed the largest of them. Measure the test edits before
   choosing between the free and paid plans.
 - **Where does the editor read the source from?** Answered: from the Worker's `/api/source`, which reads GitHub's
-  contents API (the page's open edit branch, otherwise `main`). Responses are cached for 60 seconds in each data
-  centre, and an edit clears its page's entry in the data centre that handled it. So for up to a minute after a pull request is merged, the editor can
-  still offer the pre-merge text, and a submit then gets the "page changed" message until the cache expires. The test
-  checks this right after a merge.
+  contents API (the page's open edit branch, otherwise `main`). Responses are cached for 60 seconds in each data centre,
+  and an edit clears its page's entry in the data centre that handled it. So for up to a minute after a pull request is
+  merged, the editor can still offer the pre-merge text. A submit then gets the "page changed" message, which also
+  clears that cached copy, so "Reload the latest version" shows the merged text. The test checks this right after a
+  merge.
 - **Is GitHub's pull request view acceptable for reviewers?** Reviewers and turnaround are in the
   [moderation runbook](moderation.md). Whether the view works for them is checked in #18.
 - **Licence, terms and takedown:** answered. The licence, terms and privacy pages cover public editing (#17), and the
