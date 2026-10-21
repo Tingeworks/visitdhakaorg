@@ -3,7 +3,7 @@
 // stores nothing until it has chosen a display name. Every route answers `sign_in_disabled` while SIGN_IN_ENABLED isn't
 // `true`, and `not_configured` while something it needs is missing (#55).
 import { randomToken } from './base64.ts';
-import type { Env } from './env.ts';
+import { isDevelopment, type Env } from './env.ts';
 import { GoogleError, authorizeUrl, exchangeCode, subjectOf } from './google.ts';
 import { allowedOrigins, error, isAllowedOrigin, json, validationErrors } from './http.ts';
 import { sessionUser, signInConfigured, signInEnabled } from './identity.ts';
@@ -43,8 +43,9 @@ export function returnPath(raw: unknown) {
 /** A page on the site: visitdhaka.org in production, or the Astro dev server locally (the first ALLOWED_ORIGIN). */
 const siteUrl = (env: Env, path: string) => new URL(path, allowedOrigins(env)[0]).toString();
 
-/** Where Google sends the browser back to: this Worker's own callback, on whatever origin it is served from. */
-const callbackUrl = (request: Request) => new URL('/api/auth/callback', request.url).toString();
+/** Where Google sends the browser back to: this Worker's own callback, or in development the WORKER_URL override. */
+const callbackUrl = (request: Request, env: Env) =>
+	new URL('/api/auth/callback', isDevelopment(env) && env.WORKER_URL ? env.WORKER_URL : request.url).toString();
 
 function withCookies(response: Response, cookies: string[]) {
 	for (const value of cookies) response.headers.append('Set-Cookie', value);
@@ -86,7 +87,7 @@ const login: Handler = async (request, env) => {
 	const verifier = randomToken();
 	const back = returnPath(new URL(request.url).searchParams.get('return'));
 	const flow = await seal(env, SIGN_IN_COOKIE, { state, nonce, verifier, return: back }, FLOW_SECONDS);
-	const location = await authorizeUrl(env, { redirectUri: callbackUrl(request), state, nonce, verifier });
+	const location = await authorizeUrl(env, { redirectUri: callbackUrl(request, env), state, nonce, verifier });
 	return redirect(location, [cookie(SIGN_IN_COOKIE, flow, FLOW_SECONDS)]);
 };
 
@@ -107,7 +108,7 @@ const callback: Handler = async (request, env) => {
 
 	let idToken: string;
 	try {
-		idToken = await exchangeCode(env, { code, verifier: String(flow.verifier), redirectUri: callbackUrl(request) });
+		idToken = await exchangeCode(env, { code, verifier: String(flow.verifier), redirectUri: callbackUrl(request, env) });
 	} catch (cause) {
 		if (cause instanceof GoogleError && cause.status === 400) return fail(400, 'code_invalid');
 		throw cause;

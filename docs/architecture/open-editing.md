@@ -108,6 +108,13 @@ The editor is a page, `/edit/?path=<source file>` (and `/bn/edit/`), rather than
 | `PUBLIC_EDITOR_ENABLED` | `true` to send "Edit page" to the editor. Leave unset until the Worker is deployed and routed (#13, #14) and #17 is merged |
 | `PUBLIC_TURNSTILE_SITE_KEY` | The Turnstile site key (#10). Without it, the editor stays off in production |
 | `PUBLIC_EDIT_API_URL` | Leave unset in production, where the Worker is on the same origin. Locally, the `wrangler dev` address, such as `http://localhost:8787` |
+| `PUBLIC_SIGN_IN_ENABLED` | `true` to offer optional Google sign-in in the editor (#59). Set it only once the Worker's `SIGN_IN_ENABLED` is `true` |
+
+With sign-in on, the editor asks the Worker who is signed in (`/api/auth/me`). Signed out, it shows the name field and a
+plain "Sign in with Google" link to `/api/auth/login`, never Google's button or script. Signed in, it shows "Editing as
+<name>", a link to the account's contributor page once it has one (#62), "Change your name" and "Sign out", and sends no
+name with the edit. After a first sign-in it asks for a display name before anything else, saying the name is public and
+permanent.
 
 To try it locally, run the Worker with `pnpm dev` in `worker/`, with `ALLOWED_ORIGIN` set to the site's local origin in `worker/.dev.vars`. Then build or run the site with `PUBLIC_EDITOR_ENABLED=true PUBLIC_EDIT_API_URL=http://localhost:8787`. Without app credentials, the Worker can load pages but not write edits.
 

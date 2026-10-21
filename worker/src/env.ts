@@ -35,6 +35,12 @@ export interface Env {
 	 * (`pnpm fake-github`) for a local end-to-end run (#18). Ignored unless `ENVIRONMENT` is `development`.
 	 */
 	GITHUB_API_URL?: string;
+	/**
+	 * Development only: the Worker's own address, such as http://localhost:8787, for Google's redirect back after sign-in.
+	 * `wrangler dev` rewrites request URLs to the route's host (visitdhaka.org), so it can't be read from the request.
+	 * Ignored unless `ENVIRONMENT` is `development`.
+	 */
+	WORKER_URL?: string;
 }
 
 export const isDevelopment = (env: Env) => env.ENVIRONMENT === 'development';

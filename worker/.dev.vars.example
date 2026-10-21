@@ -17,6 +17,7 @@ ALLOWED_ORIGIN=http://localhost:4321
 # ID and secret from the Google Cloud console, and make a session secret with `openssl rand -base64 48`. Sign-in also
 # needs the local database: `npx wrangler d1 migrations apply visitdhaka-edit --local`.
 SIGN_IN_ENABLED=false
+WORKER_URL=http://localhost:8787
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 SESSION_SECRET=
