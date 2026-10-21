@@ -7,7 +7,9 @@
 //   /api/* (#14). Locally, the `wrangler dev` address, such as http://localhost:8787.
 // - PUBLIC_TURNSTILE_SITE_KEY: the Turnstile widget's site key (#10). Development uses Cloudflare's always-pass test key.
 
-export const editApiUrl = (import.meta.env.PUBLIC_EDIT_API_URL ?? '').replace(/\/$/, '');
+import { localizePath } from './i18n';
+
+export const editApiUrl =(import.meta.env.PUBLIC_EDIT_API_URL ?? '').replace(/\/$/, '');
 
 const testSiteKey = '1x00000000000000000000AA';
 export const turnstileSiteKey: string | undefined =
@@ -22,3 +24,15 @@ export const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true' &&
  */
 export const isEditablePath = (filePath: string | undefined) =>
 	Boolean(filePath && /^src\/content\/docs\/(?:bn\/)?(?:overview|areas|attractions|food|getting-around|where-to-stay|culture|practical-info|shopping|day-trips)\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(filePath));
+
+type Route = { editUrl?: URL; isFallback?: boolean; entry: { filePath?: string } };
+
+/**
+ * The in-site editor's address for a page, or undefined where edits go to GitHub instead: while the editor is off, on
+ * pages it can't edit, and on Bangla pages that fall back to the English text. "Edit page" and the unchecked-page
+ * notice's "Help check it" both use it, so they always agree.
+ */
+export function inSiteEditorUrl(route: Route, locale: string | undefined) {
+	if (!editorEnabled || !route.editUrl || route.isFallback || !isEditablePath(route.entry.filePath)) return undefined;
+	return localizePath('/edit/', locale) + '?' + new URLSearchParams({ path: route.entry.filePath! });
+}
