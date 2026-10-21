@@ -182,6 +182,16 @@ describe('GET /api/auth/callback', () => {
 		assert.equal(callback.headers.get('Location'), 'http://localhost:4321/edit/');
 	});
 
+	test('uses WORKER_URL for the callback in development, where wrangler dev rewrites the request URL', async () => {
+		const local = signInEnv(d1.binding, { ENVIRONMENT: 'development', WORKER_URL: 'http://localhost:8787' });
+		const login = await worker.fetch(new Request('http://visitdhaka.org/api/auth/login'), local, ctx);
+		const redirectUri = new URL(login.headers.get('Location')!).searchParams.get('redirect_uri');
+		assert.equal(redirectUri, 'http://localhost:8787/api/auth/callback');
+		// Ignored outside development.
+		const production = await worker.fetch(new Request('https://visitdhaka.org/api/auth/login'), signInEnv(d1.binding, { WORKER_URL: 'http://evil.example' }), ctx);
+		assert.equal(new URL(production.headers.get('Location')!).searchParams.get('redirect_uri'), 'https://visitdhaka.org/api/auth/callback');
+	});
+
 	test('goes back signed out when the person cancels at Google', async () => {
 		const { location, flow } = await startLogin('/edit/');
 		const response = await call(`/api/auth/callback?error=access_denied&state=${location.searchParams.get('state')}`, {
