@@ -7,12 +7,13 @@ coordinates:
   lat: 23.794
   lng: 90.404
 verified: false
+contributors:
+  - Anonymous
 ---
 
 Banani is next to [Gulshan](/areas/gulshan/) and shares much of its character: offices, apartments, restaurants and cafes. It is a good place to eat and to base yourself if you want a modern part of the city.
 
-## Good for
-
+## Things to do
 - A large choice of restaurants and cafes
 - Hotels and guesthouses in a central-north location
 
