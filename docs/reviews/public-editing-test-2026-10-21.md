@@ -23,9 +23,8 @@ These were checked on production without submitting an edit:
 
 ## Before you start
 
-- **A Bangla page is needed for the Bangla edits.** There is no Bangla content page yet, so every `/bn/` guide page
-  falls back to English and has no in-site editor link. Add at least one translation to `src/content/docs/bn/<pillar>/`
-  (through the CMS or a pull request) and merge it first.
+- **Bangla page:** `/bn/food/fuchka/` is translated (#43), and its "Edit page" opens the Bangla editor. Use it for
+  the Bangla edit. Every other `/bn/` guide page still falls back to English and links to GitHub instead.
 - **Two people**, each on their own device and network, so the per-IP rate limit and authorship are realistic.
 - Merge with **"Create a merge commit"** or **"Rebase and merge"**, as the [runbook](../architecture/moderation.md#merging)
   says. Use squash only for the one throwaway test below.
@@ -36,7 +35,7 @@ Make at least five edits through "Edit page" on the live site. Note each pull re
 
 | # | Who | Page and language | What it tests | Pull request | Result |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | | English page | First edit opens a pull request (#15) | | |
+| 1 | Imtiaz | Mohammadpur, English | First edit opens a pull request (#15) | [#39](https://github.com/Tingeworks/visitdhakaorg/pull/39) | Passed all four checks below. Closed without merging on 21 October, so edit 2 needs a new first edit with its pull request left open |
 | 2 | | Same page as 1 | A repeat edit adds a commit to the same pull request (#15) | | |
 | 3 | | Bangla page | Bangla edit through `/bn/edit/` edits the Bangla file (#16) | | |
 | 4 | | Any page | Adds an external link: the pull request is labelled `links-added` | | |
@@ -54,7 +53,7 @@ For each pull request, check:
 | Question | How to test | Answer |
 | :--- | :--- | :--- |
 | Does a squash merge keep the contributor as author? | Turn squash on briefly, squash-merge one throwaway edit, check the commit on `main`, then turn squash off again. Record the answer in decision 0003 | |
-| Does `/api/edit` stay within the free plan's 10 ms CPU per request? | Edit Worker → Metrics, CPU time for `/api/edit` after the edits. The median across all requests was 3.36 ms on 21 October, but that was only `/api/health` and `/api/source` | |
+| Does `/api/edit` stay within the free plan's 10 ms CPU per request? | Edit Worker → Observability, the `cpuTimeMs` of each `POST /api/edit` event. The median across all requests was 3.36 ms on 21 October, but that was only `/api/health` and `/api/source` | **Not on the first sample.** #39 used 15 ms of CPU (6.3 s wall time, mostly waiting for GitHub) and still succeeded. Check every edit in this test. The Worker keeps its installation token in memory, but each new Worker instance imports the app key and signs a new app token first, so compare first and later edits. If edits stay over 10 ms, move to the paid plan or find where the CPU goes |
 | Does the cached `/api/source` cause false 409s right after a merge? | Merge an edit, wait for the deploy, then edit the same page again straight away | |
 | Does the CMS keep `contributors` after a public edit? | Save a merged, publicly edited page in the CMS and check `git diff` | |
 | Does the credit show? | After the merge and deploy, the name appears under the page and on Recent changes | |
