@@ -5,6 +5,7 @@ are merged. Infrastructure setup and deployed integration tests
 remain open. The editor is switched on in production for the end-to-end testing in #18, with `DAILY_EDIT_CAP=50` as the
 only limit until the rate limiting rule exists. The go-live decision is still to be recorded (#18). Decisions 0003 and 0004 remain proposed;
 0006 accepts anonymous editing first and optional sign-in later. See the [epic readiness review](../reviews/wiki-epic-readiness-2026-10-21.md).
+Optional Google sign-in (epic #54) is built and switched off until decision 0008 is accepted: see "Sign-in" below.
 
 ## Goals and non-goals
 

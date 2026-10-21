@@ -19,8 +19,9 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 | [0003](decisions/0003-contributor-credit-model.md) | How contributors are credited | Proposed |
 | [0004](decisions/0004-d1-for-contribution-records.md) | Cloudflare D1 for contribution records | Proposed, deferred to phase 2 |
 | [0005](decisions/0005-google-analytics-with-consent.md) | Google Analytics 4 through Tag Manager, loaded only after consent | Accepted, implemented |
-| [0006](decisions/0006-anonymous-editing-first-sign-in-later.md) | Anonymous editing first, optional Google sign-in later | Accepted |
+| [0006](decisions/0006-anonymous-editing-first-sign-in-later.md) | Anonymous editing first, optional Google sign-in later | Accepted. Sign-in built (epic #54) |
 | [0007](decisions/0007-launch-public-editing.md) | Launch public editing | Proposed, waiting for the end-to-end test (#18) |
+| [0008](decisions/0008-launch-google-sign-in.md) | Launch optional Google sign-in | Proposed, waiting for the setup (#55) and the end-to-end test (#61) |
 
 ## Documents
 
@@ -29,6 +30,7 @@ Infrastructure and architecture decisions for visitdhaka.org. Content and CMS us
 - [Open editing feasibility review](reviews/open-editing-feasibility.md): feasibility, risks, technical debt and the go/no-go verdict
 - [Wiki epic readiness, 21 October 2026](reviews/wiki-epic-readiness-2026-10-21.md): branch ownership, completed work and the remaining checks for issue #1
 - [Public editing end-to-end test](reviews/public-editing-test-2026-10-21.md): the real-edit test for #18, with the checks already done and the tables to fill in
+- [Google sign-in end-to-end test](reviews/sign-in-test-2026-10-21.md): the local run and the production test plan for #61
 
 ## Conventions
 
