@@ -23,6 +23,9 @@ export const collections = {
 				sources: z
 					.array(z.object({ title: z.string(), url: z.string().url(), accessed: z.coerce.date().optional() }))
 					.default([]),
+				// Names credited under the page (src/components/PageLinks.astro). Public edits append the contributor's
+				// unverified display name (decision 0003), so it's always shown as plain text.
+				contributors: z.array(z.string()).optional(),
 				// Set to true once an editor has fact-checked the page.
 				verified: z.boolean().default(false),
 			}),

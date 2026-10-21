@@ -52,6 +52,9 @@
 	"talk.link": "Talk",
 	"talk.new": "Start a discussion",
 	"talk.body": "Discussion about this page:",
+	"contributors.label": "Contributors",
+	"contributors.more": "and {{n}} others",
+	"contributors.anonymous": "Anonymous",
 
 	"edit.title": "Edit a page",
 	"edit.description": "Suggest a change to a Visit Dhaka page. Every edit is checked by a reviewer before it appears on the site.",
