@@ -14,6 +14,9 @@ export const pageUrl = (path: string) => `/${pageKey(path).replace(/(^|\/)index$
 export const sourceCacheKey = (path: string) =>
 	new Request(`https://edit-worker.cache/api/source?path=${encodeURIComponent(path)}`);
 
+/** The /api/users cache entry (#62), cleared when an account is renamed or deleted. */
+export const usersCacheKey = () => new Request('https://edit-worker.cache/api/users');
+
 /** Midnight at the start of today in Dhaka, as an ISO 8601 time GitHub search understands. */
 export function dhakaDayStart(now = new Date()) {
 	const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);

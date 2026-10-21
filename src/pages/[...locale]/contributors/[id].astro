@@ -1,0 +1,46 @@
+---
+// A signed-in editor's profile, at /contributors/<id>/ and /bn/contributors/<id>/ (#62): their current display name and
+// their published edits, newest first. One page per account that still exists and has a published edit
+// (src/lib/profiles.ts). Other IDs, including deleted accounts, are a normal 404.
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import ChangeList from '../../../components/ChangeList.astro';
+import { translatedLocales } from '../../../lib/i18n';
+import { profiles, type Profile } from '../../../lib/profiles';
+
+export const getStaticPaths = (async () => {
+	const list = await profiles();
+	return [undefined, ...translatedLocales].flatMap((locale) =>
+		list.map((profile) => ({ params: { locale, id: String(profile.id) }, props: { profile } })),
+	);
+}) satisfies GetStaticPaths;
+
+const { locale } = Astro.params;
+const { profile } = Astro.props as { profile: Profile };
+const { t } = Astro.locals;
+const count = new Intl.NumberFormat(locale === 'bn' ? 'bn-BD' : 'en-GB').format(profile.changes.length);
+// Astro escapes the text it outputs, so i18next mustn't escape the name as well.
+const values = { name: profile.name, count, interpolation: { escapeValue: false } };
+---
+
+<StarlightPage
+	frontmatter={{
+		title: profile.name,
+		description: t('profile.description', values),
+		pagefind: false,
+		editUrl: false,
+		prev: false,
+		next: false,
+	}}
+>
+	<p>{t(profile.changes.length === 1 ? 'profile.introOne' : 'profile.intro', values)}</p>
+	<ChangeList changes={profile.changes} locale={locale} variant="profile" />
+	<p class="note">{t('profile.note')}</p>
+</StarlightPage>
+
+<style>
+	.note {
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-sm);
+	}
+</style>

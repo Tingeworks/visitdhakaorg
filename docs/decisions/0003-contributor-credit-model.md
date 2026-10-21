@@ -42,3 +42,18 @@ Optional Google sign-in is built (epic #54). A signed-in edit is credited like t
 The address and the `(account <id>)` line link one account's edits to each other, publicly and permanently. That is the
 point, and the privacy policy says so. The display name itself is still chosen by the person, not checked. Anonymous
 edits are unchanged: `anonymous@visitdhaka.org` and `Edited-by: <name> (unverified)`.
+
+### Contributor profiles (#62)
+
+Each signed-in editor with a published edit has a profile page, `/contributors/<id>/` (and `/bn/contributors/<id>/`),
+listing their published edits under their current display name. Profiles are static and built from git, like Recent
+changes: the build finds commits whose author email is `user-<id>@visitdhaka.org`. These are the only emails ever read
+from git, and no email is shown. Only merged edits are in the history the site builds from, so pending and declined
+edits never appear, in keeping with credit for merged edits only.
+
+The build also asks the edit Worker (`GET /api/users`) for each account's current name and which accounts still exist.
+A rename shows on the profile from the next deploy, and a deleted account's profile is gone from the next deploy, while
+its past edits stay in git and in pages' `contributors` lists under the name used at the time. If the Worker can't be
+reached, the build makes no profile pages rather than rebuilding them from git alone. Recent changes links a signed-in
+edit's author to the profile. Names in pages' "Contributors" lists stay plain text for now, because linking them needs
+the account ID in `contributors`.

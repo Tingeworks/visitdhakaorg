@@ -35,6 +35,12 @@ export async function findUser(db: D1Database, id: number) {
 	return row ? toUser(row) : undefined;
 }
 
+/** Every account that exists, banned or not, with its current name, for contributor profile pages (#62). */
+export async function listUsers(db: D1Database) {
+	const { results } = await db.prepare('SELECT id, display_name FROM users ORDER BY id').all<Pick<Row, 'id' | 'display_name'>>();
+	return results.map((row) => ({ id: row.id, name: row.display_name }));
+}
+
 /** A new account, or the existing one if the same Google account signed up a moment ago in another tab. */
 export async function createUser(db: D1Database, options: { sub: string; name: string; now?: Date }) {
 	const row = await db

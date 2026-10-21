@@ -7,6 +7,7 @@ import { isDevelopment, type Env } from './env.ts';
 import { GoogleError, authorizeUrl, exchangeCode, subjectOf } from './google.ts';
 import { allowedOrigins, error, isAllowedOrigin, json, validationErrors } from './http.ts';
 import { sessionUser, signInConfigured, signInEnabled } from './identity.ts';
+import { usersCacheKey } from './pages.ts';
 import {
 	FLOW_SECONDS,
 	SESSION_COOKIE,
@@ -59,6 +60,11 @@ const sessionCookie = async (env: Env, user: User) =>
 	cookie(SESSION_COOKIE, await seal(env, SESSION_COOKIE, { uid: user.id }, SESSION_SECONDS), SESSION_SECONDS);
 
 const publicUser = (user: User) => ({ id: user.id, name: user.name });
+
+/** Drops this data centre's cached /api/users, so the next site build sees a rename or deletion (#62). */
+const forgetUsers = (ctx: ExecutionContext) => {
+	if (typeof caches !== 'undefined') ctx.waitUntil(caches.default.delete(usersCacheKey()));
+};
 
 /** Compares two strings in time that depends only on their length. */
 function sameText(a: string, b: string) {
@@ -144,7 +150,7 @@ const me: Handler = async (request, env) => {
  * POST /api/auth/name `{ name }`: a new account's display name, which creates the account and signs it in, or a new
  * name for the signed-in account. The name is public, and permanent in git once an edit is merged.
  */
-const name: Handler = async (request, env) => {
+const name: Handler = async (request, env, ctx) => {
 	if (!isAllowedOrigin(request, env)) return error(403, 'origin_not_allowed');
 	const input = await readSmallJson(request);
 	if (!input) return error(400, 'invalid_json');
@@ -155,6 +161,7 @@ const name: Handler = async (request, env) => {
 	if (user) {
 		if (user.bannedAt) return error(403, 'banned');
 		await renameUser(env.DB!, user.id, cleaned.value);
+		forgetUsers(ctx);
 		return json({ ok: true, user: { id: user.id, name: cleaned.value } });
 	}
 	const signUp = await unseal(env, SIGN_UP_COOKIE, readCookie(request, SIGN_UP_COOKIE));
