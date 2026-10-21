@@ -53,10 +53,6 @@ const legal = [
 	{ label: t('footer.licence'), href: '/licence/' },
 ].map((link) => ({ ...link, href: localizePath(link.href, locale) }));
 
-const credit = t('footer.credit', {
-	link: '<a href="https://tingeworks.com" target="_blank" rel="noopener noreferrer">Tingeworks</a>',
-	interpolation: { escapeValue: false },
-});
 const year = new Date().getFullYear();
 ---
 
@@ -108,7 +104,7 @@ const year = new Date().getFullYear();
 				</li>
 			</ul>
 		</nav>
-		<p set:html={credit} />
+		<p>{t('footer.credit')}</p>
 	</div>
 	</div>
 </footer>
