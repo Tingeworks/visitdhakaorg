@@ -29,3 +29,12 @@ Any one of: a leaderboard or "recent changes" page is wanted, credit must surviv
 - Site credits fed from D1 would require the build to fetch from the Worker. A failed fetch must fall back to the last good copy and not fail the build.
 - Only a hashed IP is stored, never a raw IP or an email.
 - Platform limits on the free plan are far above expected volume (see feasibility review), so cost is not the reason to defer. Complexity is.
+
+## Update (decision 0006, #56)
+
+The `users` table is built ahead of phase 2, for optional Google sign-in (0006, #54). It lives in the `visitdhaka-edit`
+D1 database (`worker/migrations/0001_users.sql`) and holds a stable ID, Google's subject ID, the display name, the join
+date and a ban flag with a reason. It holds no email, picture or other Google profile data, and its checks refuse an
+email address in any column. Queries are in `worker/src/users.ts`. The `contributions` and `blocked` tables, the webhook
+and the reconcile job are still deferred to phase 2. A ban on a signed-in account is the `banned_at` column rather than a
+`blocked` row.
