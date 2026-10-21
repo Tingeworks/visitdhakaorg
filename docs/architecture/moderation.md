@@ -48,6 +48,9 @@ Work through the diff, not just the summary.
   details are fine where they help visitors.
 - **The contributor name.** It's unverified (decision 0003). Remove offensive names, names that impersonate a real
   person or organisation, and anything that isn't a name, then merge with "Anonymous".
+- **Signed-in edits.** The pull request says `<name> (account <id>)` rather than `(unverified)`. The name is the
+  account's chosen display name, not a checked real name. Treat it like any other name, and check the edit just as
+  carefully: signing in is optional and proves only that the same account made each edit.
 - **Tone and format.** Plain, neutral, helpful English or Bangla that matches the page. Small style fixes are worth
   doing yourself rather than rejecting.
 
@@ -82,6 +85,30 @@ How to handle them:
 - Removing something from the **git history** is a separate, rare step, for legal or serious personal-data cases only.
   A repo admin rewrites the history and asks GitHub Support to purge cached views. Commit history and pull requests stay
   visible on GitHub until then, so say so when replying to the person who reported it.
+
+## Banning a signed-in account
+
+Signed-in edits (decision 0006) can be stopped per account, without blocking an IP. A banned account gets a "This
+account can't make edits" message, and its past edits stay where they are.
+
+- **Find the account.** A signed-in edit's pull request says `Contributor | <name> (account <id>)`, its commits end
+  with `Edited-by: <name> (account <id>)`, and the commit author is `user-<id>@visitdhaka.org`. Search them with
+  `git log --author='user-<id>@visitdhaka.org'` or `git log --grep='(account <id>)'`.
+- **Look it up,** from `worker/`:
+  `npx wrangler d1 execute visitdhaka-edit --remote --command "SELECT id, display_name, created_at, banned_at, ban_reason FROM users WHERE id = <id>"`.
+  Never select `google_sub`: it isn't needed for moderation.
+- **Ban it,** with a short reason that names no one, such as the pull request number:
+  `npx wrangler d1 execute visitdhaka-edit --remote --command "UPDATE users SET banned_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), ban_reason = 'Spam, #123' WHERE id = <id>"`.
+  It applies to the account's next request. Close its open pull requests as for any spam.
+- **Unban it:**
+  `npx wrangler d1 execute visitdhaka-edit --remote --command "UPDATE users SET banned_at = NULL, ban_reason = NULL WHERE id = <id>"`.
+- **An abusive display name:** rename it, for example to "Editor <id>":
+  `npx wrangler d1 execute visitdhaka-edit --remote --command "UPDATE users SET display_name = 'Editor <id>' WHERE id = <id>"`.
+  Remove the old name from pages' `contributors` lists as for any name.
+- Note each ban in the incident log below, with the account ID and the reason, never the person's details.
+
+To stop all sign-in at once, set the edit Worker's `SIGN_IN_ENABLED` variable to anything but `true`. Sessions are then
+ignored and every edit is anonymous. Anonymous editing keeps working.
 
 ## Turning public editing off
 
