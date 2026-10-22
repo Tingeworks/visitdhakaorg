@@ -7,8 +7,10 @@
 //   rail    a row of portrait photo tiles, a sideways rail on phones
 //   plates  round photos beside the text, for dishes
 //   panels  two wide photo tiles
-//   steps   a numbered list in a tinted band, with no photos
+//   steps   numbered checklist cards with an icon (from `icons`) and the page's description, with no photos
 // In the photo layouts, a page without a cover photo falls back to a text card.
+import { Icon } from '@astrojs/starlight/components';
+import type { StarlightIcon } from '@astrojs/starlight/types';
 import { localeOf, localizedPages, type LocalizedPage } from '../../lib/i18n';
 import CardGrid from './CardGrid.astro';
 import HomeCard from './HomeCard.astro';
@@ -25,9 +27,11 @@ interface Props {
 	eyebrow?: 'category' | 'area' | 'bestTime' | 'number' | 'tags';
 	columns?: 2 | 3 | 4;
 	variant?: 'cards' | 'mosaic' | 'rail' | 'plates' | 'panels' | 'steps';
+	/** Steps only: a Starlight icon for each page slug. Pages without one show the default icon. */
+	icons?: Record<string, StarlightIcon>;
 }
 
-const { dir, order = [], limit = Infinity, eyebrow, columns, variant = 'cards' } = Astro.props;
+const { dir, order = [], limit = Infinity, eyebrow, columns, variant = 'cards', icons = {} } = Astro.props;
 const locale = localeOf(Astro.url);
 
 const rank = (slug: string) => {
@@ -122,15 +126,19 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 {
 	variant === 'steps' && (
 		<ol class="steps">
-			{items.map(({ href, data }, index) => (
+			{items.map(({ slug, href, data }, index) => (
 				<li>
 					<a class="step vd-reveal" href={href}>
-						<span class="number" aria-hidden="true">
-							{String(index + 1).padStart(2, '0')}
+						<span class="step-top" aria-hidden="true">
+							<span class="badge">
+								<Icon name={icons[slug.slice(dir.length + 1)] ?? 'information'} size="1.375rem" />
+							</span>
+							<span class="number">{String(index + 1).padStart(2, '0')}</span>
 						</span>
 						<h3>{data.title}</h3>
+						{data.description && <p>{data.description}</p>}
 						<span class="arrow" aria-hidden="true">
-							→
+							<Icon name="right-arrow" size="1.125rem" />
 						</span>
 					</a>
 				</li>
@@ -282,22 +290,13 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 		color: var(--sl-color-gray-3);
 	}
 
-	/* ---------- Steps: a numbered checklist in a marigold band ---------- */
+	/* ---------- Steps: a numbered checklist of cards, one brand hue each ---------- */
 	.steps {
 		display: grid;
+		gap: 1rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
-		overflow: hidden;
-		border: 1px solid var(--sl-color-hairline-light);
-		border-radius: var(--vd-radius-lg);
-		/* Faint vertical ribs over the tint: the hero's fluted glass again, in the page's marigold. */
-		background-color: var(--sl-color-orange-low);
-		background-image: repeating-linear-gradient(
-			90deg,
-			color-mix(in srgb, var(--sl-color-white) 6%, transparent) 0 1px,
-			transparent 1px 11px
-		);
 	}
 	@media (min-width: 36rem) {
 		.steps {
@@ -309,84 +308,163 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
 	}
-	/* Each cell draws the lines above and to its left; the band's rounded corners clip the outermost ones. */
+	/* Krishnachura, marigold, bottle green and river, then round again. */
 	.steps li {
 		display: flex;
-		box-shadow: -1px -1px 0 0 color-mix(in srgb, var(--sl-color-white) 12%, transparent);
+		--hue: var(--sl-color-accent);
+		--hue-low: var(--sl-color-accent-low);
+		--hue-high: var(--sl-color-accent-high);
+	}
+	.steps li:nth-child(4n + 2) {
+		--hue: var(--sl-color-orange);
+		--hue-low: var(--sl-color-orange-low);
+		--hue-high: var(--sl-color-orange-high);
+	}
+	.steps li:nth-child(4n + 3) {
+		--hue: var(--sl-color-green);
+		--hue-low: var(--sl-color-green-low);
+		--hue-high: var(--sl-color-green-high);
+	}
+	.steps li:nth-child(4n + 4) {
+		--hue: var(--sl-color-blue);
+		--hue-low: var(--sl-color-blue-low);
+		--hue-high: var(--sl-color-blue-high);
 	}
 	.step {
 		position: relative;
 		display: flex;
-		align-items: center;
-		gap: 1rem;
+		flex-direction: column;
+		gap: 0.5rem;
 		width: 100%;
-		padding: 1rem 3rem 1rem 1.25rem;
+		padding: 1.25rem 1.25rem 3.25rem;
+		overflow: hidden;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		background: var(--vd-surface);
+		box-shadow: var(--sl-shadow-sm);
 		color: inherit;
 		text-decoration: none;
-		transition: background-color var(--vd-duration) var(--vd-ease);
+		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
+			border-color var(--vd-duration) var(--vd-ease);
+	}
+	/* A strip of the card's hue along the top edge, which thickens on hover. */
+	.step::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 3px;
+		background: var(--hue);
+		transition: height var(--vd-duration) var(--vd-ease);
 	}
 	.step:hover,
 	.step:focus-visible {
-		background: color-mix(in srgb, var(--vd-surface) 45%, transparent);
+		transform: translateY(-2px);
+		border-color: var(--hue);
+		box-shadow: var(--sl-shadow-md);
+	}
+	.step:hover::before,
+	.step:focus-visible::before {
+		height: 5px;
+	}
+	.step-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+	}
+	.badge {
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border-radius: 50%;
+		background: var(--hue-low);
+		color: var(--hue-high);
+		transition: background-color var(--vd-duration) var(--vd-ease), color var(--vd-duration) var(--vd-ease);
+	}
+	.step:hover .badge,
+	.step:focus-visible .badge {
+		background: var(--hue);
+		color: var(--vd-surface);
 	}
 	.number {
 		font-family: var(--vd-font-display);
 		font-size: var(--sl-text-2xl);
 		font-weight: 700;
-		line-height: 0.9;
+		line-height: 1;
 		letter-spacing: -0.04em;
-		color: var(--sl-color-accent);
+		font-variant-numeric: tabular-nums;
+		color: var(--sl-color-gray-5);
 	}
 	.step h3 {
 		margin: 0;
 		font-family: var(--vd-font-display);
 		font-size: var(--sl-text-lg);
-		font-weight: 650;
+		font-weight: 700;
 		line-height: 1.25;
 		letter-spacing: -0.01em;
 		color: var(--sl-color-white);
 		text-wrap: balance;
 	}
+	.step p {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+		margin: 0;
+		font-size: var(--sl-text-sm);
+		line-height: 1.55;
+		color: var(--sl-color-gray-2);
+		text-wrap: pretty;
+	}
 	.arrow {
 		position: absolute;
-		right: 1.25rem;
-		bottom: 1rem;
-		font-size: var(--sl-text-lg);
-		color: var(--sl-color-text-accent);
+		left: 1.25rem;
+		bottom: 1.125rem;
+		display: flex;
+		color: var(--hue-high);
 		transition: transform var(--vd-duration) var(--vd-ease);
 	}
 	.step:hover .arrow,
 	.step:focus-visible .arrow {
-		transform: translateX(3px);
+		transform: translateX(4px);
 	}
-	/* From two columns up the steps are tall cells: the number on top, the title at the bottom. */
-	@media (min-width: 36rem) {
+	/* On phones each step is a compact row: the icon beside the text, the arrow at the end, no number. */
+	@media (max-width: 35.99rem) {
 		.step {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1.5rem;
-			min-height: 10.5rem;
-			padding: 1.25rem 1.25rem 1.25rem;
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			gap: 0.25rem 1rem;
+			padding: 1.125rem 3rem 1.125rem 1rem;
 		}
-		.step h3 {
-			margin-top: auto;
-			padding-right: 1.5rem;
+		.step-top {
+			grid-row: span 2;
+			align-self: start;
+			margin: 0;
 		}
 		.number {
-			font-size: var(--sl-text-4xl);
+			display: none;
 		}
 		.arrow {
-			bottom: 1.25rem;
+			top: 50%;
+			right: 1rem;
+			bottom: auto;
+			left: auto;
+			translate: 0 -50%;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.plate-photo,
 		.step,
+		.step::before,
+		.badge,
 		.arrow {
 			transition: none;
 		}
 		.plate:hover .plate-photo,
 		.plate:focus-visible .plate-photo,
+		.step:hover,
+		.step:focus-visible,
 		.step:hover .arrow,
 		.step:focus-visible .arrow {
 			transform: none;
