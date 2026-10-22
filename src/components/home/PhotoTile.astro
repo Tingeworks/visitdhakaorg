@@ -129,7 +129,9 @@ const {
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 	}
-	.title {
+	/* `.tile .title` rather than `.title`, to outrank the Markdown heading colour in custom.css, which is dark in light
+	   mode and would put navy text on the navy wash. */
+	.tile .title {
 		margin: 0;
 		font-family: var(--vd-font-display);
 		font-size: var(--sl-text-xl);
