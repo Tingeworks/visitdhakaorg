@@ -46,6 +46,7 @@ export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/
 
 <HomeSection
 	id="neighborhoods"
+	brand
 	eyebrow="Explore"
 	title="Dhaka's neighborhoods"
 	intro="From the river lanes of Old Dhaka to the lakeside cafés of Gulshan and Banani, each part of the city has its own character."
@@ -86,7 +87,7 @@ export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/
 
 <HomeSection
 	id="before-you-go"
-	eyebrow="Plan your trip"
+	brand
 	title="Before you go"
 	intro="Entry rules and advice change, so always confirm the details with official sources before you travel."
 	links={[{ label: 'Practical info', href: '/practical-info/' }]}
@@ -96,12 +97,6 @@ export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/
 		variant="steps"
 		order={['visa-and-entry', 'money-and-connectivity', 'health-and-safety', 'bangla-phrases']}
 		limit={4}
-		icons={{
-			'visa-and-entry': 'document',
-			'money-and-connectivity': 'mobile-android',
-			'health-and-safety': 'heart',
-			'bangla-phrases': 'translate',
-		}}
 	/>
 </HomeSection>
 

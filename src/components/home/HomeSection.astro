@@ -2,7 +2,7 @@
 // One homepage segment: eyebrow, heading, intro and "see all" links, with the section's cards in the slot.
 // `not-content` opts out of Starlight's Markdown styles, which the homepage MDX would otherwise apply.
 // `centered` centres the heading, intro and links above the cards; `display` also sets the heading in a much larger
-// size, as for Dhaka Now.
+// size, as for Dhaka Now. `brand` sets the section on a full-width Krishnachura band, with light text.
 interface Props {
 	id: string;
 	title: string;
@@ -11,12 +11,13 @@ interface Props {
 	links?: { label: string; href: string; external?: boolean }[];
 	centered?: boolean;
 	display?: boolean;
+	brand?: boolean;
 }
 
-const { id, title, eyebrow, intro, links = [], centered = false, display = false } = Astro.props;
+const { id, title, eyebrow, intro, links = [], centered = false, display = false, brand = false } = Astro.props;
 ---
 
-<section class:list={['home-section', 'not-content', { centered, display }]} aria-labelledby={`${id}-title`}>
+<section class:list={['home-section', 'not-content', { centered, display, brand }]} aria-labelledby={`${id}-title`}>
 	<div class="head vd-reveal">
 		<div class="copy">
 			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
@@ -174,6 +175,44 @@ const { id, title, eyebrow, intro, links = [], centered = false, display = false
 	.links a:hover span,
 	.links a:focus-visible span {
 		transform: translateX(2px);
+	}
+	/* Brand band: Krishnachura pulled out to the viewport edges behind the section, the same way as the hero. The content
+	   panel clips sideways overflow (src/styles/custom.css), so the page can't scroll horizontally. Text, links and the
+	   focus ring turn light so they stay readable on the red. */
+	.brand {
+		position: relative;
+		isolation: isolate;
+		padding-block: 3.5rem;
+		--vd-ring: #f4f4f8;
+		--vd-hover: rgb(244 244 248 / 0.12);
+	}
+	.brand::before {
+		content: '';
+		position: absolute;
+		inset-block: 0;
+		inset-inline: calc(50% - 50vw);
+		z-index: -1;
+		background: var(--vd-krishnachura);
+	}
+	@media (min-width: 50em) {
+		.brand {
+			padding-block: 5rem;
+		}
+	}
+	.brand .eyebrow,
+	.brand h2 {
+		color: var(--vd-button-text);
+	}
+	.brand .intro {
+		color: rgb(244 244 248 / 0.85);
+	}
+	.brand .links a {
+		border-color: rgb(244 244 248 / 0.45);
+		color: var(--vd-button-text);
+	}
+	.brand .links a:hover,
+	.brand .links a:focus-visible {
+		border-color: var(--vd-button-text);
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.links a,

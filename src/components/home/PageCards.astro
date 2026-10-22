@@ -7,10 +7,9 @@
 //   rail    a row of portrait photo tiles, a sideways rail on phones
 //   plates  round photos beside the text, for dishes
 //   panels  two wide photo tiles
-//   steps   numbered checklist cards with an icon (from `icons`) and the page's description, with no photos
-// In the photo layouts, a page without a cover photo falls back to a text card.
+//   steps   numbered checklist cards with the page's description, under the cover photo if the page has one
+// In the photo layouts, a page without a cover photo falls back to a text card. A step without one has no photo.
 import { Icon } from '@astrojs/starlight/components';
-import type { StarlightIcon } from '@astrojs/starlight/types';
 import { localeOf, localizedPages, type LocalizedPage } from '../../lib/i18n';
 import CardGrid from './CardGrid.astro';
 import HomeCard from './HomeCard.astro';
@@ -27,11 +26,9 @@ interface Props {
 	eyebrow?: 'category' | 'area' | 'bestTime' | 'number' | 'tags';
 	columns?: 2 | 3 | 4;
 	variant?: 'cards' | 'mosaic' | 'rail' | 'plates' | 'panels' | 'steps';
-	/** Steps only: a Starlight icon for each page slug. Pages without one show the default icon. */
-	icons?: Record<string, StarlightIcon>;
 }
 
-const { dir, order = [], limit = Infinity, eyebrow, columns, variant = 'cards', icons = {} } = Astro.props;
+const { dir, order = [], limit = Infinity, eyebrow, columns, variant = 'cards' } = Astro.props;
 const locale = localeOf(Astro.url);
 
 const rank = (slug: string) => {
@@ -126,19 +123,29 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 {
 	variant === 'steps' && (
 		<ol class="steps">
-			{items.map(({ slug, href, data }, index) => (
+			{items.map(({ href, data, photo }, index) => (
 				<li>
-					<a class="step vd-reveal" href={href}>
-						<span class="step-top" aria-hidden="true">
-							<span class="badge">
-								<Icon name={icons[slug.slice(dir.length + 1)] ?? 'information'} size="1.375rem" />
+					<a class:list={['step', 'vd-reveal', { 'has-photo': photo }]} href={href}>
+						{photo && (
+							<span class="step-photo">
+								<img
+									src={photo.image}
+									alt={photo.imageAlt ?? ''}
+									width="1200"
+									height="800"
+									loading="lazy"
+									decoding="async"
+								/>
 							</span>
-							<span class="number">{String(index + 1).padStart(2, '0')}</span>
+						)}
+						<span class="number" aria-hidden="true">
+							{String(index + 1).padStart(2, '0')}
 						</span>
 						<h3>{data.title}</h3>
 						{data.description && <p>{data.description}</p>}
+						{photo?.imageCredit && <small class="step-credit">{photo.imageCredit}</small>}
 						<span class="arrow" aria-hidden="true">
-							<Icon name="right-arrow" size="1.125rem" />
+							<Icon name="right-arrow" size="1.5rem" />
 						</span>
 					</a>
 				</li>
@@ -312,22 +319,18 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 	.steps li {
 		display: flex;
 		--hue: var(--sl-color-accent);
-		--hue-low: var(--sl-color-accent-low);
 		--hue-high: var(--sl-color-accent-high);
 	}
 	.steps li:nth-child(4n + 2) {
 		--hue: var(--sl-color-orange);
-		--hue-low: var(--sl-color-orange-low);
 		--hue-high: var(--sl-color-orange-high);
 	}
 	.steps li:nth-child(4n + 3) {
 		--hue: var(--sl-color-green);
-		--hue-low: var(--sl-color-green-low);
 		--hue-high: var(--sl-color-green-high);
 	}
 	.steps li:nth-child(4n + 4) {
 		--hue: var(--sl-color-blue);
-		--hue-low: var(--sl-color-blue-low);
 		--hue-high: var(--sl-color-blue-high);
 	}
 	.step {
@@ -343,18 +346,10 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 		background: var(--vd-surface);
 		box-shadow: var(--sl-shadow-sm);
 		color: inherit;
+		isolation: isolate;
 		text-decoration: none;
 		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
 			border-color var(--vd-duration) var(--vd-ease);
-	}
-	/* A strip of the card's hue along the top edge, which thickens on hover. */
-	.step::before {
-		content: '';
-		position: absolute;
-		inset: 0 0 auto;
-		height: 3px;
-		background: var(--hue);
-		transition: height var(--vd-duration) var(--vd-ease);
 	}
 	.step:hover,
 	.step:focus-visible {
@@ -362,44 +357,62 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 		border-color: var(--hue);
 		box-shadow: var(--sl-shadow-md);
 	}
-	.step:hover::before,
-	.step:focus-visible::before {
-		height: 5px;
+	/* With a cover photo, the photo runs to the card's edges with the hue as a line under it. */
+	.has-photo {
+		padding-top: 0;
 	}
-	.step-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 0.5rem;
+	.step-photo {
+		position: relative;
+		display: block;
+		margin: 0 -1.25rem;
+		overflow: hidden;
+		border-bottom: 3px solid var(--hue);
+		background: var(--sl-color-gray-6);
 	}
-	.badge {
-		display: grid;
-		place-items: center;
-		width: 2.75rem;
-		height: 2.75rem;
-		border-radius: 50%;
-		background: var(--hue-low);
-		color: var(--hue-high);
-		transition: background-color var(--vd-duration) var(--vd-ease), color var(--vd-duration) var(--vd-ease);
+	.step-photo img {
+		display: block;
+		width: 100%;
+		/* The image's height attribute would otherwise win over the aspect ratio. */
+		height: auto;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		transition: transform 700ms var(--vd-ease);
 	}
-	.step:hover .badge,
-	.step:focus-visible .badge {
-		background: var(--hue);
-		color: var(--vd-surface);
+	.step:hover .step-photo img,
+	.step:focus-visible .step-photo img {
+		transform: scale(1.05);
 	}
+	/* Over the photo's top corner, like the photo tiles' credits. */
+	.step-credit {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.625rem;
+		max-width: 80%;
+		font-size: 0.625rem;
+		line-height: 1.3;
+		text-align: right;
+		color: rgb(244 244 248 / 0.8);
+		text-shadow: 0 1px 2px rgb(1 7 20 / 0.8);
+	}
+	/* A large, faint number in the card's bottom-right corner, behind the text. */
 	.number {
+		position: absolute;
+		right: 0.75rem;
+		bottom: -1.5rem;
+		z-index: -1;
 		font-family: var(--vd-font-display);
-		font-size: var(--sl-text-2xl);
+		font-size: 9rem;
 		font-weight: 700;
 		line-height: 1;
 		letter-spacing: -0.04em;
 		font-variant-numeric: tabular-nums;
-		color: var(--sl-color-gray-5);
+		color: var(--hue);
+		opacity: 0.08;
 	}
 	.step h3 {
 		margin: 0;
 		font-family: var(--vd-font-display);
-		font-size: var(--sl-text-lg);
+		font-size: var(--sl-text-h3);
 		font-weight: 700;
 		line-height: 1.25;
 		letter-spacing: -0.01em;
@@ -429,21 +442,39 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 	.step:focus-visible .arrow {
 		transform: translateX(4px);
 	}
-	/* On phones each step is a compact row: the icon beside the text, the arrow at the end, no number. */
+	/* On phones each step is a compact row with the arrow at the end and no number. */
 	@media (max-width: 35.99rem) {
 		.step {
-			display: grid;
-			grid-template-columns: auto minmax(0, 1fr);
-			gap: 0.25rem 1rem;
+			gap: 0.25rem;
 			padding: 1.125rem 3rem 1.125rem 1rem;
-		}
-		.step-top {
-			grid-row: span 2;
-			align-self: start;
-			margin: 0;
 		}
 		.number {
 			display: none;
+		}
+		/* With a photo, a square thumbnail sits beside the text. */
+		.has-photo {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			gap: 0.25rem 1rem;
+			padding-top: 1.125rem;
+		}
+		.step-photo {
+			grid-row: span 3;
+			align-self: start;
+			width: 4.5rem;
+			margin: 0;
+			border-bottom: 0;
+			border-radius: var(--vd-radius-md);
+		}
+		.step-photo img {
+			aspect-ratio: 1;
+		}
+		.step-credit {
+			position: static;
+			max-width: none;
+			text-align: left;
+			color: var(--sl-color-gray-3);
+			text-shadow: none;
 		}
 		.arrow {
 			top: 50%;
@@ -453,11 +484,30 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 			translate: 0 -50%;
 		}
 	}
+	/* On a brand band (HomeSection's `brand`), the cards are a darker Krishnachura with light text. */
+	:global(.brand) .step {
+		background: hsl(6, 71%, 34%);
+		border-color: rgb(244 244 248 / 0.14);
+	}
+	:global(.brand) .step:hover,
+	:global(.brand) .step:focus-visible {
+		border-color: rgb(244 244 248 / 0.6);
+	}
+	:global(.brand) .step h3,
+	:global(.brand) .arrow,
+	:global(.brand) .number {
+		color: var(--vd-button-text);
+	}
+	:global(.brand) .step p {
+		color: rgb(244 244 248 / 0.8);
+	}
+	:global(.brand) .number {
+		opacity: 0.09;
+	}
 	@media (prefers-reduced-motion: reduce) {
 		.plate-photo,
 		.step,
-		.step::before,
-		.badge,
+		.step-photo img,
 		.arrow {
 			transition: none;
 		}
@@ -465,6 +515,8 @@ const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'p
 		.plate:focus-visible .plate-photo,
 		.step:hover,
 		.step:focus-visible,
+		.step:hover .step-photo img,
+		.step:focus-visible .step-photo img,
 		.step:hover .arrow,
 		.step:focus-visible .arrow {
 			transform: none;
