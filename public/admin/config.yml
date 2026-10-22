@@ -49,7 +49,7 @@ collections:
         label: Cover photo
         widget: image
         required: false
-        hint: "Shown where the page is featured, such as the homepage tiles, cropped to fit. Keep the subject near the middle. Use a photo you took or one with a licence that allows it, 1,200 to 1,800 pixels wide."
+        hint: "Shown at the top of the page, in the At a glance box, and where the page is featured, such as the homepage tiles, where it is cropped to fit. Keep the subject near the middle. Use a photo you took or one with a licence that allows it, 1,200 to 1,800 pixels wide."
       - &image-alt-field
         name: imageAlt
         label: Photo description
