@@ -2,8 +2,8 @@
 title: Rickshaws
 description: Cycle rickshaws are the classic way to get around Dhaka for short trips, and one of the city's most recognisable sights.
 image: /uploads/getting-around/rickshaws.jpg
-imageAlt: "The painted back of a cycle rickshaw in Old Dhaka, decorated with rickshaw art and tassels"
-imageCredit: "Photo: David Brewer, CC BY-SA 2.0, via Wikimedia Commons"
+imageAlt: "A cycle rickshaw painted in bright rickshaw art, parked on a street under pink and white bougainvillea"
+imageCredit: "Photo: meh.akthisside, via Pinterest"
 category: Transport
 tags: [rickshaw, transport]
 verified: false

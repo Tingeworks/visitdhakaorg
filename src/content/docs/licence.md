@@ -38,7 +38,7 @@ The code that runs the site is available under the [MIT licence](https://opensou
 
 ## Photo credits
 
-These photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are used under their own licences. Each has been resized and cropped for the site.
+Most of these photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are used under their own licences. Photos marked "no open licence" aren't under a Creative Commons licence, so they aren't covered by this site's licences and can't be reused. Each has been resized and cropped for the site.
 
 - **National Martyrs' Memorial, Savar** (Victory Day): [Kritzolina](https://commons.wikimedia.org/wiki/File:Jatiyo_Smriti_Soudho,_November_2017_02.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Publishers' stalls at the Ekushey Book Fair** (Amar Ekushey Book Fair): [Kritzolina](https://commons.wikimedia.org/wiki/File:Ekushey_Book_Fair_2020_01.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -53,9 +53,9 @@ These photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are
 - **Sat Gambuj Mosque at prayer time** (Mohammadpur): [Kazi Murad Hossain](https://commons.wikimedia.org/wiki/File:Sat_Gambuj_Mosque_(Prayer_Time).jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Kacchi biryani** (Kacchi Biryani): [ANKAN](https://commons.wikimedia.org/wiki/File:Kacchi_Biryani.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Fuchka at Sonargaon** (Fuchka): [Kritzolina](https://commons.wikimedia.org/wiki/File:Phuchka_at_Sonargaon_03.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-- **Painted rickshaw in Old Dhaka** (Rickshaws): [David Brewer](https://commons.wikimedia.org/wiki/File:Rickshaw_in_old_Dhaka_(8474592957).jpg), [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/)
-- **Green CNG auto-rickshaw** (CNG Auto-Rickshaws): [Justin Brockie](https://commons.wikimedia.org/wiki/File:CNG_1.jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
-- **Ride-share motorbike rider** (Ride-share Apps): [Mashkawat.ahsan](https://commons.wikimedia.org/wiki/File:Motorcycle_Ride_Sharing.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Painted rickshaw under bougainvillea** (Rickshaws): [meh.akthisside via Pinterest](https://www.pinterest.com/pin/960603795541225588/), no open licence
+- **CNG auto-rickshaw painted with a rose** (CNG Auto-Rickshaws): [a1eh4 via Pinterest](https://www.pinterest.com/pin/349240146121978354/), no open licence
+- **Pathao logo** (Ride-share Apps): [Pathao, via The Daily Star](https://www.thedailystar.net/sites/default/files/styles/big_1/public/images/2023/10/25/pathao_new_logo.png), no open licence. The logo is Pathao's trademark.
 - **Metro train at Agargaon station** (Metro Rail): [Frameofashik](https://commons.wikimedia.org/wiki/File:Agargaon_Metro_Rail_Station_Platform_22.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Masks for the Pohela Boishakh procession** (Pohela Boishakh): [Anik Sarker](https://commons.wikimedia.org/wiki/File:Pohela_Boishakh_Placard,_Faculty_of_Fine_Arts_,_University_Of_Dhaka_1.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Crowds at the Ekushey Book Fair** (Ekushey Book Fair): [Shahnoor Habib Munmun](https://commons.wikimedia.org/wiki/File:Ekushey_Book_Fair_Dhaka_Bangladesh_02.JPG), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
