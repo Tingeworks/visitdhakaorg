@@ -137,6 +137,8 @@
 	"events.empty": "Nothing is listed right now. Know about something happening in Dhaka? Suggest it and an editor will add it.",
 	"events.suggest": "Suggest an event",
 
+	"home.photoStrip": "Photos from around the guide",
+
 	"whatsOn.title": "What's on in Dhaka",
 	"whatsOn.description": "Festivals, national days and events happening in Dhaka now and coming up soon.",
 	"whatsOn.intro": "Festivals, national days and events happening in Dhaka now and coming up soon. Dates can change, so check with the organiser or official source before you go. Know about something that's missing? {{link}}.",

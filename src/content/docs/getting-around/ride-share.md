@@ -1,6 +1,9 @@
 ---
 title: Ride-share Apps
 description: Ride-share apps such as Pathao and Uber offer cars, motorbikes and other rides in Dhaka with the price shown up front.
+image: /uploads/getting-around/ride-share.jpg
+imageAlt: "A ride-share motorbike rider waiting for a customer on a Dhaka street"
+imageCredit: "Photo: Mashkawat.ahsan, CC BY-SA 4.0, via Wikimedia Commons"
 category: Transport
 tags: [pathao, uber, apps]
 verified: false

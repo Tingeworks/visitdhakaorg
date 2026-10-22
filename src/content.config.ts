@@ -26,6 +26,11 @@ export const collections = {
 				// Names credited under the page (src/components/PageLinks.astro). Public edits append the contributor's
 				// unverified display name (decision 0003), so it's always shown as plain text.
 				contributors: z.array(z.string()).optional(),
+				// A cover photo, shown where the page is featured (the homepage tiles), its description, and its credit
+				// (shown with the photo, as the licence page requires). Same shape as the events collection's photo.
+				image: z.string().startsWith('/').optional(),
+				imageAlt: z.string().optional(),
+				imageCredit: z.string().optional(),
 				// Set to true once an editor has fact-checked the page.
 				verified: z.boolean().default(false),
 			}),

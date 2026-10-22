@@ -22,7 +22,7 @@ const Tag = href ? 'a' : 'div';
 const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}) } : {};
 ---
 
-<Tag class:list={['home-card', { link: href, 'has-image': image }]} {...linkAttrs} {...attrs}>
+<Tag class:list={['home-card', 'vd-reveal', { link: href, 'has-image': image }]} {...linkAttrs} {...attrs}>
 	{
 		image && (
 			<figure class="media">

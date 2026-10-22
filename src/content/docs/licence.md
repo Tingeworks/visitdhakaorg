@@ -45,6 +45,20 @@ These photos are from [Wikimedia Commons](https://commons.wikimedia.org) and are
 - **Central Shaheed Minar** (International Mother Language Day): [Biswarup Ganguly](https://commons.wikimedia.org/wiki/File:Central_Shaheed_Minar_-_Dhaka_Medical_College_Campus_-_Dhaka_2015-05-31_2577.JPG), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 - **National Parliament House lit for Independence Day** (Independence Day): [Sajeeb Ahmed Photography](https://commons.wikimedia.org/wiki/File:National_Assembly_of_Bangladesh_on_Independence_Day_2015_(16761162098).jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
 - **Mangal Shobhajatra** (Pohela Boishakh): [Abidhasan00](https://commons.wikimedia.org/wiki/File:Mangal_Shobhajatra_in_Dhaka.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Launches at Sadarghat river port** (Old Dhaka): [Shafiul Islam Shaikot](https://commons.wikimedia.org/wiki/File:Sadarghat_river_port_Bangladesh.jpg), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- **Gulshan Lake** (Gulshan): [Jubair Bin Iqbal](https://commons.wikimedia.org/wiki/File:Gulshan_Lake_Dhaka.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Kamal Ataturk Avenue** (Banani): [ASaber91](https://commons.wikimedia.org/wiki/File:Kamal_Ataturk_Avenue_(18378824389).jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
+- **Pedal boat on Dhanmondi Lake** (Dhanmondi): [Micah Parker](https://commons.wikimedia.org/wiki/File:Dhanmondi_Lake,_Dhaka_(21).jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
+- **Metro station at Uttara Center** (Uttara): [Serajus Salekin Himel](https://commons.wikimedia.org/wiki/File:Metro_Rail_Station_at_Uttara_Center_in_Dhaka,_Bangladesh.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Sat Gambuj Mosque at prayer time** (Mohammadpur): [Kazi Murad Hossain](https://commons.wikimedia.org/wiki/File:Sat_Gambuj_Mosque_(Prayer_Time).jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Kacchi biryani** (Kacchi Biryani): [ANKAN](https://commons.wikimedia.org/wiki/File:Kacchi_Biryani.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Fuchka at Sonargaon** (Fuchka): [Kritzolina](https://commons.wikimedia.org/wiki/File:Phuchka_at_Sonargaon_03.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Painted rickshaw in Old Dhaka** (Rickshaws): [David Brewer](https://commons.wikimedia.org/wiki/File:Rickshaw_in_old_Dhaka_(8474592957).jpg), [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/)
+- **Green CNG auto-rickshaw** (CNG Auto-Rickshaws): [Justin Brockie](https://commons.wikimedia.org/wiki/File:CNG_1.jpg), [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
+- **Ride-share motorbike rider** (Ride-share Apps): [Mashkawat.ahsan](https://commons.wikimedia.org/wiki/File:Motorcycle_Ride_Sharing.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Metro train at Agargaon station** (Metro Rail): [Frameofashik](https://commons.wikimedia.org/wiki/File:Agargaon_Metro_Rail_Station_Platform_22.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Masks for the Pohela Boishakh procession** (Pohela Boishakh): [Anik Sarker](https://commons.wikimedia.org/wiki/File:Pohela_Boishakh_Placard,_Faculty_of_Fine_Arts_,_University_Of_Dhaka_1.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Crowds at the Ekushey Book Fair** (Ekushey Book Fair): [Shahnoor Habib Munmun](https://commons.wikimedia.org/wiki/File:Ekushey_Book_Fair_Dhaka_Bangladesh_02.JPG), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
 
 ## Contributing
 

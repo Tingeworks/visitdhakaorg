@@ -1,6 +1,9 @@
 ---
 title: Gulshan
 description: Gulshan is an upscale area of Dhaka with embassies, restaurants, cafes, shopping and international hotels.
+image: /uploads/areas/gulshan.jpg
+imageAlt: "Gulshan Lake on a still day, with trees along the bank and apartment blocks reflected in the water"
+imageCredit: "Photo: Jubair Bin Iqbal, CC BY-SA 4.0, via Wikimedia Commons"
 area: Gulshan
 tags: [upscale, dining, hotels]
 coordinates:

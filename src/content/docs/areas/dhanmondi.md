@@ -1,6 +1,9 @@
 ---
 title: Dhanmondi
 description: Dhanmondi is a leafy residential area of Dhaka with a lake, cultural venues, shops and restaurants.
+image: /uploads/areas/dhanmondi.jpg
+imageAlt: "A pedal boat on Dhanmondi Lake, with trees along the far bank"
+imageCredit: "Photo: Micah Parker, CC BY 2.0, via Wikimedia Commons"
 area: Dhanmondi
 tags: [residential, lake, culture]
 coordinates:

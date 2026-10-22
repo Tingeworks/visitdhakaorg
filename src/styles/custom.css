@@ -509,6 +509,32 @@ site-search button[data-open-modal] {
 	color: #f4f4f8;
 }
 
+/* ---------- Scroll-driven reveal ---------- */
+/* Elements with .vd-reveal (the homepage's tiles, cards and section headings) fade and rise as they scroll into view,
+   each on its own timeline, so a grid arrives tile by tile. Only in browsers with scroll-driven animations and for
+   readers who haven't asked for reduced motion; elsewhere the elements are simply there. It animates `translate`
+   rather than `transform`, so the hover lifts, which use `transform`, still apply. Inside a sideways rail the nearest
+   scroller doesn't scroll vertically, so the timeline is inactive and the tiles show as normal. */
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.vd-reveal {
+			animation: vd-reveal linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 40%;
+		}
+	}
+}
+@keyframes vd-reveal {
+	from {
+		opacity: 0;
+		translate: 0 1.5rem;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
+
 /* ---------- Pagination ---------- */
 .pagination-links a {
 	border: 1px solid var(--sl-color-hairline-light);

@@ -1,7 +1,8 @@
 ---
 // One homepage segment: eyebrow, heading, intro and "see all" links, with the section's cards in the slot.
 // `not-content` opts out of Starlight's Markdown styles, which the homepage MDX would otherwise apply.
-// `centered` centres the heading, intro and links above the cards, in a larger size, as for Dhaka Now.
+// `centered` centres the heading, intro and links above the cards; `display` also sets the heading in a much larger
+// size, as for Dhaka Now.
 interface Props {
 	id: string;
 	title: string;
@@ -9,13 +10,14 @@ interface Props {
 	intro?: string;
 	links?: { label: string; href: string; external?: boolean }[];
 	centered?: boolean;
+	display?: boolean;
 }
 
-const { id, title, eyebrow, intro, links = [], centered = false } = Astro.props;
+const { id, title, eyebrow, intro, links = [], centered = false, display = false } = Astro.props;
 ---
 
-<section class:list={['home-section', 'not-content', { centered }]} aria-labelledby={`${id}-title`}>
-	<div class="head">
+<section class:list={['home-section', 'not-content', { centered, display }]} aria-labelledby={`${id}-title`}>
+	<div class="head vd-reveal">
 		<div class="copy">
 			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
 			<h2 id={`${id}-title`}>{title}</h2>
@@ -69,8 +71,8 @@ const { id, title, eyebrow, intro, links = [], centered = false } = Astro.props;
 	.copy {
 		max-width: 42rem;
 	}
-	/* A centred heading stacks the copy and links in the middle, in a larger size from the site's type scale, so the
-	   reader's text-size setting still applies. */
+	/* A centred heading stacks the copy and links in the middle. The display size comes from the site's type scale, so
+	   the reader's text-size setting still applies. */
 	.centered .head {
 		flex-direction: column;
 		align-items: center;
@@ -82,14 +84,20 @@ const { id, title, eyebrow, intro, links = [], centered = false } = Astro.props;
 	.centered .links {
 		justify-content: center;
 	}
-	.centered h2 {
+	.centered .eyebrow {
+		justify-content: center;
+	}
+	.centered .eyebrow::before {
+		display: none;
+	}
+	.display h2 {
 		font-size: calc(var(--sl-text-h2) * 1.6);
 	}
 	@media (min-width: 50em) {
-		.centered h2 {
+		.display h2 {
 			font-size: calc(var(--sl-text-h1) * 1.85);
 		}
-		.centered .intro {
+		.display .intro {
 			max-width: 38rem;
 			font-size: var(--sl-text-2xl);
 		}

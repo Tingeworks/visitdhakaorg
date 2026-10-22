@@ -1,6 +1,9 @@
 ---
 title: Old Dhaka
 description: Old Dhaka is the historic heart of the city, with narrow lanes, river trade, old markets and some of Dhaka's best food.
+image: /uploads/areas/old-dhaka.jpg
+imageAlt: "Launches moored in rows at Sadarghat river port, seen from above, with Old Dhaka's rooftops behind"
+imageCredit: "Photo: Shafiul Islam Shaikot, CC BY 4.0, via Wikimedia Commons"
 area: Old Dhaka
 tags: [historic, food, markets]
 coordinates:

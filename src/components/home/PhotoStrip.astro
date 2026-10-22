@@ -1,0 +1,150 @@
+---
+// A slow film strip of the guide's photos, each linking to its page, for the community section: the pages people have
+// written and photographed. It runs edge to edge and drifts by itself (a CSS animation, paused while the pointer or
+// keyboard focus is on it), and becomes a plain sideways-scrolling row for readers who prefer reduced motion. The
+// second copy of the strip, which makes the loop seamless, is hidden from assistive technology and the tab order.
+import { getCollection } from 'astro:content';
+import { localeOf, localizePath, localizedPages } from '../../lib/i18n';
+
+type Frame = { href: string; image: string; alt: string };
+
+const { t } = Astro.locals;
+const locale = localeOf(Astro.url);
+
+// Pages with a cover photo, in the page's language. A translated page without its own photo uses the English page's.
+const english = new Map((await localizedPages(undefined)).map((page) => [page.slug, page.data]));
+const pages = (await localizedPages(locale))
+	.map((page) => {
+		const data = page.data.image ? page.data : english.get(page.slug);
+		return data?.image ? { href: page.href, image: data.image, alt: data.imageAlt ?? '' } : undefined;
+	})
+	.filter((frame): frame is Frame => Boolean(frame));
+
+// Event photos link to the event's wiki page, or its official source, or the What's on listing.
+const events = (await getCollection('events'))
+	.filter(({ data }) => data.image)
+	.map(({ data }) => ({
+		href: data.page ? localizePath(data.page, locale) : (data.link ?? localizePath('/whats-on/', locale)),
+		image: data.image as string,
+		alt: data.imageAlt ?? '',
+	}));
+
+// Spread the event photos through the pages, so the strip mixes places, food and festivals rather than running
+// through one pillar at a time.
+const frames: Frame[] = [];
+const every = Math.ceil(pages.length / (events.length + 1));
+pages.forEach((page, index) => {
+	frames.push(page);
+	if ((index + 1) % every === 0 && events.length) frames.push(events.shift() as Frame);
+});
+frames.push(...events);
+---
+
+{
+	frames.length > 0 && (
+		<div class="strip vd-reveal" role="region" aria-label={t('home.photoStrip')}>
+			<ul class="track">
+				{frames.map((frame) => (
+					<li>
+						<a href={frame.href}>
+							<img src={frame.image} alt={frame.alt} width="600" height="400" loading="lazy" decoding="async" />
+						</a>
+					</li>
+				))}
+			</ul>
+			<ul class="track" aria-hidden="true">
+				{frames.map((frame) => (
+					<li>
+						<a href={frame.href} tabindex="-1">
+							<img src={frame.image} alt="" width="600" height="400" loading="lazy" decoding="async" />
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	)
+}
+
+<style>
+	/* Full viewport width: the section sits in the content column, so the strip is pulled out to the viewport edges.
+	   The content panel clips sideways overflow (src/styles/custom.css), so the page can't scroll horizontally. */
+	.strip {
+		--frame-h: 7rem;
+		--gap: 0.75rem;
+		display: flex;
+		gap: var(--gap);
+		width: 100vw;
+		margin-inline: calc(50% - 50vw);
+		padding-block: 0.75rem;
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+	}
+	@media (min-width: 50rem) {
+		.strip {
+			--frame-h: 9.5rem;
+			--gap: 1rem;
+		}
+	}
+	.track {
+		display: flex;
+		flex: none;
+		gap: var(--gap);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		animation: vd-strip 75s linear infinite;
+	}
+	.strip:hover .track,
+	.strip:focus-within .track {
+		animation-play-state: paused;
+	}
+	@keyframes vd-strip {
+		to {
+			transform: translateX(calc(-100% - var(--gap)));
+		}
+	}
+	/* Every other frame sits a little lower, like prints laid out on a table. */
+	.track li:nth-child(even) {
+		translate: 0 0.75rem;
+	}
+	.track a {
+		display: block;
+		height: var(--frame-h);
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		border-radius: var(--vd-radius-lg);
+		box-shadow: var(--sl-shadow-sm);
+		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease);
+	}
+	.track a:hover,
+	.track a:focus-visible {
+		transform: scale(1.04);
+		box-shadow: var(--sl-shadow-md);
+	}
+	.track img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.strip {
+			padding-inline: var(--sl-content-pad-x);
+			overflow-x: auto;
+			mask-image: none;
+		}
+		.track {
+			animation: none;
+		}
+		.track[aria-hidden='true'] {
+			display: none;
+		}
+		.track a {
+			transition: none;
+		}
+		.track a:hover,
+		.track a:focus-visible {
+			transform: none;
+		}
+	}
+</style>

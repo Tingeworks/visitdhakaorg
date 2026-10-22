@@ -1,6 +1,9 @@
 ---
 title: Uttara
 description: Uttara is a planned suburb in northern Dhaka near Hazrat Shahjalal International Airport and the start of the metro line.
+image: /uploads/areas/uttara.jpg
+imageAlt: "The elevated metro line and a station at Uttara, seen at dusk"
+imageCredit: "Photo: Serajus Salekin Himel, CC BY-SA 4.0, via Wikimedia Commons"
 area: Uttara
 tags: [airport, suburb, metro]
 coordinates:

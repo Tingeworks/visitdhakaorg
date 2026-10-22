@@ -1,6 +1,9 @@
 ---
 title: ফুচকা
 description: ফুচকা বাংলাদেশের জনপ্রিয় একটি রাস্তার খাবার। মচমচে ফাঁপা খোলের ভেতর মসলাদার আলু আর ছোলা ভরে তেঁতুলের পানিতে ডুবিয়ে খাওয়া হয়।
+image: /uploads/food/fuchka.jpg
+imageAlt: "পেঁয়াজ ও ধনেপাতা ছড়ানো এক প্লেট ফুচকা, মাঝখানে তেঁতুলের পানির ছোট বাটি"
+imageCredit: "ছবি: Kritzolina, CC BY-SA 4.0, উইকিমিডিয়া কমন্স থেকে"
 category: Street food
 tags: [street food, snack]
 verified: false

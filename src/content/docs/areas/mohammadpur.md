@@ -1,6 +1,9 @@
 ---
 title: Mohammadpur
 description: Mohammadpur is a busy residential and market area in western Dhaka, with local shops, food and transport links.
+image: /uploads/areas/mohammadpur.jpg
+imageAlt: "Rows of worshippers outside the pink Sat Gambuj Mosque in Mohammadpur at prayer time"
+imageCredit: "Photo: Kazi Murad Hossain, CC BY-SA 4.0, via Wikimedia Commons"
 area: Mohammadpur
 tags: [residential, markets, local life]
 coordinates:
