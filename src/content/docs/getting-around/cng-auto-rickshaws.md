@@ -1,6 +1,9 @@
 ---
 title: CNG Auto-Rickshaws
 description: CNG auto-rickshaws are green three-wheeled taxis in Dhaka, useful for medium-distance trips.
+image: /uploads/getting-around/cng-auto-rickshaws.jpg
+imageAlt: "The caged side door of a green CNG auto-rickshaw, painted with a red rose, in Dhaka traffic"
+imageCredit: "Photo: a1eh4, via Pinterest"
 category: Transport
 tags: [cng, auto-rickshaw, transport]
 verified: false

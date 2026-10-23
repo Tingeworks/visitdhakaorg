@@ -1,8 +1,9 @@
 ---
-// The key facts of a page, read from its frontmatter and shown like a Wikipedia infobox at the top of the content.
-// Shows only the fields the page has, and nothing at all on pillar overviews, the about and legal pages, the homepage,
-// or any page with none of the fields. Values are shown exactly as written: hours and fees are fact-checked fields,
-// so there are no placeholders.
+// The key facts of a page, read from its frontmatter and shown like a Wikipedia infobox at the top of the content,
+// with the page's cover photo above them. Shows only the fields the page has, and nothing at all on pillar overviews,
+// the about and legal pages, the homepage, or any page with neither a photo nor any of the fields. Values are shown
+// exactly as written: hours and fees are fact-checked fields, so there are no placeholders.
+import { imageSize } from '../lib/images';
 import { localeOf, localizedPages, unlocalizePath } from '../lib/i18n';
 
 const route = Astro.locals.starlightRoute;
@@ -12,6 +13,20 @@ const path = unlocalizePath(Astro.url.pathname);
 
 // Only topic pages inside a pillar folder (/attractions/lalbagh-fort/), not pillar overviews (/where-to-stay/).
 const isTopicPage = path.split('/').filter(Boolean).length > 1;
+
+// The cover photo (the same one the homepage tiles use). A translated page without its own uses the English page's.
+let photo: { src: string; alt: string; credit?: string; width?: number; height?: number } | undefined;
+if (isTopicPage) {
+	const own = route.entry.data;
+	const source = own.image
+		? own
+		: locale
+			? (await localizedPages(undefined)).find((page) => page.slug === path.replace(/^\/|\/$/g, ''))?.data
+			: undefined;
+	if (source?.image) {
+		photo = { src: source.image, alt: source.imageAlt ?? '', credit: source.imageCredit, ...(await imageSize(source.image)) };
+	}
+}
 
 // Link the area to its page under /areas/ when there is one, and leave the row out on that area's own page.
 let areaHref: string | undefined;
@@ -35,16 +50,38 @@ const mapHref =
 	coordinates &&
 	`https://www.openstreetmap.org/?mlat=${coordinates.lat}&mlon=${coordinates.lng}#map=17/${coordinates.lat}/${coordinates.lng}`;
 
-const show = isTopicPage && (rows.length > 0 || coordinates);
+const hasFacts = rows.length > 0 || Boolean(coordinates);
+const show = isTopicPage && (hasFacts || photo);
 ---
 
 {
 	show && (
-		<aside class="infobox not-content" lang={route.lang} dir={route.dir} aria-labelledby="infobox-title">
-			<p class="title" id="infobox-title">
-				{Astro.locals.t('infobox.title')}
-			</p>
-			<dl>
+		<aside
+			class="infobox not-content"
+			lang={route.lang}
+			dir={route.dir}
+			{...(hasFacts ? { 'aria-labelledby': 'infobox-title' } : {})}
+		>
+			{photo && (
+				<figure class="photo">
+					<img
+						src={photo.src}
+						alt={photo.alt}
+						width={photo.width}
+						height={photo.height}
+						loading="eager"
+						decoding="async"
+						fetchpriority="high"
+					/>
+					{photo.credit && <figcaption>{photo.credit}</figcaption>}
+				</figure>
+			)}
+			{hasFacts && (
+				<p class="title" id="infobox-title">
+					{Astro.locals.t('infobox.title')}
+				</p>
+			)}
+			<dl hidden={!hasFacts}>
 				{rows.map((row) => (
 					<div class="row">
 						<dt>{Astro.locals.t(row.label)}</dt>
@@ -89,7 +126,35 @@ const show = isTopicPage && (rows.length > 0 || coordinates);
 		background: var(--sl-color-bg-sidebar);
 		font-size: var(--sl-text-sm);
 		line-height: 1.5;
+		overflow: hidden;
 		overflow-wrap: anywhere;
+	}
+
+	/* The photo runs to the box's edges at its own proportions, up to a height that keeps portrait photos in check,
+	   with its credit underneath. */
+	.photo {
+		margin: 0;
+	}
+	.photo img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: min(24rem, 60vw);
+		object-fit: cover;
+		background: var(--sl-color-gray-6);
+	}
+	.photo figcaption {
+		padding: 0.375rem 1rem;
+		font-size: var(--sl-text-xs);
+		line-height: 1.4;
+		color: var(--sl-color-gray-3);
+	}
+	.photo + .title,
+	.photo + dl {
+		border-top: 1px solid var(--sl-color-hairline);
+	}
+	dl[hidden] {
+		display: none;
 	}
 
 	@container (min-width: 40em) {

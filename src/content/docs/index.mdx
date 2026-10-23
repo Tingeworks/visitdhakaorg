@@ -22,17 +22,21 @@ hero:
       variant: minimal
 ---
 
+{/* The sections below the hero. Each pillar's cards and photo tiles are built from its pages' own frontmatter (title,
+   description and cover photo), so editing a page in the CMS updates the homepage. Keep src/content/docs/bn/index.mdx in step. */}
+
 import HomeSection from '../../components/home/HomeSection.astro';
-import CardGrid from '../../components/home/CardGrid.astro';
-import HomeCard from '../../components/home/HomeCard.astro';
 import EventList from '../../components/home/EventList.astro';
 import PageCards from '../../components/home/PageCards.astro';
+import RangeRule from '../../components/home/RangeRule.astro';
+import PhotoStrip from '../../components/home/PhotoStrip.astro';
 
 export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/new?title=Event%3A%20';
 
 <HomeSection
 	id="dhaka-now"
-	eyebrow="What's on"
+	centered
+	display
 	title="Dhaka Now"
 	intro="What's on in Dhaka: festivals, events and things to do happening now or coming up soon."
 	links={[{ label: 'See all events', href: '/whats-on/' }]}
@@ -42,49 +46,57 @@ export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/
 
 <HomeSection
 	id="neighborhoods"
+	brand
 	eyebrow="Explore"
 	title="Dhaka's neighborhoods"
-	intro="From the historic lanes of Old Dhaka to the cafés of Gulshan and Banani, each part of the city has its own character."
+	intro="From the river lanes of Old Dhaka to the lakeside cafés of Gulshan and Banani, each part of the city has its own character."
 	links={[
 		{ label: 'All areas', href: '/areas/' },
 		{ label: 'Where to stay', href: '/where-to-stay/' },
 	]}
 >
-	<PageCards dir="areas" order={['old-dhaka', 'gulshan', 'banani', 'dhanmondi', 'uttara', 'mohammadpur']} limit={6} />
+	<PageCards
+		dir="areas"
+		variant="mosaic"
+		eyebrow="tags"
+		order={['old-dhaka', 'gulshan', 'banani', 'dhanmondi', 'uttara', 'mohammadpur']}
+		limit={6}
+	/>
 </HomeSection>
 
 <HomeSection
 	id="eat"
 	eyebrow="Eat"
 	title="Eat like a local"
-	intro="Dhaka runs on street snacks and slow-cooked biryani. Start with these."
+	intro="Dhaka runs on street snacks and slow-cooked biryani. Start with these two."
 	links={[{ label: 'Food and dining', href: '/food/' }]}
 >
-	<PageCards dir="food" order={['kacchi-biryani', 'fuchka']} eyebrow="category" columns={2} />
+	<PageCards dir="food" variant="plates" eyebrow="category" order={['kacchi-biryani', 'fuchka']} />
 </HomeSection>
 
 <HomeSection
 	id="getting-around"
 	eyebrow="Get around"
-	title="Getting around Dhaka"
-	intro="Traffic is part of life in Dhaka. Pick the right ride for the distance."
+	title="Pick your ride"
+	intro="Traffic is part of life in Dhaka. Match the ride to the distance."
 	links={[{ label: 'Transport guide', href: '/getting-around/' }]}
 >
-	<PageCards dir="getting-around" order={['rickshaws', 'cng-auto-rickshaws', 'ride-share', 'metro-rail']} columns={4} />
+	<PageCards dir="getting-around" variant="rail" order={['rickshaws', 'cng-auto-rickshaws', 'ride-share', 'metro-rail']} />
+	<RangeRule start="Short hops" end="Across the city" />
 </HomeSection>
 
 <HomeSection
 	id="before-you-go"
-	eyebrow="Plan your trip"
+	brand
 	title="Before you go"
 	intro="Entry rules and advice change, so always confirm the details with official sources before you travel."
 	links={[{ label: 'Practical info', href: '/practical-info/' }]}
 >
 	<PageCards
 		dir="practical-info"
+		variant="steps"
 		order={['visa-and-entry', 'money-and-connectivity', 'health-and-safety', 'bangla-phrases']}
-		eyebrow="number"
-		columns={4}
+		limit={4}
 	/>
 </HomeSection>
 
@@ -95,31 +107,20 @@ export const suggestEvent = 'https://github.com/Tingeworks/visitdhakaorg/issues/
 	intro="Time your trip around the city's biggest celebrations."
 	links={[{ label: 'Culture and festivals', href: '/culture/' }]}
 >
-	<PageCards dir="culture" order={['ekushey-book-fair', 'pohela-boishakh']} eyebrow="bestTime" columns={2} />
+	<PageCards dir="culture" variant="panels" eyebrow="bestTime" order={['ekushey-book-fair', 'pohela-boishakh']} />
 </HomeSection>
 
 <HomeSection
 	id="community"
+	centered
 	eyebrow="Community"
 	title="Written by the community"
 	intro="Visit Dhaka is compiled by the community and edited in the open. Every page is checked by an editor before it is marked as fact-checked."
+	links={[
+		{ label: 'How to contribute', href: '/about/#contributing' },
+		{ label: 'Suggest an event', href: suggestEvent, external: true },
+		{ label: 'See it on GitHub', href: 'https://github.com/Tingeworks/visitdhakaorg', external: true },
+	]}
 >
-	<CardGrid>
-		<HomeCard
-			title="Fix or update a page"
-			description="Every guide page has an Edit page link at the bottom. Use it to suggest a fix on GitHub."
-		/>
-		<HomeCard
-			title="Suggest an event"
-			description="Know about a festival, exhibition or gig in Dhaka? Tell us and an editor will add it to Dhaka Now."
-			href={suggestEvent}
-			external
-		/>
-		<HomeCard
-			title="See the project on GitHub"
-			description="Every page lives in a public GitHub repository. Browse the pages and their edit history."
-			href="https://github.com/Tingeworks/visitdhakaorg"
-			external
-		/>
-	</CardGrid>
+	<PhotoStrip />
 </HomeSection>

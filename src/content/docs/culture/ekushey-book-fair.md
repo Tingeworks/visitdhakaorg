@@ -1,6 +1,9 @@
 ---
 title: Ekushey Book Fair
 description: The Amar Ekushey Book Fair is Dhaka's major annual book fair, held every February in memory of the 1952 Language Movement.
+image: /uploads/culture/ekushey-book-fair.jpg
+imageAlt: "Crowds streaming through the gate of the Ekushey Book Fair on a sunny afternoon"
+imageCredit: "Photo: Shahnoor Habib Munmun, CC BY-SA 3.0, via Wikimedia Commons"
 category: Festival
 bestTime: February
 tags: [books, festival, language movement]

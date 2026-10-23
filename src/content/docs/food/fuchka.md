@@ -1,6 +1,9 @@
 ---
 title: Fuchka
 description: Fuchka is a popular Bangladeshi street snack of crisp hollow shells filled with spiced potato and chickpeas and dipped in tamarind water.
+image: /uploads/food/fuchka.jpg
+imageAlt: "A plate of fuchka topped with onion and coriander, around a small bowl of tamarind water"
+imageCredit: "Photo: Kritzolina, CC BY-SA 4.0, via Wikimedia Commons"
 category: Street food
 tags: [street food, snack]
 verified: false

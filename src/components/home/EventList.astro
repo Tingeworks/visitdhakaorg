@@ -65,6 +65,9 @@ const events = (await getCollection('events'))
 						badge={live ? status.live : status.soon}
 						description={event.summary}
 						meta={[event.venue ?? event.area, event.category].filter(Boolean).join(' · ') || undefined}
+						image={event.image}
+						imageAlt={event.imageAlt}
+						imageCredit={event.imageCredit}
 						hidden={index >= limit}
 						data-event
 						data-start={event.start}

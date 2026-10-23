@@ -1,6 +1,9 @@
 ---
 title: Metro Rail
 description: Dhaka Metro Rail (MRT Line 6) runs from Uttara through central Dhaka, avoiding the city's road traffic.
+image: /uploads/getting-around/metro-rail.jpg
+imageAlt: "A green-and-white Dhaka Metro train at the elevated Agargaon station platform"
+imageCredit: "Photo: Frameofashik, CC BY-SA 4.0, via Wikimedia Commons"
 category: Transport
 tags: [metro, mrt, transport]
 verified: false

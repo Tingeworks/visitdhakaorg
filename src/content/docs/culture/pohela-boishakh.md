@@ -1,6 +1,9 @@
 ---
 title: Pohela Boishakh
 description: Pohela Boishakh is the Bengali New Year, celebrated across Dhaka on 14 April with music, processions and traditional food.
+image: /uploads/culture/pohela-boishakh.jpg
+imageAlt: "Brightly painted masks laid out for the Pohela Boishakh procession at Dhaka University's Faculty of Fine Arts"
+imageCredit: "Photo: Anik Sarker, CC BY-SA 4.0, via Wikimedia Commons"
 category: Festival
 bestTime: 14 April
 tags: [festival, new year, bengali]

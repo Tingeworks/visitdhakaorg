@@ -1,0 +1,56 @@
+---
+// A thin gradient rule with a label at each end, drawn under a row of tiles that runs from one extreme to the other
+// (the rides, from the shortest trips to the longest). It says so without a sentence.
+interface Props {
+	start: string;
+	end: string;
+}
+
+const { start, end } = Astro.props;
+---
+
+<p class="range vd-reveal">
+	<span>{start}</span>
+	<span class="line" aria-hidden="true"></span>
+	<span>{end}</span>
+</p>
+
+<style>
+	.range {
+		display: flex;
+		align-items: center;
+		gap: 0.875rem;
+		margin: 1.25rem 0 0;
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--sl-color-gray-3);
+	}
+	/* Bottle green to marigold to Krishnachura, with a dot at each end. */
+	.line {
+		position: relative;
+		flex: 1;
+		height: 2px;
+		border-radius: 1px;
+		background: linear-gradient(90deg, var(--sl-color-green), var(--sl-color-orange) 55%, var(--sl-color-accent));
+	}
+	.line::before,
+	.line::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		translate: 0 -50%;
+	}
+	.line::before {
+		left: 0;
+		background: var(--sl-color-green);
+	}
+	.line::after {
+		right: 0;
+		background: var(--sl-color-accent);
+	}
+</style>

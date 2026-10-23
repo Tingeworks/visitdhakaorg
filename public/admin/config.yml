@@ -44,6 +44,24 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - &image-field
+        name: image
+        label: Cover photo
+        widget: image
+        required: false
+        hint: "Shown at the top of the page, in the At a glance box, and where the page is featured, such as the homepage tiles, where it is cropped to fit. Keep the subject near the middle. Use a photo you took or one with a licence that allows it, 1,200 to 1,800 pixels wide."
+      - &image-alt-field
+        name: imageAlt
+        label: Photo description
+        widget: string
+        required: false
+        hint: What the photo shows, for people who can't see it. Required if there's a photo.
+      - &image-credit-field
+        name: imageCredit
+        label: Photo credit
+        widget: string
+        required: false
+        hint: "Who took it and its licence, such as 'Photo: Rahim Uddin, CC BY-SA 4.0'. Shown with the photo, and listed on the licence page."
       - name: tags
         label: Tags
         widget: list
@@ -98,6 +116,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: area
         label: Area
         widget: string
@@ -149,6 +170,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -222,6 +246,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -272,6 +299,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -317,6 +347,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -366,6 +399,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -416,6 +452,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: tags
         label: Tags
         widget: list
@@ -454,6 +493,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -508,6 +550,9 @@ collections:
         label: Description
         widget: text
         hint: One or two sentences. Used in search results and link previews.
+      - *image-field
+      - *image-alt-field
+      - *image-credit-field
       - name: category
         label: Category
         widget: select
@@ -646,6 +691,21 @@ collections:
         widget: string
         required: false
         hint: Organiser or official URL for dates and details. The card links here when there is no wiki page.
+      - name: image
+        label: Photo
+        widget: image
+        required: false
+        hint: "Shown at the top of the event's card, cropped to 3:2 landscape. Use a photo you took or one with a licence that allows it, around 800 pixels wide."
+      - name: imageAlt
+        label: Photo description
+        widget: string
+        required: false
+        hint: What the photo shows, for people who can't see it. Required if there's a photo.
+      - name: imageCredit
+        label: Photo credit
+        widget: string
+        required: false
+        hint: "Who took it and its licence, such as 'Photo: Rahim Uddin, CC BY-SA 4.0'. Shown under the photo."
       - name: verified
         label: Fact-checked by an editor
         widget: boolean

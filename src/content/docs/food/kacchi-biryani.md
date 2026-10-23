@@ -1,6 +1,9 @@
 ---
 title: Kacchi Biryani
 description: Kacchi biryani is a Dhaka favourite made with marinated mutton and rice cooked together in a sealed pot.
+image: /uploads/food/kacchi-biryani.jpg
+imageAlt: "A plate of kacchi biryani, with rice heaped over pieces of meat and potato"
+imageCredit: "Photo: ANKAN, CC BY-SA 4.0, via Wikimedia Commons"
 category: Dish
 tags: [biryani, mutton, rice]
 verified: false

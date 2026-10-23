@@ -1,9 +1,19 @@
 ---
-// Cards for the pages in one content pillar, using each page's own title and description, so the homepage stays in
-// step with what editors write in the CMS. New pages in the folder appear after the ones named in `order`.
-import { localeOf, localizedPages } from '../../lib/i18n';
+// Cards or photo tiles for the pages in one content pillar, using each page's own title, description and cover photo,
+// so the homepage stays in step with what editors write in the CMS. New pages in the folder appear after the ones
+// named in `order`. `variant` picks the layout:
+//   cards   text cards (HomeCard) in a CardGrid, the default
+//   mosaic  photo tiles with the first page as a large lead tile, a sideways rail on phones
+//   rail    a row of portrait photo tiles, a sideways rail on phones
+//   plates  round photos beside the text, for dishes
+//   panels  two wide photo tiles
+//   steps   numbered checklist cards with the page's description, under the cover photo if the page has one
+// In the photo layouts, a page without a cover photo falls back to a text card. A step without one has no photo.
+import { Icon } from '@astrojs/starlight/components';
+import { localeOf, localizedPages, type LocalizedPage } from '../../lib/i18n';
 import CardGrid from './CardGrid.astro';
 import HomeCard from './HomeCard.astro';
+import PhotoTile from './PhotoTile.astro';
 
 interface Props {
 	/** Pillar folder in src/content/docs, such as `areas`. */
@@ -11,12 +21,15 @@ interface Props {
 	/** Page slugs within the folder, in the order they should appear. */
 	order?: string[];
 	limit?: number;
-	/** Frontmatter field shown above the title. `number` shows the card's position instead (01, 02, ...). */
-	eyebrow?: 'category' | 'area' | 'bestTime' | 'number';
+	/** Frontmatter field shown above the title. `number` shows the card's position instead (01, 02, ...), `tags` the
+	 * page's first two tags. */
+	eyebrow?: 'category' | 'area' | 'bestTime' | 'number' | 'tags';
 	columns?: 2 | 3 | 4;
+	variant?: 'cards' | 'mosaic' | 'rail' | 'plates' | 'panels' | 'steps';
 }
 
-const { dir, order = [], limit = Infinity, eyebrow, columns } = Astro.props;
+const { dir, order = [], limit = Infinity, eyebrow, columns, variant = 'cards' } = Astro.props;
+const locale = localeOf(Astro.url);
 
 const rank = (slug: string) => {
 	const index = order.indexOf(slug.slice(dir.length + 1));
@@ -24,21 +37,489 @@ const rank = (slug: string) => {
 };
 
 // In the page's language, falling back to English for pages that haven't been translated.
-const pages = (await localizedPages(localeOf(Astro.url)))
+const pages = (await localizedPages(locale))
 	.filter((page) => page.slug.startsWith(`${dir}/`))
 	.sort((a, b) => rank(a.slug) - rank(b.slug) || a.data.title.localeCompare(b.data.title))
 	.slice(0, limit);
+
+// A translated page without a photo of its own uses the English page's, so a photo added to the English page shows in
+// both languages.
+const english = locale ? new Map((await localizedPages(undefined)).map((page) => [page.slug, page.data])) : undefined;
+const photoOf = ({ slug, data }: LocalizedPage) => {
+	const source = data.image ? data : english?.get(slug);
+	return source?.image ? { image: source.image, imageAlt: source.imageAlt, imageCredit: source.imageCredit } : undefined;
+};
+const eyebrowOf = (data: LocalizedPage['data'], index: number) => {
+	if (eyebrow === 'number') return String(index + 1).padStart(2, '0');
+	if (eyebrow === 'tags') return data.tags.slice(0, 2).join(' · ') || undefined;
+	return eyebrow ? data[eyebrow] : undefined;
+};
+
+const items = pages.map((page, index) => ({ ...page, photo: photoOf(page), eyebrow: eyebrowOf(page.data, index) }));
+const photoLayout = variant === 'mosaic' || variant === 'rail' || variant === 'panels';
 ---
 
-<CardGrid columns={columns}>
-	{
-		pages.map(({ href, data }, index) => (
-			<HomeCard
-				href={href}
-				title={data.title}
-				description={data.description}
-				eyebrow={eyebrow === 'number' ? String(index + 1).padStart(2, '0') : eyebrow ? data[eyebrow] : undefined}
-			/>
-		))
+{
+	variant === 'cards' && (
+		<CardGrid columns={columns}>
+			{items.map(({ href, data, eyebrow }) => (
+				<HomeCard href={href} title={data.title} description={data.description} eyebrow={eyebrow} />
+			))}
+		</CardGrid>
+	)
+}
+
+{
+	photoLayout && (
+		<div class:list={['tiles', variant]}>
+			{items.map(({ href, data, photo, eyebrow }, index) =>
+				photo ? (
+					<PhotoTile
+						href={href}
+						title={data.title}
+						description={data.description}
+						eyebrow={eyebrow}
+						size={variant === 'panels' || (variant === 'mosaic' && index === 0) ? 'lg' : 'md'}
+						{...photo}
+					/>
+				) : (
+					<HomeCard href={href} title={data.title} description={data.description} eyebrow={eyebrow} />
+				)
+			)}
+		</div>
+	)
+}
+
+{
+	variant === 'plates' && (
+		<div class="plates">
+			{items.map(({ href, data, photo, eyebrow }) => (
+				<a class="plate vd-reveal" href={href}>
+					{photo ? (
+						<img
+							class="plate-photo"
+							src={photo.image}
+							alt={photo.imageAlt ?? ''}
+							width="1000"
+							height="1000"
+							loading="lazy"
+							decoding="async"
+						/>
+					) : (
+						<span class="plate-photo" />
+					)}
+					<div class="plate-text">
+						{eyebrow && <span class="eyebrow">{eyebrow}</span>}
+						<h3>{data.title}</h3>
+						{data.description && <p>{data.description}</p>}
+						{photo?.imageCredit && <small class="credit">{photo.imageCredit}</small>}
+					</div>
+				</a>
+			))}
+		</div>
+	)
+}
+
+{
+	variant === 'steps' && (
+		<ol class="steps">
+			{items.map(({ href, data, photo }, index) => (
+				<li>
+					<a class:list={['step', 'vd-reveal', { 'has-photo': photo }]} href={href}>
+						{photo && (
+							<span class="step-photo">
+								<img
+									src={photo.image}
+									alt={photo.imageAlt ?? ''}
+									width="1200"
+									height="800"
+									loading="lazy"
+									decoding="async"
+								/>
+							</span>
+						)}
+						<span class="number" aria-hidden="true">
+							{String(index + 1).padStart(2, '0')}
+						</span>
+						<h3>{data.title}</h3>
+						{data.description && <p>{data.description}</p>}
+						{photo?.imageCredit && <small class="step-credit">{photo.imageCredit}</small>}
+						<span class="arrow" aria-hidden="true">
+							<Icon name="right-arrow" size="1.5rem" />
+						</span>
+					</a>
+				</li>
+			))}
+		</ol>
+	)
+}
+
+<style>
+	/* ---------- Photo layouts: mosaic, rail and panels ---------- */
+	.tiles {
+		display: grid;
+		gap: 1rem;
 	}
-</CardGrid>
+	/* On phones the photo layouts become a rail that scrolls sideways, edge to edge, with the next tile peeking in. */
+	@media (max-width: 35.99rem) {
+		.tiles {
+			display: flex;
+			gap: 0.75rem;
+			margin-inline: calc(-1 * var(--sl-content-pad-x));
+			padding-inline: var(--sl-content-pad-x);
+			padding-bottom: 0.25rem;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			scroll-padding-inline: var(--sl-content-pad-x);
+			scrollbar-width: none;
+			--tile-aspect: 4 / 5;
+		}
+		.tiles::-webkit-scrollbar {
+			display: none;
+		}
+		.tiles > :global(*) {
+			flex: 0 0 min(76%, 18rem);
+			scroll-snap-align: start;
+		}
+	}
+	/* Mosaic: at two columns the lead tile runs across the top; from 64rem it takes two columns and two rows, with the
+	   other five around it. */
+	@media (min-width: 36rem) {
+		.mosaic {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.mosaic > :global(:first-child) {
+			grid-column: 1 / -1;
+			--tile-aspect: 2 / 1;
+		}
+		.rail {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			--tile-aspect: 4 / 5;
+		}
+		.panels {
+			--tile-aspect: 16 / 9;
+		}
+	}
+	@media (min-width: 50rem) {
+		.rail {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+		.panels {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			--tile-aspect: 16 / 10;
+		}
+	}
+	@media (min-width: 64rem) {
+		.mosaic {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+		.mosaic > :global(:first-child) {
+			grid-column: span 2;
+			grid-row: span 2;
+			--tile-aspect: auto;
+		}
+	}
+
+	/* ---------- Plates: a round photo beside the text, like a menu ---------- */
+	.plates {
+		display: grid;
+		gap: 2rem 2.5rem;
+	}
+	@media (min-width: 50rem) {
+		.plates {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.plate {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: 1.25rem;
+		color: inherit;
+		text-decoration: none;
+	}
+	@media (min-width: 36rem) {
+		.plate {
+			gap: 1.75rem;
+		}
+	}
+	.plate-photo {
+		display: block;
+		width: clamp(6.5rem, 24vw, 13rem);
+		/* The image's height attribute would otherwise win over the aspect ratio. */
+		height: auto;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		object-fit: cover;
+		background: var(--sl-color-gray-6);
+		/* A rim like a plate's: a gap in the page colour, then a hairline. The hairline turns Krishnachura on hover. */
+		box-shadow: 0 0 0 5px var(--vd-surface), 0 0 0 6px var(--sl-color-hairline-light), var(--sl-shadow-md);
+		transition: transform 700ms var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease);
+	}
+	.plate:hover .plate-photo,
+	.plate:focus-visible .plate-photo {
+		transform: rotate(-8deg) scale(1.04);
+		box-shadow: 0 0 0 5px var(--vd-surface), 0 0 0 6px var(--sl-color-accent), var(--sl-shadow-lg);
+	}
+	.plate-text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+	.eyebrow {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--sl-color-text-accent);
+	}
+	.plate h3 {
+		margin: 0;
+		font-family: var(--vd-font-display);
+		font-size: var(--sl-text-2xl);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		color: var(--sl-color-white);
+	}
+	.plate p {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		margin: 0;
+		font-size: var(--sl-text-sm);
+		line-height: 1.55;
+		color: var(--sl-color-gray-2);
+	}
+	.plate .credit {
+		font-size: 0.6875rem;
+		color: var(--sl-color-gray-3);
+	}
+
+	/* ---------- Steps: a numbered checklist of cards, one brand hue each ---------- */
+	.steps {
+		display: grid;
+		gap: 1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	@media (min-width: 36rem) {
+		.steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (min-width: 64rem) {
+		.steps {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+	/* Krishnachura, marigold, bottle green and river, then round again. */
+	.steps li {
+		display: flex;
+		--hue: var(--sl-color-accent);
+		--hue-high: var(--sl-color-accent-high);
+	}
+	.steps li:nth-child(4n + 2) {
+		--hue: var(--sl-color-orange);
+		--hue-high: var(--sl-color-orange-high);
+	}
+	.steps li:nth-child(4n + 3) {
+		--hue: var(--sl-color-green);
+		--hue-high: var(--sl-color-green-high);
+	}
+	.steps li:nth-child(4n + 4) {
+		--hue: var(--sl-color-blue);
+		--hue-high: var(--sl-color-blue-high);
+	}
+	.step {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 1.25rem 1.25rem 3.25rem;
+		overflow: hidden;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: var(--vd-radius-lg);
+		background: var(--vd-surface);
+		box-shadow: var(--sl-shadow-sm);
+		color: inherit;
+		isolation: isolate;
+		text-decoration: none;
+		transition: transform var(--vd-duration) var(--vd-ease), box-shadow var(--vd-duration) var(--vd-ease),
+			border-color var(--vd-duration) var(--vd-ease);
+	}
+	.step:hover,
+	.step:focus-visible {
+		transform: translateY(-2px);
+		border-color: var(--hue);
+		box-shadow: var(--sl-shadow-md);
+	}
+	/* With a cover photo, the photo runs to the card's edges with the hue as a line under it. */
+	.has-photo {
+		padding-top: 0;
+	}
+	.step-photo {
+		position: relative;
+		display: block;
+		margin: 0 -1.25rem;
+		overflow: hidden;
+		border-bottom: 3px solid var(--hue);
+		background: var(--sl-color-gray-6);
+	}
+	.step-photo img {
+		display: block;
+		width: 100%;
+		/* The image's height attribute would otherwise win over the aspect ratio. */
+		height: auto;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		transition: transform 700ms var(--vd-ease);
+	}
+	.step:hover .step-photo img,
+	.step:focus-visible .step-photo img {
+		transform: scale(1.05);
+	}
+	/* Over the photo's top corner, like the photo tiles' credits. */
+	.step-credit {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.625rem;
+		max-width: 80%;
+		font-size: 0.625rem;
+		line-height: 1.3;
+		text-align: right;
+		color: rgb(244 244 248 / 0.8);
+		text-shadow: 0 1px 2px rgb(1 7 20 / 0.8);
+	}
+	/* A large, faint number in the card's bottom-right corner, behind the text. */
+	.number {
+		position: absolute;
+		right: 0.75rem;
+		bottom: -1.5rem;
+		z-index: -1;
+		font-family: var(--vd-font-display);
+		font-size: 9rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		font-variant-numeric: tabular-nums;
+		color: var(--hue);
+		opacity: 0.08;
+	}
+	.step h3 {
+		margin: 0;
+		font-family: var(--vd-font-display);
+		font-size: var(--sl-text-h3);
+		font-weight: 700;
+		line-height: 1.25;
+		letter-spacing: -0.01em;
+		color: var(--sl-color-white);
+		text-wrap: balance;
+	}
+	.step p {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+		margin: 0;
+		font-size: var(--sl-text-sm);
+		line-height: 1.55;
+		color: var(--sl-color-gray-2);
+		text-wrap: pretty;
+	}
+	.arrow {
+		position: absolute;
+		left: 1.25rem;
+		bottom: 1.125rem;
+		display: flex;
+		color: var(--hue-high);
+		transition: transform var(--vd-duration) var(--vd-ease);
+	}
+	.step:hover .arrow,
+	.step:focus-visible .arrow {
+		transform: translateX(4px);
+	}
+	/* On phones each step is a compact row with the arrow at the end and no number. */
+	@media (max-width: 35.99rem) {
+		.step {
+			gap: 0.25rem;
+			padding: 1.125rem 3rem 1.125rem 1rem;
+		}
+		.number {
+			display: none;
+		}
+		/* With a photo, a square thumbnail sits beside the text. */
+		.has-photo {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			gap: 0.25rem 1rem;
+			padding-top: 1.125rem;
+		}
+		.step-photo {
+			grid-row: span 3;
+			align-self: start;
+			width: 4.5rem;
+			margin: 0;
+			border-bottom: 0;
+			border-radius: var(--vd-radius-md);
+		}
+		.step-photo img {
+			aspect-ratio: 1;
+		}
+		.step-credit {
+			position: static;
+			max-width: none;
+			text-align: left;
+			color: var(--sl-color-gray-3);
+			text-shadow: none;
+		}
+		.arrow {
+			top: 50%;
+			right: 1rem;
+			bottom: auto;
+			left: auto;
+			translate: 0 -50%;
+		}
+	}
+	/* On a brand band (HomeSection's `brand`), the cards are a darker Krishnachura with light text. */
+	:global(.brand) .step {
+		background: hsl(6, 71%, 34%);
+		border-color: rgb(244 244 248 / 0.14);
+	}
+	:global(.brand) .step:hover,
+	:global(.brand) .step:focus-visible {
+		border-color: rgb(244 244 248 / 0.6);
+	}
+	:global(.brand) .step h3,
+	:global(.brand) .arrow,
+	:global(.brand) .number {
+		color: var(--vd-button-text);
+	}
+	:global(.brand) .step p {
+		color: rgb(244 244 248 / 0.8);
+	}
+	:global(.brand) .number {
+		opacity: 0.09;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.plate-photo,
+		.step,
+		.step-photo img,
+		.arrow {
+			transition: none;
+		}
+		.plate:hover .plate-photo,
+		.plate:focus-visible .plate-photo,
+		.step:hover,
+		.step:focus-visible,
+		.step:hover .step-photo img,
+		.step:focus-visible .step-photo img,
+		.step:hover .arrow,
+		.step:focus-visible .arrow {
+			transform: none;
+		}
+	}
+</style>

@@ -1,6 +1,9 @@
 ---
 title: Banani
 description: Banani is a modern commercial and residential area of Dhaka next to Gulshan, known for its restaurants and cafes.
+image: /uploads/areas/banani.jpg
+imageAlt: "Kamal Ataturk Avenue in Banani, a tree-lined road with office towers and orange banners on the lamp posts"
+imageCredit: "Photo: ASaber91, CC BY 2.0, via Wikimedia Commons"
 area: Banani
 tags: [dining, cafes]
 coordinates:
